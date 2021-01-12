@@ -11,13 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/tokens")
-@SuppressWarnings("deprecation")
+@RequestMapping("/oauth")
 public class TokenRestController {
-    private ConsumerTokenServices tokenServices;
+    private final ConsumerTokenServices tokenServices;
 
     @Autowired
-    public void setTokenServices(ConsumerTokenServices tokenServices) {
+    public TokenRestController(ConsumerTokenServices tokenServices) {
         this.tokenServices = tokenServices;
     }
 

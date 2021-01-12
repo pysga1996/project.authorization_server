@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -13,7 +14,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonComponent
-public class User implements Serializable {
+public class User implements UserDetails, Serializable {
+
     private Long id;
 
     private String password;

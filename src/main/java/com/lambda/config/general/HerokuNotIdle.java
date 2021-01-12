@@ -8,12 +8,13 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class HerokuNotIdle {
+
     private static final Logger LOG = LoggerFactory.getLogger(HerokuNotIdle.class);
 
-    @Scheduled(fixedDelay=120000)
-    public void herokuNotIdle(){
-        LOG.debug("Heroku not idle execution");
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getForObject("https://lambda-authorization-server.herokuapp.com", String.class);
-    }
+//    @Scheduled(fixedDelay=120000)
+//    public void herokuNotIdle(){
+//        LOG.debug("Heroku not idle execution");
+//        RestTemplate restTemplate = new RestTemplate();
+//        restTemplate.getForObject("https://lambda-authorization-server.herokuapp.com", String.class);
+//    }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/")
 public class HomeController {
+
     @GetMapping("/")
     public ModelAndView home() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

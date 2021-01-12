@@ -7,6 +7,7 @@ import com.lambda.model.Client;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,12 +15,12 @@ import javax.sql.DataSource;
 import java.util.List;
 import java.util.Objects;
 
-@Repository
+@Component
 @Transactional
 public class ClientDaoImpl extends JdbcDaoSupport implements ClientDao {
 
     private Object[] params = new Object[] {};
-    private ClientMapper mapper = new ClientMapper();
+    private final ClientMapper mapper = new ClientMapper();
 
     public ClientDaoImpl(DataSource dataSource) {
         this.setDataSource(dataSource);

@@ -27,23 +27,14 @@ public class UserResultSetExtractor implements ResultSetExtractor<List<User>> {
 
             if (!id.equals(previousId)) {
                 String password = rs.getString("password");
-
                 String username = rs.getString("username");
-
                 boolean accountNonExpired = rs.getBoolean("account_non_expired");
-
                 boolean accountNonLocked = rs.getBoolean("account_non_locked");
-
                 boolean credentialsNonExpired = rs.getBoolean("credentials_non_expired");
-
                 boolean enabled = rs.getBoolean("enabled");
-
                 String avatarUrl = rs.getString("avatar_url");
-
                 currentUser = new User(id, password, username, null, accountNonExpired, accountNonLocked, credentialsNonExpired, enabled, avatarUrl, null);
-
                 users.add(currentUser);
-
                 previousId = id;
             }
 

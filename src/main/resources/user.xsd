@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.lambda.authorization" xmlns:tns="http://www.lambda.authorization"
+           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <xs:annotation>
+    <xs:appinfo>
+      <jaxb:bindings
+              xmlns:xs="http://www.w3.org/2001/XMLSchema"
+              xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+              xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc">
+        <jaxb:globalBindings generateIsSetMethod="true" fixedAttributeAsConstantProperty="true">
+<!--          <jaxb:javaType xmlType="xs:integer" name="java.lang.Integer" />-->
+          <xjc:serializable />
+        </jaxb:globalBindings>
+        <jaxb:bindings>
+          <jaxb:bindings node="//xs:simpleType[@name='ResponseType']">
+            <jaxb:typesafeEnumClass>
+              <jaxb:typesafeEnumMember value="1" name="SINGLE" />
+              <jaxb:typesafeEnumMember value="2" name="LIST" />
+            </jaxb:typesafeEnumClass>
+          </jaxb:bindings>
+<!--          <jaxb:bindings node="//xs:simpleType[@name='ResponseType']/xs:restriction/xs:enumeration[@value='1']">-->
+<!--            <jaxb:typesafeEnumClass name="ResponseType" />-->
+<!--            <jaxb:typesafeEnumMember name="SINGLE" />-->
+<!--          </jaxb:bindings>-->
+<!--          <jaxb:bindings node="//xs:simpleType[@name='ResponseType']/xs:restriction/xs:enumeration[@value='2']">-->
+<!--            <jaxb:typesafeEnumClass name="ResponseType" />-->
+<!--            <jaxb:typesafeEnumMember name="LIST" />-->
+<!--          </jaxb:bindings>-->
+        </jaxb:bindings>
+      </jaxb:bindings>
+    </xs:appinfo>
+  </xs:annotation>
+
+  <xs:element name="UserRequest">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UserResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="type" type="tns:ResponseType" />
+        <xs:element name="user" type="tns:User" />
+        <xs:element name="userList">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="user" type="tns:User" minOccurs="0" maxOccurs="unbounded" nillable="true" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="User">
+    <xs:sequence>
+      <xs:element type="xs:string" name="username"/>
+      <xs:element type="xs:string" name="password"/>
+      <xs:element name="authorities">
+        <xs:simpleType>
+          <xs:list itemType="xs:string"/>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element type="xs:string" name="avatarUrl"/>
+      <xs:element name="setting" type="tns:Setting"/>
+    </xs:sequence>
+    <xs:attribute type="xs:byte" name="id"/>
+  </xs:complexType>
+  <xs:complexType name="Setting">
+    <xs:sequence>
+      <xs:element type="xs:boolean" name="darkMode"/>
+    </xs:sequence>
+    <xs:attribute type="xs:short" name="id"/>
+  </xs:complexType>
+
+  <xs:simpleType name="ResponseType">
+    <xs:restriction base="xs:int">
+      <xs:enumeration value="1"/>
+      <xs:enumeration value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

@@ -1,0 +1,12 @@
+<user id="123">
+    <username>Vu Tat Thanh</username>
+    <password>123456789</password>
+    <authorities>
+        <authority>ADMIN</authority>
+        <authority>MEMBER</authority>
+    </authorities>
+    <avatarUrl>https://github.com/jacobono/gradle-jaxb-plugin</avatarUrl>
+    <setting id="456">
+        <darkMode>true</darkMode>
+    </setting>
+</user>
