@@ -1,12 +1,22 @@
 package com.lambda.service;
 
-import com.lambda.model.Client;
+import com.lambda.model.CustomClient;
+import org.springframework.security.oauth2.provider.ClientDetails;
 
 import java.util.List;
 
+@SuppressWarnings("deprecation")
 public interface ClientService {
-    List<Client> findAll();
-    Client findById(String id);
-    void save(Client client);
+
+    List<CustomClient> findAll();
+
+    CustomClient findById(String id);
+
+    void create(CustomClient clientDetails);
+
+    void update(CustomClient clientDetails);
+
+    void updateSecret(String clientId, String clientSecret);
+
     void deleteById(String id);
 }

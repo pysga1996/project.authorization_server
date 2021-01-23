@@ -1,7 +1,8 @@
 package com.lambda.dao;
 
-import com.lambda.model.User;
+import com.lambda.model.CustomUser;
 
 public interface UserDao {
-    User getUserByUsername(String username);
+
+    CustomUser getUserByUsername(String username);
 }

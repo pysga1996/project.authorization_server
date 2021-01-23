@@ -10,4 +10,5 @@ public class LambdaAuthServiceApplication {
         SpringApplication.run(LambdaAuthServiceApplication.class, args);
     }
 
+
 }

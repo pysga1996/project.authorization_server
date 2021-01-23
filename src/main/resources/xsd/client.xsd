@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="qualified" elementFormDefault="qualified"
+           targetNamespace="http://www.lambda.authorization/clients" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:cli="http://www.lambda.authorization/clients"
+           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+  <xs:annotation>
+    <xs:appinfo>
+      <jaxb:bindings
+              xmlns:xs="http://www.w3.org/2001/XMLSchema"
+              xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+              xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc">
+        <jaxb:globalBindings generateIsSetMethod="true" fixedAttributeAsConstantProperty="true">
+          <!--          <jaxb:javaType xmlType="xs:integer" name="java.lang.Integer" />-->
+          <xjc:serializable />
+        </jaxb:globalBindings>
+<!--        <jaxb:bindings node="//xs:complexType[@name='InfoMap']">-->
+<!--          <jaxb:property>-->
+<!--            <jaxb:baseType name="com.lambda.dto.InfoMap&lt;String,String&gt;" />-->
+<!--          </jaxb:property>-->
+<!--        </jaxb:bindings>-->
+      </jaxb:bindings>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="CreateClientRequest" >
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="client" nillable="true" type="cli:ClientDTO"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateClientResponse" >
+    <xs:complexType>
+      <xs:sequence/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetClientRequest" >
+    <xs:complexType>
+      <xs:sequence/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetClientResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="client" type="cli:ClientDTO" />
+        <xs:element name="clientList" >
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="client" type="cli:ClientDTO" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+
+  </xs:element>
+  <xs:complexType name="ClientDTO">
+    <xs:sequence>
+      <xs:element type="xs:string" name="clientSecret"/>
+      <xs:element name="scope" >
+        <xs:simpleType>
+          <xs:list itemType="xs:string" />
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="resourceIds">
+        <xs:simpleType>
+          <xs:list itemType="xs:string" />
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="authorizedGrantTypes" >
+        <xs:simpleType>
+          <xs:list itemType="xs:string" />
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="registeredRedirectUris">
+        <xs:simpleType>
+          <xs:list itemType="xs:string" />
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="autoApproveScopes" >
+        <xs:simpleType>
+          <xs:list itemType="xs:string" />
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="authorities" type="cli:AuthorityDTO"/>
+      <xs:element type="xs:int" name="accessTokenValiditySeconds"/>
+      <xs:element type="xs:int" name="refreshTokenValiditySeconds"/>
+      <xs:element name="additionalInformation" type="cli:InfoMapDTO">
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="clientId"/>
+  </xs:complexType>
+  <xs:complexType name="InfoMapDTO">
+    <xs:sequence>
+      <xs:element name="entry" minOccurs="0" maxOccurs="unbounded" >
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="key" type="xs:string"/>
+            <xs:element name="value" type="xs:anyType"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="AuthorityDTO">
+    <xs:sequence>
+      <xs:element name="authority" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

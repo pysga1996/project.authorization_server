@@ -1,7 +1,6 @@
 package com.lambda.config.custom;
 
 import com.lambda.dao.UserDao;
-import com.lambda.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -13,6 +12,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 @Component
+@SuppressWarnings("deprecation")
 public class CustomTokenEnhancer implements TokenEnhancer {
 
     private final UserDao userDao;
