@@ -42,14 +42,14 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     compile 'org.postgresql:postgresql'
     compile 'mysql:mysql-connector-java'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web-services', version: '2.3.7.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web-services'
     compile group: 'org.springframework.ws', name: 'spring-ws-security', version: '3.0.10.RELEASE'
     compile (group: 'com.sun.xml.wss', name: 'xws-security', version: '3.0') {
         exclude group: 'javax.xml.crypto', module: 'xmldsig'
         exclude group: 'javax.activation', module: 'activation'
     }
     compile group: 'wsdl4j', name: 'wsdl4j', version: '1.6.3'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    compile group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     testCompile('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
