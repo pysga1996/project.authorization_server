@@ -1,6 +1,5 @@
 package com.lambda.config.custom;
 
-import com.lambda.constant.WebServiceConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -22,19 +21,18 @@ import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
-import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionManager;
+import org.springframework.transaction.support.TransactionOperations;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
-import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
-import org.springframework.ws.wsdl.wsdl11.Wsdl11Definition;
-import org.springframework.xml.xsd.XsdSchema;
 
 import javax.servlet.http.HttpServlet;
 import javax.sql.DataSource;
-import java.util.Properties;
 
 @Configuration
 @DependsOn({"dataSource"})
@@ -130,43 +128,7 @@ public class CustomBeanConfig {
     }
 
     @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
-    @Primary
-    public ServletRegistrationBean<HttpServlet> messageDispatcherServlet(ApplicationContext applicationContext) {
-        MessageDispatcherServlet servlet = new MessageDispatcherServlet();
-        servlet.setApplicationContext(applicationContext);
-        servlet.setTransformWsdlLocations(true);
-        return new ServletRegistrationBean<>(servlet, "/ws/*");
-    }
-
-
-    @Bean(name = "users")
-    public Wsdl11Definition usersWsdl11Definition(XsdSchema usersSchema) {
-        DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
-        wsdl11Definition.setPortTypeName("UserPort");
-        wsdl11Definition.setLocationUri("/ws");
-        wsdl11Definition.setTargetNamespace(WebServiceConstant.USERS_NAMESPACE);
-        wsdl11Definition.setServiceName("UserService");
-        wsdl11Definition.setResponseSuffix("Response");
-        wsdl11Definition.setRequestSuffix("Request");
-        wsdl11Definition.setSchema(usersSchema);
-        return wsdl11Definition;
-    }
-
-    @Bean(name = "clients")
-    public Wsdl11Definition clientsWsdl11Definition(XsdSchema clientsSchema) {
-        DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
-        wsdl11Definition.setPortTypeName("ClientPort");
-        wsdl11Definition.setLocationUri("/ws");
-        wsdl11Definition.setTargetNamespace(WebServiceConstant.CLIENTS_NAMESPACE);
-        wsdl11Definition.setServiceName("ClientService");
-        wsdl11Definition.setResponseSuffix("Response");
-        wsdl11Definition.setRequestSuffix("Request");
-        wsdl11Definition.setSchema(clientsSchema);
-        Properties soapActions = new Properties();
-        soapActions.setProperty("getClientList", "http://www.lambda.authorization/clients/list");
-        soapActions.setProperty("createClient", "http://www.lambda.authorization/clients/create");
-        wsdl11Definition.setSoapActions(soapActions);
-        return wsdl11Definition;
+    public TransactionOperations transactionOperations(PlatformTransactionManager transactionManager) {
+        return new TransactionTemplate(transactionManager);
     }
 }

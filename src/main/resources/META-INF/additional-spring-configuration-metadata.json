@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "webservices.url.notification",
+      "type": "java.lang.String",
+      "description": "Description for webservices.url.notification."
+  }
+] }

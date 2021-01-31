@@ -32,3 +32,6 @@ spring:
   messages:
     basename: static/i18n/message
     encoding: UTF-8
+webservices:
+  url:
+    notification: https://delta-notification-service.herokuapp.com/delta-notification/webservice/notification.wsdl

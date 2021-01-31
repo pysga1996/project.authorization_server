@@ -1,7 +1,7 @@
 package com.lambda.service.impl;
 
 import com.lambda.dao.ClientDao;
-import com.lambda.model.CustomClient;
+import com.lambda.model.dto.ClientDTO;
 import com.lambda.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -22,26 +22,26 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public List<CustomClient> findAll() {
+    public List<ClientDTO> findAll() {
         List<ClientDetails> rs = clientDao.listClientDetails();
         return rs
                 .stream()
-                .map(CustomClient::new)
+                .map(ClientDTO::new)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public CustomClient findById(String id) {
-        return new CustomClient(clientDao.loadClientByClientId(id));
+    public ClientDTO findById(String id) {
+        return new ClientDTO(clientDao.loadClientByClientId(id));
     }
 
     @Override
-    public void create(CustomClient clientDetails) {
+    public void create(ClientDTO clientDetails) {
         clientDao.addClientDetails(clientDetails);
     }
 
     @Override
-    public void update(CustomClient clientDetails) {
+    public void update(ClientDTO clientDetails) {
         clientDao.updateClientDetails(clientDetails);
     }
 

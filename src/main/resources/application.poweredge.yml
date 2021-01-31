@@ -34,3 +34,6 @@ spring:
   messages:
     basename: static/i18n/message
     encoding: UTF-8
+webservices:
+  url:
+    notification: http://192.168.0.100:8095/delta-notification/webservice/notification.wsdl

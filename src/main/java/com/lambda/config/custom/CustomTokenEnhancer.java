@@ -1,6 +1,7 @@
 package com.lambda.config.custom;
 
-import com.lambda.dao.UserDao;
+import com.lambda.model.dto.UserDTO;
+import com.lambda.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -15,26 +16,20 @@ import java.util.TreeMap;
 @SuppressWarnings("deprecation")
 public class CustomTokenEnhancer implements TokenEnhancer {
 
-    private final UserDao userDao;
+    private final UserService userService;
 
     @Autowired
-    public CustomTokenEnhancer(UserDao userDao) {
-        this.userDao = userDao;
+    public CustomTokenEnhancer(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
     public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
-        String username = authentication.getUserAuthentication().getName();
-//        User user = userDao.getUserByUsername(username);
+        UserDTO userDTO = this.userService.getCurrentUser();
         final Map<String, Object> additionalInfo = new TreeMap<>();
-//        additionalInfo.put("id", user.getId());
-        additionalInfo.put("user_name", username);
-//        additionalInfo.put("roles", user.getAuthorities());
-//        additionalInfo.put("avatar_url", user.getAvatarUrl());
-//        additionalInfo.put("setting", user.getSetting());
-
+        additionalInfo.put("profile", userDTO.getUserProfile());
+        additionalInfo.put("setting", userDTO.getSetting());
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
-
         return accessToken;
     }
 

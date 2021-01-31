@@ -2,16 +2,19 @@ package com.lambda.dao.impl;
 
 import com.lambda.constant.JdbcConstant;
 import com.lambda.dao.UserDao;
-import com.lambda.model.CustomUser;
+import com.lambda.dao.extractor.SqlResultExtractor;
+import com.lambda.model.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @Transactional
@@ -19,22 +22,64 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
 
     private final JdbcOperations jdbcOperations;
 
-    private final ResultSetExtractor<List<CustomUser>> mapper;
+    private final SqlResultExtractor<UserDTO> extractor;
 
     @Autowired
-    public UserDaoImpl(DataSource dataSource, JdbcOperations jdbcOperations, ResultSetExtractor<List<CustomUser>> mapper) {
-        this.mapper = mapper;
+    public UserDaoImpl(DataSource dataSource, JdbcOperations jdbcOperations,
+                       SqlResultExtractor<UserDTO> extractor) {
+        this.extractor = extractor;
         this.setDataSource(dataSource);
         this.jdbcOperations = jdbcOperations;
     }
 
     @Override
-    public CustomUser getUserByUsername(String username) {
-        List<CustomUser> customUserList = jdbcOperations.query(JdbcConstant.DEF_USERS_BY_USERNAME_FULL_WITH_SETTING_QUERY, mapper, username);
-        if (customUserList == null || customUserList.isEmpty()) {
-            return null;
+    public Page<UserDTO> findAll(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Optional<UserDTO> findByUsername(String username) {
+        List<UserDTO> userDTOList = jdbcOperations.query(
+                JdbcConstant.DEF_USERS_BY_USERNAME_FULL_WITH_SETTING_QUERY, extractor.listExtractor(), username);
+        if (userDTOList == null || userDTOList.isEmpty()) {
+            return Optional.empty();
         } else {
-            return customUserList.get(0);
+            return Optional.of(userDTOList.get(0));
         }
+    }
+
+    @Override
+    public Page<UserDTO> findByUsernameContaining(String username, Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Page<UserDTO> findByAuthorities_Authority(String authority, Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Optional<UserDTO> findById(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public UserDTO findByEmail(String email) {
+        return null;
+    }
+
+    @Override
+    public void saveAndFlush(UserDTO user) {
+
+    }
+
+    @Override
+    public void deleteById(Long id) {
+
+    }
+
+    @Override
+    public void save(UserDTO user) {
+
     }
 }

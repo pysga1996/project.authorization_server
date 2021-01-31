@@ -55,21 +55,6 @@ create table oauth_approvals (
                                  lastModifiedAt TIMESTAMP
 );
 
-drop table if exists ClientDetails;
-create table ClientDetails (
-                               appId VARCHAR(255) PRIMARY KEY,
-                               resourceIds VARCHAR(255),
-                               appSecret VARCHAR(255),
-                               scope VARCHAR(255),
-                               grantTypes VARCHAR(255),
-                               redirectUrl VARCHAR(255),
-                               authorities VARCHAR(255),
-                               access_token_validity INTEGER,
-                               refresh_token_validity INTEGER,
-                               additionalInformation VARCHAR(4096),
-                               autoApproveScopes VARCHAR(255)
-);
-
 create table customUsers(
                       username varchar_ignorecase(50) not null primary key,
                       password varchar_ignorecase(500) not null,
@@ -100,3 +85,20 @@ create table group_members (
                                group_id bigint not null,
                                constraint fk_group_members_group foreign key(group_id) references groups(id)
 );
+
+create table authentication_token
+(
+    id LONG auto_increment,
+    token VARCHAR(50) null,
+    username VARCHAR(50) null,
+    create_date TIMESTAMP not null,
+    expire_date TIMESTAMP not null,
+    status BIT(10) null,
+    constraint authentication_token_pk
+        primary key (id)
+)
+    comment 'Authentication token management table';
+
+create unique index authentication_token_token_uindex
+    on authentication_token (token);
+
