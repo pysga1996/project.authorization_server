@@ -3,11 +3,12 @@ package com.lambda.dao;
 import com.lambda.model.dto.UserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.provisioning.GroupManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 
 import java.util.Optional;
 
-public interface UserDao extends UserDetailsManager {
+public interface UserDao extends UserDetailsManager, GroupManager {
 
     Page<UserDTO> findAll(Pageable pageable);
 

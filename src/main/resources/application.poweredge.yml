@@ -31,9 +31,15 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:}
   main:
     allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      file-size-threshold: 5MB
+      max-file-size: 10MB
   messages:
     basename: static/i18n/message
     encoding: UTF-8
+folder:
+  temp: /tmp
 webservices:
   url:
     notification: http://192.168.0.100:8095/delta-notification/webservice/notification.wsdl

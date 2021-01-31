@@ -4,5 +4,10 @@
       "name": "webservices.url.notification",
       "type": "java.lang.String",
       "description": "Description for webservices.url.notification."
-  }
-] }
+    },
+    {
+      "name": "folder.temp",
+      "type": "java.lang.String",
+      "description": "Description for folder.temp."
+    }
+  ] }

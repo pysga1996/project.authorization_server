@@ -102,3 +102,22 @@ create table authentication_token
 create unique index authentication_token_token_uindex
     on authentication_token (token);
 
+create table user_profile
+(
+    id BIGINT auto_increment,
+    user_id BIGINT null,
+    first_name NVARCHAR(50) null,
+    last_name NVARCHAR(50) null,
+    date_of_birth TIMESTAMP null,
+    gender BIT(10) null,
+    phone_number VARCHAR(20) null,
+    email VARCHAR(20) null,
+    avatar_url VARCHAR(100) null,
+    constraint user_profile_pk
+        primary key (id),
+    constraint user_profile_user_id_fk
+        foreign key (user_id) references user (id)
+);
+
+
+

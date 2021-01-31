@@ -49,6 +49,7 @@ dependencies {
         exclude group: 'javax.activation', module: 'activation'
     }
     compile group: 'wsdl4j', name: 'wsdl4j', version: '1.6.3'
+    compile group: 'com.cloudinary', name: 'cloudinary-http44', version: '1.27.0'
 
     providedCompile group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
     annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'

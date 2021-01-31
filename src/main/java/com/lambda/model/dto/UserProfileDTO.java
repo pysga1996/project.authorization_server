@@ -1,14 +1,20 @@
 package com.lambda.model.dto;
 
 import com.lambda.constant.Gender;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Data
-public class UserProfileDTO {
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserProfileDTO implements Serializable {
 
     private Long id;
 
@@ -18,7 +24,7 @@ public class UserProfileDTO {
 
     private String lastName;
 
-    private Date dateOfBirth;
+    private Timestamp dateOfBirth;
 
     private Gender gender;
 
@@ -30,5 +36,4 @@ public class UserProfileDTO {
 
     private String avatarUrl;
 
-    private String avatarBlobString;
 }

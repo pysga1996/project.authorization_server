@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/setting")
+@RequestMapping("/api/setting")
 public class SettingRestController {
 
     private final SettingService settingService;
@@ -25,11 +25,7 @@ public class SettingRestController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<Void> changeSetting(@RequestBody SettingDTO settingDTO) {
-        try {
-            this.settingService.changeSetting(settingDTO);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        this.settingService.changeSetting(settingDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

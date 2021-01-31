@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -39,13 +38,9 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
 
     @Override
     public Optional<UserDTO> findByUsername(String username) {
-        List<UserDTO> userDTOList = jdbcOperations.query(
-                JdbcConstant.DEF_USERS_BY_USERNAME_FULL_WITH_SETTING_QUERY, extractor.listExtractor(), username);
-        if (userDTOList == null || userDTOList.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(userDTOList.get(0));
-        }
+        return this.jdbcOperations.query(
+                JdbcConstant.DEF_USERS_BY_USERNAME_FULL_WITH_SETTING_QUERY,
+                extractor.singleExtractor(), username);
     }
 
     @Override
@@ -60,7 +55,9 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
 
     @Override
     public Optional<UserDTO> findById(Long id) {
-        return Optional.empty();
+        return this.jdbcOperations.query(
+                JdbcConstant.DEF_USERS_BY_ID_FULL_WITH_SETTING_QUERY,
+                extractor.singleExtractor(), id);
     }
 
     @Override

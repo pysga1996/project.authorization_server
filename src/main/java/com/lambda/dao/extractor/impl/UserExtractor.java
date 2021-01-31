@@ -1,10 +1,13 @@
 package com.lambda.dao.extractor.impl;
 
+import com.lambda.constant.Gender;
 import com.lambda.constant.SettingColumn;
 import com.lambda.constant.UserColumn;
+import com.lambda.constant.UserProfileColumn;
 import com.lambda.dao.extractor.SqlResultExtractor;
 import com.lambda.model.dto.SettingDTO;
 import com.lambda.model.dto.UserDTO;
+import com.lambda.model.dto.UserProfileDTO;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,6 +26,7 @@ public class UserExtractor implements SqlResultExtractor<UserDTO> {
             Long previousId = -1L;
             while (rs.next()) {
                 Long id = rs.getLong(UserColumn.ID);
+                if (previousId != -1 && !id.equals(previousId)) break;
                 if (!id.equals(previousId)) {
                     userDTO = new UserDTO(
                             id, null, null,
@@ -33,6 +37,21 @@ public class UserExtractor implements SqlResultExtractor<UserDTO> {
                             !rs.getBoolean(UserColumn.ACCOUNT_LOCKED),
                             !rs.getBoolean(UserColumn.CREDENTIALS_EXPIRED),
                             new HashSet<>());
+                    if (rs.getLong(SettingColumn.SETTING_ID) != 0) {
+                        userDTO.setSetting(new SettingDTO(rs.getLong(SettingColumn.SETTING_ID),
+                                id, rs.getBoolean(SettingColumn.SETTING_DARK_MODE)));
+                    }
+                    if (rs.getLong(UserProfileColumn.USER_PROFILE_ID) != 0) {
+                        userDTO.setUserProfile(new UserProfileDTO(rs.getLong(UserProfileColumn.USER_PROFILE_ID),
+                                id, rs.getString(UserProfileColumn.FIRST_NAME),
+                                rs.getString(UserProfileColumn.LAST_NAME),
+                                rs.getTimestamp(UserProfileColumn.DATE_OF_BIRTH),
+                                Gender.fromValue(rs.getInt(UserProfileColumn.GENDER)),
+                                rs.getString(UserProfileColumn.PHONE_NUMBER),
+                                rs.getString(UserProfileColumn.EMAIL),
+                                rs.getString(UserProfileColumn.AVATAR_URL)));
+                    }
+
                     previousId = id;
                 }
                 if (userDTO != null) {
@@ -41,7 +60,6 @@ public class UserExtractor implements SqlResultExtractor<UserDTO> {
                 }
             }
             return Optional.ofNullable(userDTO);
-
         };
     }
 

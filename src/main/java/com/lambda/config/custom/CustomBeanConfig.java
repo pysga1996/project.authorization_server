@@ -1,5 +1,7 @@
 package com.lambda.config.custom;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -130,5 +132,13 @@ public class CustomBeanConfig {
     @Bean
     public TransactionOperations transactionOperations(PlatformTransactionManager transactionManager) {
         return new TransactionTemplate(transactionManager);
+    }
+
+    @Bean
+    public Cloudinary cloudinary() {
+        return new Cloudinary(ObjectUtils.asMap(
+                "cloud_name", "hkhrh3ta7",
+                "api_key", "792721613817853",
+                "api_secret", "zf2zxuYeEuF7YfCGsIVjq8U5wpo"));
     }
 }

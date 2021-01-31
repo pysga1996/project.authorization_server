@@ -7,11 +7,14 @@ import org.springframework.security.oauth2.common.exceptions.InvalidTokenExcepti
 
 import java.net.UnknownHostException;
 import java.util.Calendar;
+import java.util.Optional;
 
 @SuppressWarnings("deprecation")
 public interface UserService {
 
     UserDTO getCurrentUser();
+
+    Optional<UserDTO> findByUsername(String username);
 
     UserDTO findByEmail(String email);
 
@@ -26,6 +29,8 @@ public interface UserService {
     String showChangePasswordPage(String token) throws UnknownHostException;
 
     UserDTO checkResetPassToken(String token);
+
+
 
     default void validateToken(AuthenticationTokenDTO authenticationTokenDTO) {
         if (authenticationTokenDTO == null) {

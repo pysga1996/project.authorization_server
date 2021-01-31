@@ -32,4 +32,10 @@ public class ControllerErrorHandler {
     public ApiError handleInvalidTokenException(InvalidTokenException ex, WebRequest request) {
         return new ApiError(2000, ex.getLocalizedMessage());
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    public ApiError handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
+        return new ApiError(1500, ex.getLocalizedMessage());
+    }
 }

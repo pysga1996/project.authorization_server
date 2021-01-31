@@ -6,7 +6,6 @@ import com.lambda.dao.TokenDao;
 import com.lambda.dao.UserDao;
 import com.lambda.error.BusinessException;
 import com.lambda.model.dto.AuthenticationTokenDTO;
-import com.lambda.model.dto.AuthorityDTO;
 import com.lambda.model.dto.SearchResponseDTO;
 import com.lambda.model.dto.UserDTO;
 import com.lambda.service.UserService;
@@ -15,13 +14,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private static final String DEFAULT_ROLE = "ROLE_USER";
+    private static final String DEFAULT_GROUP = "user";
 
     private final UserDao userDao;
 
@@ -41,6 +39,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<UserDTO> findByUsername(String username) {
+        return this.userDao.findByUsername(username);
+    }
+
+    @Override
     public UserDTO findByEmail(String email) {
         return userDao.findByEmail(email);
     }
@@ -52,8 +55,8 @@ public class UserServiceImpl implements UserService {
                 throw new BusinessException(1000, "Username existed");
             }
             user.setEnabled(false);
-            user.setAuthorities(Collections.singleton(new AuthorityDTO(DEFAULT_ROLE)));
             userDao.createUser(user);
+            userDao.addUserToGroup(user.getUsername(), DEFAULT_GROUP);
         } else {
             userDao.updateUser(user);
         }

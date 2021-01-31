@@ -2,6 +2,7 @@ package com.lambda.model.dto;
 
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
@@ -35,6 +36,7 @@ public class UserDTO implements UserDetails, Serializable {
     public UserDTO(String username, String password, boolean enabled,
                    boolean accountNonExpired, boolean accountNonLocked,
                    boolean credentialsNonExpired, Set<GrantedAuthority> authorities) {
+        User.withUserDetails(this).build();
         this.username = username;
         this.password = password;
         this.enabled = enabled;

@@ -29,9 +29,15 @@ spring:
     url: ${SPRING_DATASOURCE_URL:}
   main:
     allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      file-size-threshold: 5MB
+      max-file-size: 10MB
   messages:
     basename: static/i18n/message
     encoding: UTF-8
+folder:
+  temp: /tmp
 webservices:
   url:
     notification: https://delta-notification-service.herokuapp.com/delta-notification/webservice/notification.wsdl

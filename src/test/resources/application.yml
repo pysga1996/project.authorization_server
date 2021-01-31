@@ -34,6 +34,8 @@ spring:
   messages:
     basename: static/i18n/message
     encoding: UTF-8
+folder:
+  temp: /tmp
 webservices:
   url:
     notification: http://localhost:8095/delta-notification/webservice/notification.wsdl

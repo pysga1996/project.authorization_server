@@ -34,6 +34,12 @@ spring:
   messages:
     basename: static/i18n/message
     encoding: UTF-8
+  servlet:
+    multipart:
+      file-size-threshold: 5MB
+      max-file-size: 10MB
+folder:
+  temp: ../tmp
 webservices:
   url:
     notification: http://localhost:8095/delta-notification/webservice/notification.wsdl

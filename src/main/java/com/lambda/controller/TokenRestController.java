@@ -20,18 +20,10 @@ public class TokenRestController {
 
     @DeleteMapping("/revoke/{tokenId:.*}")
     public ResponseEntity<Void> revokeToken(@PathVariable String tokenId) {
-        try {
-            boolean isTokenExisted = tokenServices.revokeToken(tokenId);
-            if (isTokenExisted) {
-                return new ResponseEntity<>(HttpStatus.OK);
-            } else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        boolean isTokenExisted = tokenServices.revokeToken(tokenId);
+        if (isTokenExisted) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @RequestMapping(value = "/ping", method = {RequestMethod.TRACE})
-    public ResponseEntity<Void> test() {
-        return ResponseEntity.ok().build();
-    }
 }
