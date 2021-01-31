@@ -50,12 +50,13 @@ dependencies {
     }
     compile group: 'wsdl4j', name: 'wsdl4j', version: '1.6.3'
 
-    compileOnly group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
+    providedCompile group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
     annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
     testCompileOnly group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
     testAnnotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
-
-    compileOnly 'org.projectlombok:lombok:1.18.16'
+//    providedCompile deprecated -> compileOnly
+//    compile deprecated -> implementation
+    providedCompile 'org.projectlombok:lombok:1.18.16'
     annotationProcessor 'org.projectlombok:lombok:1.18.16'
     testCompileOnly 'org.projectlombok:lombok:1.18.16'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
