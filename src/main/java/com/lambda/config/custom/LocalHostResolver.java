@@ -26,7 +26,8 @@ public class LocalHostResolver implements HostResolver {
     public String resolveHost(String path) {
         String ip = InetAddress.getLoopbackAddress().getHostAddress();
         int port = this.environment.getProperty("server.port", Integer.class, 8081);
-        String url = ip + ":" + port;
+        String context = this.environment.getProperty("server.servlet.context-path", String.class, "/");
+        String url = ip + ":" + port + context;
         logger.info("Current url: {}", url);
         return url;
     }

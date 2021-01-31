@@ -49,8 +49,16 @@ dependencies {
         exclude group: 'javax.activation', module: 'activation'
     }
     compile group: 'wsdl4j', name: 'wsdl4j', version: '1.6.3'
-    compile group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
+
+    compileOnly group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
+    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
+    testCompileOnly group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
+    testAnnotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
+
+    compileOnly 'org.projectlombok:lombok:1.18.16'
+    annotationProcessor 'org.projectlombok:lombok:1.18.16'
+    testCompileOnly 'org.projectlombok:lombok:1.18.16'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
     testCompile('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
@@ -118,7 +126,7 @@ jaxb {
 task genJaxb {
     ext.sourcesDir = "${buildDir}/generated-sources/jaxb"
     ext.classesDir = "${buildDir}/classes/jaxb"
-    ext.schema = "http://localhost:8095/delta-notification/ws/notification.wsdl"
+    ext.schema = "http://localhost:8095/delta-notification/webservice/notification.wsdl"
 
     outputs.dir classesDir
 

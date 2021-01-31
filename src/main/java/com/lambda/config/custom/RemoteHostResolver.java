@@ -31,13 +31,14 @@ public class RemoteHostResolver implements HostResolver {
     public String resolveHost(String path) throws UnknownHostException {
         String ip;
         String url;
+        String context = this.environment.getProperty("server.servlet.context-path", String.class, "/");
         if ("heroku".equals(activeProfile)) {
             ip = InetAddress.getLocalHost().getHostAddress();
-            url = ip + path;
+            url = ip + context + path;
         } else {
             ip = InetAddress.getLocalHost().getHostAddress();
             int port = this.environment.getProperty("server.port", Integer.class, 8081);
-            url = ip + ":" + port + path;
+            url = ip + ":" + port + context + path;
         }
         logger.info("Current url: {}", url);
         return url;
