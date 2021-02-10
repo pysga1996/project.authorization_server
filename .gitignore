@@ -34,3 +34,4 @@ out/
 *.env
 /generated/
 /schema/
+/logs/

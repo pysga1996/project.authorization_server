@@ -1,6 +1,9 @@
 package com.lambda.constant;
 
-public final class UserColumn {
+import lombok.Value;
+
+@Value
+public class UserColumn {
 
     public static final String ID = "id";
 

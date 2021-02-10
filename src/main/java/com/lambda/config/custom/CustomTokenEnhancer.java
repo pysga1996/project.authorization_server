@@ -3,6 +3,7 @@ package com.lambda.config.custom;
 import com.lambda.model.dto.UserDTO;
 import com.lambda.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -10,9 +11,8 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @SuppressWarnings("deprecation")
@@ -33,9 +33,19 @@ public class CustomTokenEnhancer implements TokenEnhancer {
                     .findByUsername(((UserDetails) principal).getUsername());
             final Map<String, Object> additionalInfo = new TreeMap<>();
             if (optionalUserDTO.isPresent()) {
+                additionalInfo.put("id", optionalUserDTO.get().getId());
                 additionalInfo.put("profile", optionalUserDTO.get().getUserProfile());
                 additionalInfo.put("setting", optionalUserDTO.get().getSetting());
-                additionalInfo.put("authorities", optionalUserDTO.get().getAuthorities());
+                Set<String> authorities = optionalUserDTO.get().getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toSet());
+                additionalInfo.put("authorities", authorities);
+                Map<String, Boolean> otherInfo = new HashMap<>();
+                otherInfo.put("enabled", optionalUserDTO.get().isEnabled());
+                otherInfo.put("accountNonLocked", optionalUserDTO.get().isAccountNonLocked());
+                otherInfo.put("accountNonExpired", optionalUserDTO.get().isAccountNonExpired());
+                otherInfo.put("credentialsNonExpired", optionalUserDTO.get().isCredentialsNonExpired());
+                additionalInfo.put("other", otherInfo);
             }
             ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
         }

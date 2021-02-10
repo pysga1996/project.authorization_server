@@ -1,6 +1,9 @@
 package com.lambda.constant;
 
-public final class UserProfileColumn {
+import lombok.Value;
+
+@Value
+public class UserProfileColumn {
 
     private UserProfileColumn() {}
 

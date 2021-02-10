@@ -1,6 +1,9 @@
 package com.lambda.constant;
 
-public final class SettingColumn {
+import lombok.Value;
+
+@Value
+public class SettingColumn {
 
     public static final String SETTING_ID = "setting_id";
 

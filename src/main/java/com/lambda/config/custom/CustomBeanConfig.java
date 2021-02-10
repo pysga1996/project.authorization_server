@@ -1,16 +1,16 @@
 package com.lambda.config.custom;
 
 import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,16 +24,13 @@ import org.springframework.security.web.authentication.rememberme.JdbcTokenRepos
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.springframework.ws.transport.http.MessageDispatcherServlet;
 
-import javax.servlet.http.HttpServlet;
 import javax.sql.DataSource;
 
 @Configuration
@@ -44,6 +41,9 @@ public class CustomBeanConfig {
     private final DataSource dataSource;
 
     private final UserDetailsService userDetailsService;
+
+    @Value("${storage.cloudinary.url}")
+    private String cloudinaryUrl;
 
     @Autowired
     public CustomBeanConfig(DataSource dataSource,
@@ -136,9 +136,19 @@ public class CustomBeanConfig {
 
     @Bean
     public Cloudinary cloudinary() {
-        return new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", "hkhrh3ta7",
-                "api_key", "792721613817853",
-                "api_secret", "zf2zxuYeEuF7YfCGsIVjq8U5wpo"));
+        return new Cloudinary(cloudinaryUrl);
+    }
+
+    @Bean
+    public WebServerFactoryCustomizer<TomcatServletWebServerFactory> sessionManagerCustomizer() {
+        return server -> {
+            ErrorPage error400 = new ErrorPage(HttpStatus.BAD_REQUEST, "/error/400");
+            ErrorPage error500 = new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/error/500");
+            ErrorPage error404 = new ErrorPage(HttpStatus.NOT_FOUND, "/error/404");
+            ErrorPage error403 = new ErrorPage(HttpStatus.FORBIDDEN, "/error/403");
+            ErrorPage error503 = new ErrorPage(HttpStatus.SERVICE_UNAVAILABLE, "/error/503");
+            ErrorPage error401 = new ErrorPage(HttpStatus.UNAUTHORIZED, "/error/401");
+            server.addErrorPages(error400, error500, error404, error403, error503, error401);
+        };
     }
 }

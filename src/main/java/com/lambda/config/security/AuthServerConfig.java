@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -30,14 +31,17 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
     private final TokenEnhancer tokenEnhancer;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
     public AuthServerConfig(@Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager,
                             DataSource dataSource, TokenStore tokenStore,
-                            @Qualifier("customTokenEnhancer") TokenEnhancer tokenEnhancer) {
+                            @Qualifier("customTokenEnhancer") TokenEnhancer tokenEnhancer, PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.dataSource = dataSource;
         this.tokenStore = tokenStore;
         this.tokenEnhancer = tokenEnhancer;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -58,7 +62,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(ClientDetailsServiceConfigurer clients)
             throws Exception {
-        clients.jdbc(dataSource);
+        clients.jdbc(dataSource).passwordEncoder(passwordEncoder);
     }
 
     @Override

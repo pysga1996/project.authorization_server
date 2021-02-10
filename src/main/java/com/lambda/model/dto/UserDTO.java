@@ -1,5 +1,7 @@
 package com.lambda.model.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.lambda.util.CustomAuthoritySerializer;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -31,12 +33,12 @@ public class UserDTO implements UserDetails, Serializable {
 
     private boolean credentialsNonExpired;
 
+    @JsonSerialize(using = CustomAuthoritySerializer.class)
     private Set<GrantedAuthority> authorities;
 
     public UserDTO(String username, String password, boolean enabled,
                    boolean accountNonExpired, boolean accountNonLocked,
                    boolean credentialsNonExpired, Set<GrantedAuthority> authorities) {
-        User.withUserDetails(this).build();
         this.username = username;
         this.password = password;
         this.enabled = enabled;
@@ -79,6 +81,10 @@ public class UserDTO implements UserDetails, Serializable {
     @Override
     public Set<GrantedAuthority> getAuthorities() {
         return authorities;
+    }
+
+    public UserDetails getBasicInfo() {
+        return User.withUserDetails(this).build();
     }
 
 

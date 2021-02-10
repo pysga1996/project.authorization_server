@@ -1,13 +1,15 @@
 package com.lambda.constant;
 
-public final class JdbcConstant {
+import lombok.Value;
+
+@Value
+public class JdbcConstant {
 
     public static final int TOKEN_DURATION = 24 * 60 * 60 * 1000;
 
     public static final String DEF_USERS_BY_USERNAME_FULL_QUERY = "SELECT username, " +
             "password, enabled, account_locked, account_expired, " +
             "credentials_expired FROM user WHERE username =?";
-
 
     public static final String DEF_USERS_BY_USERNAME_FULL_WITH_SETTING_QUERY =
             " SELECT u.id as id, u.username as username, password, enabled, account_locked, account_expired, credentials_expired,\n" +
@@ -31,7 +33,8 @@ public final class JdbcConstant {
             " LEFT JOIN setting s on u.id = s.user_id\n" +
             " WHERE u.id = ?";
 
-    public static final String DEF_CUSTOM_GROUP_AUTHORITIES_BY_USERNAME_QUERY = "select g.id, g.group_name, ga.authority "
+    public static final String DEF_CUSTOM_GROUP_AUTHORITIES_BY_USERNAME_QUERY =
+            "select g.id, g.group_name, ga.authority "
             + "from `groups` g, group_members gm, group_authorities ga "
             + "where gm.username = ? " + "and g.id = ga.group_id " + "and g.id = gm.group_id";
 }

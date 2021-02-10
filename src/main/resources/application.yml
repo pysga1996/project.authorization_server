@@ -9,6 +9,7 @@ logging:
             MessageTracing:
               received: TRACE
               sent: TRACE
+  config: classpath:log4j-spring.xml
 server:
   port: 8081
   servlet:
@@ -16,13 +17,17 @@ server:
     encoding:
       charset: UTF-8
       enabled: true
+  error:
+    whitelabel:
+      enabled: false
+    path: /error
 spring:
   datasource:
     driver-class-name: ${SPRING_DATASOURCE_DRIVER:}
     hikari:
       connectionTimeout: 30000
       idleTimeout: 100000
-      maxLifetime: 900000
+      maxLifetime: 600000
       maximum-pool-size: 20
       minimum-idle: 10
     initialization-mode: never
@@ -38,8 +43,29 @@ spring:
     multipart:
       file-size-threshold: 5MB
       max-file-size: 10MB
-folder:
+  mvc:
+    static-path-pattern: /
+    log-resolved-exception: true
+    view:
+      prefix: classpath:/templates/
+      suffix: .html
+    throw-exception-if-no-handler-found: true
+  thymeleaf:
+    cache: false
+# Override by WebMvcConfig.class
+#  web:
+#    resources:
+#      static-locations: classpath:/static/
+#      add-mappings: false
+storage:
   temp: ../tmp
+  cloudinary:
+    url: ${CLOUDINARY_URL:}
 webservices:
   url:
     notification: http://localhost:8095/delta-notification/webservice/notification.wsdl
+security:
+  oath2:
+    resource-id: user
+
+

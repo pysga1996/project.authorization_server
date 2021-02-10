@@ -6,8 +6,18 @@
       "description": "Description for webservices.url.notification."
     },
     {
-      "name": "folder.temp",
+      "name": "storage.temp",
       "type": "java.lang.String",
-      "description": "Description for folder.temp."
+      "description": "Description for storage.temp."
+    },
+    {
+      "name": "security.oath2.resource-id",
+      "type": "java.lang.String",
+      "description": "Description for security.oath2.resource-id."
+    },
+    {
+      "name": "storage.cloudinary.url",
+      "type": "java.lang.String",
+      "description": "Description for storage.cloudinary.url."
     }
   ] }

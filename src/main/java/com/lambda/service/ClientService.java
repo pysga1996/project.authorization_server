@@ -2,9 +2,9 @@ package com.lambda.service;
 
 import com.lambda.model.dto.ClientDTO;
 
+import javax.servlet.http.Cookie;
 import java.util.List;
 
-@SuppressWarnings("deprecation")
 public interface ClientService {
 
     List<ClientDTO> findAll();
@@ -18,4 +18,8 @@ public interface ClientService {
     void updateSecret(String clientId, String clientSecret);
 
     void deleteById(String id);
+
+    Cookie createCookie(ClientDTO clientDTO);
+
+    void patchCookieToForm(String cookie, ClientDTO clientDTO);
 }

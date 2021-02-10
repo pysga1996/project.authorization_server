@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head th:fragment="headerfiles">
+    <meta charset="UTF-8"/>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/icon/bootstrap-icons.css}" rel="stylesheet">
+<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">-->
+    <title>Header Fragments</title>
+    <style >
+        /*@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css");*/
+        body {
+            padding-top: 5rem;
+            padding-bottom: 5rem;
+        }
+    </style>
+    <script type="text/javascript" th:src="@{/js/bootstrap.bundle.js}"></script>
+    <script>
+        function hideMessage() {
+            const timeout = setTimeout(() => {
+                const msgDiv = document.getElementById("msg");
+                if (msgDiv) {
+                    msgDiv.remove();
+                }
+                clearTimeout(timeout);
+            }, 5000);
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const btnContainer = document.getElementById("navBar");
+
+            // Get all buttons with class="btn" inside the container
+            const btns = btnContainer.getElementsByTagName("a");
+            const currentUrl = (window.location.href);
+            // Loop through the buttons and add the active class to the current/clicked button
+            for (let i = 0; i < btns.length; i++) {
+                const btnUrl = (window.location.protocol + "//" + window.location.host + btns[i].getAttribute("href"));
+                if (currentUrl.startsWith(btnUrl)) {
+                    const currents = document.getElementsByClassName("active");
+                    if (currents.length > 0) {
+                        for (let current of currents) {
+                            current.className = current.className.replace(" active", "");
+                        }
+                    }
+                    btns[i].className += " active";
+                    break;
+                }
+            }
+            hideMessage();
+        }, false);
+    </script>
+</head>
+<body>
+<div th:fragment="header">
+    <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light" id="navBar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Lambda Auth Service (admin)</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/client/list}" class="nav-link" href="#">Client Management</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                    </li>
+                </ul>
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false" th:text="${#authentication.name}">
+
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" th:href="@{/perform_logout}">Logout</a></li>
+                    </ul>
+                </div>
+                <form class="d-flex">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+
+            </div>
+        </div>
+    </nav>
+</div>
+<aside>
+    <div>This is a sidebar</div>
+</aside>
+<div th:fragment="message" th:if="${viewMessage}" role="alert" id="msg"
+     th:attr="class=${viewMessage.success ? 'alert alert-success' : 'alert alert-danger'}">
+    <span th:text="${viewMessage.message}"></span></div>
+<footer class="fixed-bottom" th:fragment="footer">
+    <a th:href="@{/fragments}">Fragments Index</a> |
+    <a th:href="@{/markup}">Markup inclussion</a> |
+    <a th:href="@{/params}">Fragment params</a> |
+    <a th:href="@{/other}">Other</a>
+</footer>
+</body>
+</html>

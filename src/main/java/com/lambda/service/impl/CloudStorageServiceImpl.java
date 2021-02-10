@@ -22,7 +22,7 @@ public class CloudStorageServiceImpl implements StorageService {
 
     private static final Logger logger = LogManager.getLogger(CloudStorageServiceImpl.class);
 
-    @Value("${folder.temp}")
+    @Value("${storage.temp}")
     private String tempFolder;
 
     private final Cloudinary cloudinary;
