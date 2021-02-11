@@ -76,6 +76,7 @@ public class CustomBeanConfig {
     }
 
     @Bean
+    @Primary
     public LocaleResolver localeResolver() {
         return new AcceptHeaderLocaleResolver();
     }

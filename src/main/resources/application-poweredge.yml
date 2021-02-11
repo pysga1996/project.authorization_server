@@ -43,7 +43,7 @@ spring:
     static-path-pattern: /
     log-resolved-exception: true
     view:
-      prefix: classpath:/templates/
+      prefix: classpath:/templates
       suffix: .html
     throw-exception-if-no-handler-found: true
   thymeleaf:

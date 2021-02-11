@@ -56,9 +56,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
             @Override
             @NonNull
             public Set<String> parse(String text, @NonNull Locale locale) {
-                if (text == null) {
-
-                }
                 if ("".equals(text.trim())) return Collections.emptySet();
                 return new Strings(locale).setSplit(text, ",");
             }
