@@ -1,6 +1,8 @@
 package com.lambda.config.custom;
 
+import com.lambda.model.dto.SettingDTO;
 import com.lambda.model.dto.UserDTO;
+import com.lambda.model.dto.UserProfileDTO;
 import com.lambda.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,6 +36,12 @@ public class CustomTokenEnhancer implements TokenEnhancer {
             final Map<String, Object> additionalInfo = new TreeMap<>();
             if (optionalUserDTO.isPresent()) {
                 additionalInfo.put("id", optionalUserDTO.get().getId());
+                if (optionalUserDTO.get().getUserProfile() == null) {
+                    optionalUserDTO.get().setUserProfile(new UserProfileDTO());
+                }
+                if (optionalUserDTO.get().getSetting() == null) {
+                    optionalUserDTO.get().setSetting(new SettingDTO());
+                }
                 additionalInfo.put("profile", optionalUserDTO.get().getUserProfile());
                 additionalInfo.put("setting", optionalUserDTO.get().getSetting());
                 Set<String> authorities = optionalUserDTO.get().getAuthorities().stream()
