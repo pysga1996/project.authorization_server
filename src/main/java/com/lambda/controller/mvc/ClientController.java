@@ -59,13 +59,13 @@ public class ClientController {
     @GetMapping("/list")
     public ModelAndView getClientList() {
         List<ClientDTO> clientList = this.clientService.findAll();
-        return new ModelAndView("/client/client-list", "clientList", clientList);
+        return new ModelAndView("client/client-list", "clientList", clientList);
     }
 
     @GetMapping("/create")
     public String createClient(@ModelAttribute("newClient") ClientDTO clientDTO,
                                @ModelAttribute("grantTypes") GrantType[] grantTypes) {
-        return "/client/client-create";
+        return "client/client-create";
     }
 
     @PostMapping("/create")
@@ -97,7 +97,7 @@ public class ClientController {
         try {
             ClientDTO clientDTO = this.clientService.findById(id);
             modelMap.addAttribute("existedClient", clientDTO);
-            return "/client/client-update";
+            return "client/client-update";
         } catch (Exception ex) {
             String redirectUrl = "/client/list";
             redirectAttributes.addFlashAttribute("viewMessage",
