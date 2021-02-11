@@ -19,7 +19,10 @@ public interface ClientService {
 
     void deleteById(String id);
 
-    Cookie createCookie(ClientDTO clientDTO);
+    Cookie[] createCookie(ClientDTO clientDTO);
 
-    void patchCookieToForm(String cookie, ClientDTO clientDTO);
+    void patchCookiesToForm(String clientId, String scope, String autoApproveScopes,
+                            String authorities, String registeredRedirectUri,
+                            String accessTokenValiditySeconds, String refreshTokenValiditySeconds,
+                            ClientDTO clientDTO);
 }

@@ -3,9 +3,10 @@ package com.lambda.service.impl;
 import com.lambda.dao.ClientDao;
 import com.lambda.model.dto.ClientDTO;
 import com.lambda.service.ClientService;
+import com.lambda.util.CookieSecureCreator;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import javax.servlet.http.Cookie;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log4j2
 @Service
 @SuppressWarnings("deprecation")
 public class ClientServiceImpl implements ClientService {
@@ -64,58 +66,62 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Cookie createCookie(ClientDTO clientDTO) {
+    public Cookie[] createCookie(ClientDTO clientDTO) {
         String clientId = clientDTO.getClientId();
+        Cookie clientIdCookie = CookieSecureCreator.create("clientId", clientId);
         Set<String> scope = clientDTO.getScope() == null ? new HashSet<>() : clientDTO.getScope();
+        Cookie scopeCookie = CookieSecureCreator.create("scope", String.join("|", scope));
         Set<String> autoApproveScopes = clientDTO.getAutoApproveScopes() == null ?
                 new HashSet<>() : clientDTO.getAutoApproveScopes();
+        Cookie autoApproveScopesCookie = CookieSecureCreator.create("autoApproveScopes", String.join("|", autoApproveScopes));
         Set<String> authorities = clientDTO.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
+        Cookie authoritiesCookie = CookieSecureCreator.create("authorities", String.join("|", authorities));
         Set<String> registeredRedirectUri = clientDTO.getRegisteredRedirectUri() == null ?
                 new HashSet<>() : clientDTO.getRegisteredRedirectUri();
+        Cookie registeredRedirectUriCookie = CookieSecureCreator.create("registeredRedirectUri", String.join("|", registeredRedirectUri));
         String accessTokenValiditySeconds = clientDTO.getAccessTokenValiditySeconds() == null ?
                 String.valueOf(60) : String.valueOf(clientDTO.getAccessTokenValiditySeconds());
+        Cookie accessTokenValiditySecondsCookie = CookieSecureCreator.create("accessTokenValiditySeconds", accessTokenValiditySeconds);
         String refreshTokenValiditySeconds = clientDTO.getRefreshTokenValiditySeconds() == null ?
                 String.valueOf(60 * 60) : String.valueOf(clientDTO.getRefreshTokenValiditySeconds());
-        List<String> attrList = Arrays.asList(clientId,
-                String.join(",", scope),
-                String.join(",", autoApproveScopes),
-                String.join(",", authorities),
-                String.join(",", registeredRedirectUri),
-                accessTokenValiditySeconds,
-                refreshTokenValiditySeconds);
-        String cookieStr = String.join("|", attrList);
-        return new Cookie("newClient", cookieStr);
+        Cookie refreshTokenValiditySecondsCookie = CookieSecureCreator.create("refreshTokenValiditySeconds", refreshTokenValiditySeconds);
+        return new Cookie[]{clientIdCookie, scopeCookie, autoApproveScopesCookie, authoritiesCookie,
+                registeredRedirectUriCookie, accessTokenValiditySecondsCookie, refreshTokenValiditySecondsCookie};
     }
 
     @Override
-    public void patchCookieToForm(String cookie, ClientDTO clientDTO) {
-        if (cookie == null) return;
+    public void patchCookiesToForm(String clientId, String scopeCookie, String autoApproveScopes,
+                                   String authorities, String registeredRedirectUri,
+                                   String accessTokenValiditySeconds, String refreshTokenValiditySeconds,
+                                   ClientDTO clientDTO) {
         try {
-            String[] values = cookie.split("\\|");
-            String clientId = values[0];
-            Collection<String> scope = values[1].trim().equals("") ?
-                    new HashSet<>() : Arrays.asList(values[1].split(","));
-            Collection<String> autoApproveScopes = values[2].trim().equals("") ?
-                    new HashSet<>() : Arrays.asList(values[2].split(","));
-            Collection<? extends GrantedAuthority> authorities = values[3].trim().equals("") ?
-                    new HashSet<>() : Arrays.stream(values[3].split(","))
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toSet());
-            Set<String> registeredRedirectUri = values[4].trim().equals("") ?
-                    new HashSet<>() : Arrays.stream(values[4].split(","))
-                    .collect(Collectors.toSet());
-            clientDTO.setClientId(clientId);
-            clientDTO.setScope(scope);
-            clientDTO.setAutoApproveScopes(autoApproveScopes);
-            clientDTO.setAuthorities(authorities);
-            clientDTO.setRegisteredRedirectUri(registeredRedirectUri);
-            clientDTO.setAccessTokenValiditySeconds(Integer.valueOf(values[5]));
-            clientDTO.setRefreshTokenValiditySeconds(Integer.valueOf(values[6]));
+            if (clientId != null) {
+                clientDTO.setClientId(clientId);
+            }
+            if (scopeCookie != null && !scopeCookie.trim().equals("")) {
+                clientDTO.setScope(Arrays.asList(scopeCookie.trim().split("\\|")));
+            }
+            if (autoApproveScopes != null && !autoApproveScopes.trim().equals("")) {
+                clientDTO.setAutoApproveScopes(Arrays.asList(autoApproveScopes.trim().split("\\|")));
+            }
+            if (authorities != null && !authorities.trim().equals("")) {
+                clientDTO.setAuthorities(new HashSet<>(Arrays.asList(authorities.trim().split("\\|"))));
+            }
+            if (refreshTokenValiditySeconds != null && !refreshTokenValiditySeconds.trim().equals("")) {
+                clientDTO.setRegisteredRedirectUri(new HashSet<>(Arrays
+                        .asList(refreshTokenValiditySeconds.split("\\|"))));
+            }
+            if (accessTokenValiditySeconds != null) {
+                clientDTO.setAccessTokenValiditySeconds(Integer.valueOf(accessTokenValiditySeconds));
+            }
+            if (refreshTokenValiditySeconds != null) {
+                clientDTO.setRefreshTokenValiditySeconds(Integer.valueOf(refreshTokenValiditySeconds));
+            }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.error("Error while patch cookie to form", ex);
         }
     }
 }

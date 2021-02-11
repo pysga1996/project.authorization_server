@@ -18,6 +18,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
@@ -43,11 +44,20 @@ public class ClientController {
     }
 
     @ModelAttribute("newClient")
-    public ClientDTO clientDetail(@CookieValue(value = "newClient", required = false) String cookie) {
+    public ClientDTO clientDetail(
+            @CookieValue(name = "clientId", required = false) String clientId,
+            @CookieValue(name = "scope", required = false) String scope,
+            @CookieValue(name = "autoApproveScopes", required = false) String autoApproveScopes,
+            @CookieValue(name = "authorities", required = false) String authorities,
+            @CookieValue(name = "registeredRedirectUri", required = false) String registeredRedirectUri,
+            @CookieValue(name = "accessTokenValiditySeconds", required = false) String accessTokenValiditySeconds,
+            @CookieValue(name = "refreshTokenValiditySeconds", required = false) String refreshTokenValiditySeconds) {
         BaseClientDetails prototype = new BaseClientDetails
                 ("", null, null, null, null, null);
         ClientDTO clientDTO = new ClientDTO(prototype);
-        this.clientService.patchCookieToForm(cookie, clientDTO);
+        this.clientService.patchCookiesToForm(clientId, scope, autoApproveScopes,
+                authorities, registeredRedirectUri, accessTokenValiditySeconds,
+                refreshTokenValiditySeconds, clientDTO);
         return clientDTO;
     }
 
@@ -74,8 +84,10 @@ public class ClientController {
                                      HttpServletResponse response) {
         String redirectUrl;
         try {
-            Cookie cookie = this.clientService.createCookie(clientDTO);
-            response.addCookie(cookie);
+            Cookie[] cookies = this.clientService.createCookie(clientDTO);
+            for (Cookie cookie: cookies) {
+                response.addCookie(cookie);
+            }
             clientDTO.setClientSecret(this.passwordEncoder.encode(clientDTO.getClientSecret()));
             this.clientService.create(clientDTO);
             redirectUrl = this.servletContext.getContextPath() + "/client/list";

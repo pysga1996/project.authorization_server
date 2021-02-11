@@ -9,7 +9,7 @@ logging:
             MessageTracing:
               received: TRACE
               sent: TRACE
-      thymeleaf: TRACE
+      thymeleaf: INFO
   config: classpath:log4j-spring.xml
 server:
   port: 8081

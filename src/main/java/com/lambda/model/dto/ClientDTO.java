@@ -3,15 +3,15 @@ package com.lambda.model.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -19,18 +19,11 @@ import java.util.Set;
 @SuppressWarnings("deprecation")
 public class ClientDTO extends BaseClientDetails implements ClientDetails {
 
+    private Set<String> authorities;
+
     @Override
     public Set<GrantedAuthority> getAuthorities() {
         return new HashSet<>(super.getAuthorities());
-    }
-
-    @Override
-    public void setAuthorities(
-            Collection<? extends GrantedAuthority> authorities) {
-        if (authorities == null) {
-            authorities = new ArrayList<>();
-        }
-        super.setAuthorities(authorities);
     }
 
     @Override
@@ -43,5 +36,15 @@ public class ClientDTO extends BaseClientDetails implements ClientDetails {
 
     public ClientDTO(ClientDetails prototype) {
         super(prototype);
+    }
+
+    public void setAuthorities(Set<String> authorities) {
+        if (authorities == null) {
+            authorities = new HashSet<>();
+        }
+        this.authorities = authorities;
+        super.setAuthorities(this.authorities.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toSet()));
     }
 }
