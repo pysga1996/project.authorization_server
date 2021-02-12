@@ -23,6 +23,7 @@ import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.session.data.redis.config.ConfigureRedisAction;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -151,5 +152,12 @@ public class CustomBeanConfig {
             ErrorPage error401 = new ErrorPage(HttpStatus.UNAUTHORIZED, "/error/401");
             server.addErrorPages(error400, error500, error404, error403, error503, error401);
         };
+    }
+
+    @Bean
+    @Primary
+    @Profile({"heroku"})
+    public ConfigureRedisAction configureRedisAction() {
+        return ConfigureRedisAction.NO_OP;
     }
 }
