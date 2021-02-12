@@ -110,9 +110,9 @@ public class ClientServiceImpl implements ClientService {
             if (authorities != null && !authorities.trim().equals("")) {
                 clientDTO.setAuthorities(new HashSet<>(Arrays.asList(authorities.trim().split("\\|"))));
             }
-            if (refreshTokenValiditySeconds != null && !refreshTokenValiditySeconds.trim().equals("")) {
+            if (registeredRedirectUri != null && !registeredRedirectUri.trim().equals("")) {
                 clientDTO.setRegisteredRedirectUri(new HashSet<>(Arrays
-                        .asList(refreshTokenValiditySeconds.split("\\|"))));
+                        .asList(registeredRedirectUri.split("\\|"))));
             }
             if (accessTokenValiditySeconds != null) {
                 clientDTO.setAccessTokenValiditySeconds(Integer.valueOf(accessTokenValiditySeconds));

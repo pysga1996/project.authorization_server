@@ -10,6 +10,7 @@
       <ENTRIES>
         <ENTRY IS_ENABLED="true" PARSER="runconfig" />
         <ENTRY IS_ENABLED="true" PARSER="env" PATH="environment/storage.env" />
+        <ENTRY IS_ENABLED="true" PARSER="env" PATH="environment/redis.env" />
       </ENTRIES>
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.lambda.LambdaAuthServiceApplication" />
@@ -17,7 +18,6 @@
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="SHORTEN_COMMAND_LINE" value="CLASSPATH_FILE" />
     <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndResources" />
-    <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
