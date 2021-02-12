@@ -30,7 +30,7 @@ spring:
     redis:
       namespace: lambda:auth:session
       flush-mode: on_save
-      cleanup-cron: "0 0 0 ? * * *"
+      cleanup-cron: "0 * * * * *"
   datasource:
     driver-class-name: ${SPRING_DATASOURCE_DRIVER:}
     hikari:
