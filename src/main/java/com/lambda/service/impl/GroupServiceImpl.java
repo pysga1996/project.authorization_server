@@ -49,12 +49,12 @@ public class GroupServiceImpl implements GroupService {
             throw new BusinessException(404, "Group not found");
         }
         Pageable authorityPageable = PageRequest
-                .of(authorityPageNumber, authorityPageSize);
+                .of(authorityPageNumber - 1, authorityPageSize);
         Page<GrantedAuthority> authorityPage = this.userDao
                 .findGroupAuthorityPageById(id, authorityPageable);
         group.setAuthorityPage(authorityPage);
         Pageable userPageable = PageRequest
-                .of(authorityPageNumber, userPageSize);
+                .of(authorityPageNumber - 1, userPageSize);
         Page<String> userPage = this.userDao
                 .findGroupUserPageById(id, userPageable);
         group.setUserPage(userPage);
