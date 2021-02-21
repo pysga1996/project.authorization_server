@@ -28,7 +28,7 @@ public class CustomErrorController implements ErrorController {
 
     @GetMapping("/error/{status}")
     public ModelAndView error(@PathVariable("status") String status) {
-        return new ModelAndView("/error/" + status);
+        return new ModelAndView("error/" + status);
     }
 
     private int getErrorCode(HttpServletRequest httpRequest) {
