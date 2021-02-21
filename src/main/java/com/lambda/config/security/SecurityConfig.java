@@ -34,9 +34,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final AuthenticationEntryPoint authenticationEntryPoint;
-
     private final AccessDeniedHandler accessDeniedHandler;
+
+    private final AuthenticationEntryPoint authenticationEntryPoint;
 
     private final AuthenticationFailureHandler authenticationFailureHandler;
 
