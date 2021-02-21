@@ -24,15 +24,18 @@ import org.springframework.security.web.authentication.rememberme.JdbcTokenRepos
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.session.data.redis.config.ConfigureRedisAction;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import javax.sql.DataSource;
+import java.util.Locale;
 
 @Configuration
 @DependsOn({"dataSource"})
@@ -76,11 +79,7 @@ public class CustomBeanConfig {
         return messageSource;
     }
 
-    @Bean
-    @Primary
-    public LocaleResolver localeResolver() {
-        return new AcceptHeaderLocaleResolver();
-    }
+
 
     @Bean
     public HandlerInterceptor localeChangeInterceptor() {
@@ -150,7 +149,9 @@ public class CustomBeanConfig {
             ErrorPage error403 = new ErrorPage(HttpStatus.FORBIDDEN, "/error/403");
             ErrorPage error503 = new ErrorPage(HttpStatus.SERVICE_UNAVAILABLE, "/error/503");
             ErrorPage error401 = new ErrorPage(HttpStatus.UNAUTHORIZED, "/error/401");
-            server.addErrorPages(error400, error500, error404, error403, error503, error401);
+            server.addErrorPages(error400, error500, error404, error403, error503
+                    , error401
+            );
         };
     }
 
@@ -159,5 +160,15 @@ public class CustomBeanConfig {
     @Profile({"heroku"})
     public ConfigureRedisAction configureRedisAction() {
         return ConfigureRedisAction.NO_OP;
+    }
+
+    @Bean
+    @Primary
+    public CookieSerializer cookieSerializer() {
+        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+        serializer.setCookieName("SESSION");
+        serializer.setCookiePath("/");
+        serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+        return serializer;
     }
 }

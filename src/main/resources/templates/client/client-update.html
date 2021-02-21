@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 >
 <head>
     <meta charset="UTF-8">
@@ -34,7 +35,7 @@
     </script>
 </head>
 <body>
-<div class="container">
+<div class="container" sec:authorize="isAuthenticated()">
     <header th:insert="~{fragment/general :: header}"></header>
     <div class="d-flex justify-content-center">
         <form class="col-4" th:action="@{/client/update}" th:object="${existedClient}" th:method="POST">

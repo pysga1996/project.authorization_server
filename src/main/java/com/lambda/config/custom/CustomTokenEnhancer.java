@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.UserAuthenticationConverter;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -34,6 +35,7 @@ public class CustomTokenEnhancer implements TokenEnhancer {
             Optional<UserDTO> optionalUserDTO = this.userService
                     .findByUsername(((UserDetails) principal).getUsername());
             final Map<String, Object> additionalInfo = new TreeMap<>();
+            additionalInfo.put(UserAuthenticationConverter.USERNAME, ((UserDetails) principal).getUsername());
             if (optionalUserDTO.isPresent()) {
                 additionalInfo.put("id", optionalUserDTO.get().getId());
                 if (optionalUserDTO.get().getUserProfile() == null) {

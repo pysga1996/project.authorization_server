@@ -1,14 +1,17 @@
 logging:
   level:
+    root: INFO
     org:
       springframework:
         security:
-          oauth2: INFO
+          oauth2: DEBUG
         ws:
           server:
             MessageTracing:
               received: TRACE
               sent: TRACE
+        jdbc:
+          core: TRACE
       thymeleaf: INFO
   config: classpath:log4j-spring.xml
 server:
@@ -18,8 +21,6 @@ server:
     encoding:
       charset: UTF-8
       enabled: true
-    session:
-      timeout: 24h
   error:
     whitelabel:
       enabled: false
@@ -31,6 +32,7 @@ spring:
       namespace: lambda:auth:session
       flush-mode: on_save
       cleanup-cron: "0 * * * * *"
+    timeout: 1h
   redis:
     host: localhost
     port: 6379
@@ -50,6 +52,7 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:}
   main:
     allow-bean-definition-overriding: true
+    banner-mode: log
   messages:
     basename: static/i18n/message
     encoding: UTF-8
@@ -66,6 +69,8 @@ spring:
     throw-exception-if-no-handler-found: true
   thymeleaf:
     cache: false
+  banner:
+    location: classpath:banner.txt
 # Override by WebMvcConfig.class
 #  web:
 #    resources:

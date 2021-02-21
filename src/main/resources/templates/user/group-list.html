@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Group Management</title>
+    <th:block th:replace="~{fragment/general :: headerfiles}" />
+</head>
+<body>
+<div class="container" sec:authorize="isAuthenticated()">
+    <header th:insert="~{fragment/general :: header}"> </header>
+    <div class="border-dark row d-flex justify-content-center">
+        <div class="col-6">
+            <div><h4>Group List</h4></div>
+            <div th:replace="~{fragment/general :: message}"></div>
+            <div class="d-flex w-100 justify-content-end">
+                <a class="btn btn-primary my-2" th:href="@{/group/create}">
+                    <i class="bi bi-plus"></i> Create new</a>
+            </div>
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-action d-flex" th:each="group, iter: ${groupList}">
+                    <h6 class="align-self-center" th:text="${group.name}"></h6>
+                    <div class="d-inline-block mx-auto">
+                        <small>
+                            <label>Members:</label>
+                            <a class="text-decoration-none" href="">
+                                <span th:text="${group.usersCount}"></span>
+                                <i class="bi bi-people-fill"></i>
+                            </a>
+                        </small>
+                        <small class="ms-4">
+                            <label>Authorities:</label>
+                            <a class="text-decoration-none" href="">
+                                <span th:text="${group.authoritiesCount}"></span>
+                                <i class="bi bi-key-fill"></i>
+                            </a>
+                        </small>
+
+                    </div>
+                    <div class="d-inline-block ms-auto">
+                        <a class="d-inline-block btn btn-sm btn-warning"
+                           th:href="@{/group/update/{id}(id=${group.id})}">
+                            <i class="bi bi-pencil-fill"></i>
+                        </a>
+                        <button class="d-inline-block btn btn-sm btn-danger ">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div th:replace="~{fragment/general :: footer}"></div>
+</div>
+</body>
+</html>

@@ -1,6 +1,5 @@
 package com.lambda.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +22,5 @@ public class SettingDTO implements Serializable {
     private Long userId;
 
     @Builder.Default
-    @JsonProperty("dark_mode")
     private Boolean darkMode = true;
 }

@@ -1,31 +1,56 @@
 package com.lambda.config.general;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.*;
-import org.thymeleaf.expression.Strings;
+import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
-import java.util.Collections;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebMvc
 public class WebMvcConfig implements WebMvcConfigurer {
 
+    private final Formatter<Set<String>> stringSetFormatter;
+
+    private final Formatter<List<GrantedAuthority>> authoritiesFormatter;
+
     private final HandlerInterceptor localeChangeInterceptor;
 
     @Autowired
-    public WebMvcConfig(HandlerInterceptor localeChangeInterceptor) {
+    public WebMvcConfig(Formatter<Set<String>> stringSetFormatter,
+                        Formatter<List<GrantedAuthority>> authoritiesFormatter,
+                        HandlerInterceptor localeChangeInterceptor) {
+        this.stringSetFormatter = stringSetFormatter;
+        this.authoritiesFormatter = authoritiesFormatter;
         this.localeChangeInterceptor = localeChangeInterceptor;
+    }
+
+    @Bean
+    @Primary
+    public LocaleResolver localeResolver() {
+        CookieLocaleResolver localeResolver = new CookieLocaleResolver();
+        localeResolver.setCookieName("language");
+        localeResolver.setCookieHttpOnly(true);
+        localeResolver.setCookiePath("/");
+        localeResolver.setCookieSecure(false);
+        localeResolver.setRejectInvalidCookies(false);
+        return localeResolver;
     }
 
     @Override
@@ -45,42 +70,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        registry.addFormatter(new Formatter<Set<String>>() {
-            @Override
-            @NonNull
-            public String print(@NonNull Set<String> object, @NonNull Locale locale) {
-                if (object.isEmpty()) return "";
-                return new Strings(locale).setJoin(object, ",");
-            }
-
-            @Override
-            @NonNull
-            public Set<String> parse(String text, @NonNull Locale locale) {
-                if ("".equals(text.trim())) return Collections.emptySet();
-                return new Strings(locale).setSplit(text, ",");
-            }
-        });
-        registry.addFormatter(new Formatter<List<GrantedAuthority>>() {
-            @Override
-            @NonNull
-            public String print(@NonNull List<GrantedAuthority> object, @NonNull Locale locale) {
-                if (object.isEmpty()) return "";
-                return new Strings(locale).listJoin(object, ",");
-            }
-
-            @Override
-            @NonNull
-            public List<GrantedAuthority> parse(@NonNull String text, @NonNull Locale locale) {
-                if ("".equals(text.trim())) return Collections.emptyList();
-
-                return new Strings(locale).listSplit(text, ",")
-                        .stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-            }
-        });
+        registry.addFormatter(stringSetFormatter);
+        registry.addFormatter(authoritiesFormatter);
     }
-
 
 
     @Override

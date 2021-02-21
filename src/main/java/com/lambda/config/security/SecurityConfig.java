@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -26,6 +27,7 @@ import static com.lambda.constant.JdbcConstant.DEF_USERS_BY_USERNAME_FULL_QUERY;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, order = Ordered.HIGHEST_PRECEDENCE)
+@Order(2)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final DataSource dataSource;
@@ -74,7 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/css/**","/js/**","/image/**","/icon/**");
+        web.ignoring().antMatchers("/css/**", "/js/**", "/image/**", "/icon/**");
     }
 
     @Override
@@ -99,10 +101,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout()
                 .logoutUrl("/perform_logout")
-                .deleteCookies("JSESSIONID")
+//                .logoutSuccessUrl("/homepage.html")
+                .deleteCookies("SESSION")
                 .clearAuthentication(true)
                 .invalidateHttpSession(true)
                 .logoutSuccessHandler(logoutSuccessHandler)
+                .and()
+                .rememberMe()
+                .key("LambdaRememberMe").tokenValiditySeconds(86400)
+                .rememberMeParameter("remember")
+                .rememberMeCookieName("remember-cookie")
                 .and()
                 .cors()
                 .and()
@@ -110,7 +118,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler(accessDeniedHandler)
                 .authenticationEntryPoint(authenticationEntryPoint)
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
         ;
     }
 }

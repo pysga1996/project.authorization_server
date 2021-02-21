@@ -1,5 +1,6 @@
 logging:
   level:
+    root: INFO
     org:
       springframework:
         security:
@@ -9,6 +10,8 @@ logging:
             MessageTracing:
               received: TRACE
               sent: TRACE
+        jdbc:
+          core: TRACE
   config: classpath:log4j-spring.xml
 server:
   port: 8081
@@ -17,8 +20,10 @@ server:
     encoding:
       charset: UTF-8
       enabled: true
-    session:
-      timeout: 24h
+  error:
+    whitelabel:
+      enabled: false
+    path: /error
 spring:
   redis:
     host: 192.168.0.100
@@ -31,6 +36,7 @@ spring:
       namespace: lambda:auth:session
       flush-mode: on_save
       cleanup-cron: "0 * * * * *"
+    timeout: 1h
   datasource:
     driver-class-name: ${SPRING_DATASOURCE_DRIVER:}
     hikari:
@@ -63,6 +69,8 @@ spring:
     cache: true
   devtools:
     add-properties: false
+  banner:
+    location: classpath:banner.txt
 # Override by WebMvcConfig.class
 #  web:
 #    resources:

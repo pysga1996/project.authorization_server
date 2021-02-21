@@ -1,91 +1,111 @@
 drop table if exists oauth_client_details;
-create table oauth_client_details (
-                                      client_id VARCHAR(255) PRIMARY KEY,
-                                      resource_ids VARCHAR(255),
-                                      client_secret VARCHAR(255),
-                                      scope VARCHAR(255),
-                                      authorized_grant_types VARCHAR(255),
-                                      web_server_redirect_uri VARCHAR(255),
-                                      authorities VARCHAR(255),
-                                      access_token_validity INTEGER,
-                                      refresh_token_validity INTEGER,
-                                      additional_information VARCHAR(4096),
-                                      autoapprove VARCHAR(255)
+create table oauth_client_details
+(
+    client_id               varchar(255)  not null
+        primary key,
+    resource_ids            varchar(255)  null,
+    client_secret           varchar(255)  null,
+    scope                   varchar(255)  null,
+    authorized_grant_types  varchar(255)  null,
+    web_server_redirect_uri varchar(255)  null,
+    authorities             varchar(255)  null,
+    access_token_validity   int           null,
+    refresh_token_validity  int           null,
+    additional_information  varchar(4096) null,
+    autoapprove             varchar(255)  null
 );
+
 
 drop table if exists oauth_client_token;
-create table oauth_client_token (
-                                    token_id VARCHAR(255),
-                                    token LONG VARBINARY,
-                                    authentication_id VARCHAR(255) PRIMARY KEY,
-                                    user_name VARCHAR(255),
-                                    client_id VARCHAR(255)
+create table oauth_client_token
+(
+    token_id          varchar(255) null,
+    token             mediumblob   null,
+    authentication_id varchar(255) not null
+        primary key,
+    user_name         varchar(255) null,
+    client_id         varchar(255) null
 );
 
+
 drop table if exists oauth_access_token;
-create table oauth_access_token (
-                                    token_id VARCHAR(255),
-                                    token LONG VARBINARY,
-                                    authentication_id VARCHAR(255) PRIMARY KEY,
-                                    user_name VARCHAR(255),
-                                    client_id VARCHAR(255),
-                                    authentication LONG VARBINARY,
-                                    refresh_token VARCHAR(255)
+create table oauth_access_token
+(
+    token_id          varchar(255) null,
+    token             mediumblob   null,
+    authentication_id varchar(255) not null
+        primary key,
+    user_name         varchar(255) null,
+    client_id         varchar(255) null,
+    authentication    mediumblob   null,
+    refresh_token     varchar(255) null
 );
 
 drop table if exists oauth_refresh_token;
-create table oauth_refresh_token (
-                                     token_id VARCHAR(255),
-                                     token LONG VARBINARY,
-                                     authentication LONG VARBINARY
+create table oauth_refresh_token
+(
+    token_id       varchar(255) null,
+    token          mediumblob   null,
+    authentication mediumblob   null
 );
 
 drop table if exists oauth_code;
-create table oauth_code (
-                            code VARCHAR(255), authentication LONG VARBINARY
+create table oauth_code
+(
+    code           varchar(255) null,
+    authentication mediumblob   null
 );
 
 drop table if exists oauth_approvals;
-create table oauth_approvals (
-                                 userId VARCHAR(255),
-                                 clientId VARCHAR(255),
-                                 scope VARCHAR(255),
-                                 status VARCHAR(10),
-                                 expiresAt TIMESTAMP,
-                                 lastModifiedAt TIMESTAMP
+create table oauth_approvals
+(
+    userId         varchar(255) null,
+    clientId       varchar(255) null,
+    scope          varchar(255) null,
+    status         varchar(10)  null,
+    expiresAt      timestamp    null,
+    lastModifiedAt timestamp    null
 );
 
-create table customUsers(
-                      username varchar_ignorecase(50) not null primary key,
-                      password varchar_ignorecase(500) not null,
-                      enabled boolean not null
+# create table authorities (
+#                              username varchar(50) not null,
+#                              authority varchar(50) not null,
+#                              constraint fk_authorities_users foreign key(username) references user(username)
+# );
+
+# create unique index ix_auth_username on authorities (username,authority);
+
+drop table if exists `groups`;
+create table `groups`
+(
+    id         bigint auto_increment
+        primary key,
+    group_name varchar(50) charset utf8 not null,
+    constraint groups_group_name_uindex
+        unique (group_name)
 );
 
-create table authorities (
-                             username varchar_ignorecase(50) not null,
-                             authority varchar_ignorecase(50) not null,
-                             constraint fk_authorities_users foreign key(username) references customUsers(username)
-);
-create unique index ix_auth_username on authorities (username,authority);
-
-create table `groups` (
-                        id bigint generated by default as identity(start with 0) primary key,
-                        group_name varchar_ignorecase(50) not null
+drop table if exists group_authorities;
+create table group_authorities
+(
+    group_id bigint not null,
+    authority varchar(50) not null,
+    primary key (group_id, authority),
+    constraint fk_group_authorities_group
+        foreign key (group_id) references `groups` (id)
 );
 
-create table group_authorities (
-                                   group_id bigint not null,
-                                   authority varchar(50) not null,
-                                   constraint fk_group_authorities_group foreign key(group_id) references groups(id)
+drop table if exists group_members;
+create table group_members
+(
+    username varchar(50) not null,
+    group_id bigint not null,
+    primary key (group_id, username),
+    constraint fk_group_members_group
+        foreign key (group_id) references `groups` (id)
 );
 
-create table group_members (
-                               id bigint generated by default as identity(start with 0) primary key,
-                               username varchar(50) not null,
-                               group_id bigint not null,
-                               constraint fk_group_members_group foreign key(group_id) references groups(id)
-);
-
+drop table if exists authentication_token;
 create table authentication_token
 (
     id LONG auto_increment,
@@ -102,6 +122,7 @@ create table authentication_token
 create unique index authentication_token_token_uindex
     on authentication_token (token);
 
+drop table if exists user_profile;
 create table user_profile
 (
     id BIGINT auto_increment,

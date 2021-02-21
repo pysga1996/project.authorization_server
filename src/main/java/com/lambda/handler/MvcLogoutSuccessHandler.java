@@ -16,7 +16,7 @@ public class MvcLogoutSuccessHandler implements LogoutSuccessHandler {
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        response.setStatus(HttpStatus.FORBIDDEN.value());
-        response.setHeader(HttpHeaders.LOCATION, "/lambda-auth/api/ping");
+        response.setStatus(HttpStatus.FOUND.value());
+        response.setHeader(HttpHeaders.LOCATION, request.getContextPath() + "/homepage.html");
     }
 }

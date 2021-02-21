@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 >
 <head>
     <meta charset="UTF-8">
@@ -42,7 +43,7 @@
     </script>
 </head>
 <body>
-<div class="container">
+<div class="container" sec:authorize="isAuthenticated()">
     <header th:insert="~{fragment/general :: header}"></header>
     <div class="d-flex justify-content-center">
         <form class="col-4" th:action="@{/client/create}" th:object="${newClient}" th:method="POST">
@@ -90,11 +91,6 @@
                                type="checkbox" th:field="*{authorizedGrantTypes}">
                         <span th:text="${grantype}"></span></label>
                 </th:block>
-<!--                <label class="d-block">-->
-<!--                    <input class="form-control" id="authorizedGrantTypes" placeholder="Enter authorized grant types"-->
-<!--                           th:field="*{authorizedGrantTypes}">-->
-<!--                </label>-->
-<!--                <small class="text-info">Multiple authorized grant types should be separated by comma</small>-->
             </div>
             <div class="form-group my-1">
                 <label class="d-block">Authorities

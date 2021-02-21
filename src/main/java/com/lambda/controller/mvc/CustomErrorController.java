@@ -6,10 +6,7 @@ import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,16 +20,15 @@ public class CustomErrorController implements ErrorController {
     @PreAuthorize("isAuthenticated()")
     @RequestMapping(value = "/test", method = {RequestMethod.GET})
     public String test(@RequestParam("x") Long x, Authentication authentication) {
-        logger.info("user: {}", authentication.getName());
         if (x == 0) {
             throw new RuntimeException("");
         }
         return "test";
     }
 
-    @GetMapping("/error/404")
-    public ModelAndView error(HttpServletRequest httpRequest) {
-        return new ModelAndView("/error/404");
+    @GetMapping("/error/{status}")
+    public ModelAndView error(@PathVariable("status") String status) {
+        return new ModelAndView("/error/" + status);
     }
 
     private int getErrorCode(HttpServletRequest httpRequest) {

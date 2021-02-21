@@ -8,10 +8,11 @@
     <th:block th:replace="~{fragment/general :: headerfiles}" />
 </head>
 <body>
-<h1>Homepage</h1>
-<header th:insert="~{fragment/general :: header}"> </header>
-<p class="bg-primary">Test</p>
-<div th:replace="~{fragment/general :: message}"></div>
-<p class="bg-danger">Add error fragment</p>
+<div class="container">
+    <h1>Homepage</h1>
+    <header th:insert="~{fragment/general :: header}"> </header>
+    <p class="bg-primary">Test</p>
+    <div th:replace="~{fragment/general :: message}"></div>
+</div>
 </body>
 </html>

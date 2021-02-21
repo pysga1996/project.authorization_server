@@ -37,4 +37,15 @@ public class JdbcConstant {
             "select g.id, g.group_name, ga.authority "
             + "from `groups` g, group_members gm, group_authorities ga "
             + "where gm.username = ? " + "and g.id = ga.group_id " + "and g.id = gm.group_id";
+
+    public static final String DEF_CUSTOM_FIND_GROUPS_SQL = "select group_name from `groups`";
+
+    public static final String DEF_CUSTOM_FIND_GROUP_ID_SQL = "select id from `groups` where group_name = ?";
+
+    public static final String DEF_CUSTOM_INSERT_GROUP_SQL = "insert into `groups` (group_name) values (?)";
+
+    public static final String DEF_CUSTOM_RENAME_GROUP_SQL = "update `groups` set group_name = ? where group_name = ?";
+
+    public static final String DEF_CUSTOM_DELETE_GROUP_SQL = "delete from `groups` where id = ?";
+
 }

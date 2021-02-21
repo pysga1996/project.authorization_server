@@ -1,27 +1,39 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-<head><title>Login Page</title></head>
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+    <th:block th:replace="~{fragment/general :: headerfiles}"/>
+</head>
 <body>
-<h1>Login</h1>
-<form name='f' th:action="@{/perform_login}" method='POST'>
-    <table>
-        <tr>
-            <td>User:</td>
-            <td><label>
-                <input type='text' name='username' value=''>
-            </label></td>
-        </tr>
-        <tr>
-            <td>Password:</td>
-            <td><label>
-                <input type='password' name='password' />
-            </label></td>
-        </tr>
-        <tr>
-            <td><input name="submit" type="submit" value="submit" /></td>
-        </tr>
-    </table>
-</form>
+<div class="container">
+    <header th:insert="~{fragment/general :: header}"></header>
+    <div class="d-flex justify-content-center">
+        <form class="col-4" name='f'
+              th:action="@{/perform_login}" method='POST'>
+            <h5>Login Page</h5>
+            <div class="form-group">
+                <label for="exampleInputEmail1">Username</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" name="username"
+                       aria-describedby="emailHelp" placeholder="Enter email">
+                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
+                    else.</small>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">Password</label>
+                <input type="password" class="form-control" id="exampleInputPassword1"
+                       name="password" placeholder="Password">
+            </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1"
+                       name="remember">
+                <label class="form-check-label" for="exampleCheck1">Remember Me</label>
+            </div>
+            <button type="submit" class="btn btn-primary my-2">Submit</button>
+            <div th:replace="~{fragment/general :: message}"></div>
+        </form>
+    </div>
+</div>
 </body>
 </html>

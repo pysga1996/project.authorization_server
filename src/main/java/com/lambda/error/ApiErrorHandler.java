@@ -2,10 +2,11 @@ package com.lambda.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
+import org.springframework.security.oauth2.provider.endpoint.FrameworkEndpoint;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
-@RestControllerAdvice(annotations = {RestController.class})
+@RestControllerAdvice(annotations = {RestController.class, FrameworkEndpoint.class})
 @SuppressWarnings("deprecation")
 public class ApiErrorHandler {
 
