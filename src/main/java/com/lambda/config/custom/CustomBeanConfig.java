@@ -30,12 +30,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import javax.sql.DataSource;
-import java.util.Locale;
 
 @Configuration
 @DependsOn({"dataSource"})
@@ -126,6 +123,7 @@ public class CustomBeanConfig {
 //    }
 
     @Bean
+    @Primary
     public JdbcOperations jdbcTemplate() {
         return new JdbcTemplate(dataSource);
     }

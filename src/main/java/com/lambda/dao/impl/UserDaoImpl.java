@@ -12,12 +12,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,11 +35,11 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     private final SqlResultExtractor<UserDTO> extractor;
 
     @Autowired
-    public UserDaoImpl(JdbcOperations jdbcOperations,
+    public UserDaoImpl(JdbcOperations jdbcOperations, DataSource dataSource,
                        SqlResultExtractor<UserDTO> extractor) {
         this.extractor = extractor;
-//        this.setDataSource(dataSource);
         this.jdbcOperations = jdbcOperations;
+        this.setDataSource(dataSource);
         this.setFindAllGroupsSql(DEF_CUSTOM_FIND_GROUPS_SQL);
         this.setFindGroupIdSql(DEF_CUSTOM_FIND_GROUP_ID_SQL);
         this.setInsertGroupSql(DEF_CUSTOM_INSERT_GROUP_SQL);
