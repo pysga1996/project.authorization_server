@@ -166,6 +166,7 @@ public class CustomBeanConfig {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("SESSIONID");
         serializer.setCookiePath("/");
+        serializer.setSameSite("None");
         serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
         return serializer;
     }
