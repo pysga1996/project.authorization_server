@@ -167,7 +167,7 @@ public class CustomBeanConfig {
         serializer.setCookieName("SESSIONID");
         serializer.setCookiePath("/");
         serializer.setDomainName("https://lambda-auth-service.herokuapp.com");
-        serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+//        serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
         return serializer;
     }
 }
