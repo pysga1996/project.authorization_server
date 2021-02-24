@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+>
 <body>
 <h1>You haven't logged in yet! </h1>
-<a href="/">Go Home</a>
+<a th:href="@{/homepage.html}">Go Home</a>
 </body>
 </html>

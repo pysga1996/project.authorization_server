@@ -29,6 +29,7 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
@@ -45,6 +46,9 @@ public class CustomBeanConfig {
 
     @Value("${storage.cloudinary.url}")
     private String cloudinaryUrl;
+
+    @Value("${spring.profiles.active:Default}")
+    private String activeProfile;
 
     @Autowired
     public CustomBeanConfig(DataSource dataSource,
@@ -75,8 +79,6 @@ public class CustomBeanConfig {
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
-
-
 
     @Bean
     public HandlerInterceptor localeChangeInterceptor() {
@@ -166,8 +168,13 @@ public class CustomBeanConfig {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("SESSIONID");
         serializer.setCookiePath("/");
-        serializer.setDomainName("lambda-auth-service.herokuapp.com");
-//        serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+        switch (activeProfile) {
+            case "heroku":
+                serializer.setDomainName("lambda-auth-service.herokuapp.com");
+                break;
+            default:
+                serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+        }
         return serializer;
     }
 }

@@ -40,7 +40,7 @@ public class RestAuthenticationFailureHandler implements AuthenticationFailureHa
 			this.objectMapper.writeValue(out, res);
 			out.flush();
 		} else {
-			ViewMessage viewMessage = new ViewMessage("Wrong password", false);
+			ViewMessage viewMessage = new ViewMessage(exception.getMessage(), false);
 			log.error("Mvc login failure!", exception);
 //			response.setStatus(HttpStatus.FOUND.value());
 //			response.setHeader(HttpHeaders.LOCATION, "/lambda-auth/login.html");

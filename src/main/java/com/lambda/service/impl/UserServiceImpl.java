@@ -10,7 +10,10 @@ import com.lambda.model.dto.SearchResponseDTO;
 import com.lambda.model.dto.UserDTO;
 import com.lambda.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,19 +22,27 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private static final String DEFAULT_GROUP = "user";
-
     private final UserDao userDao;
 
     private final TokenDao tokenDao;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    public UserServiceImpl(UserDao userDao, TokenDao tokenDao) {
+    public UserServiceImpl(UserDao userDao, TokenDao tokenDao, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
         this.tokenDao = tokenDao;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<UserDTO> getUserList(Pageable pageable) {
+        return this.userDao.userList(pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public UserDTO getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<UserDTO> optionalUserDTO = userDao.findByUsername(username);
@@ -39,35 +50,38 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<UserDTO> findByUsername(String username) {
         return this.userDao.findByUsername(username);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDTO findByEmail(String email) {
         return userDao.findByEmail(email);
     }
 
     @Override
-    public void save(UserDTO user, boolean createAction) {
-        if (createAction) {
-            if (userDao.findByUsername(user.getUsername()).isPresent()) {
-                throw new BusinessException(1000, "Username existed");
-            }
-            user.setEnabled(false);
-            userDao.createUser(user);
-            userDao.addUserToGroup(user.getUsername(), DEFAULT_GROUP);
-        } else {
-            userDao.updateUser(user);
-        }
+    @Transactional
+    public void register(UserDTO user) {
+        user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+        this.userDao.register(user);
     }
 
     @Override
+    @Transactional
+    public void unregister(String username) {
+        this.userDao.unRegister(username);
+    }
+
+    @Override
+    @Transactional
     public void deleteById(Long id) {
         userDao.deleteById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public SearchResponseDTO search(String searchText) {
         return new SearchResponseDTO();
     }

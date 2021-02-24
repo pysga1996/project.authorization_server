@@ -12,7 +12,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 @RestController
-@RequestMapping("/oauth")
+@RequestMapping("/oauth/token")
 @SuppressWarnings("deprecation")
 public class TokenRestController {
 

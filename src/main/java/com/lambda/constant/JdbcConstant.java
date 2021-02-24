@@ -7,6 +7,8 @@ public class JdbcConstant {
 
     public static final int TOKEN_DURATION = 24 * 60 * 60 * 1000;
 
+    public static final String CUSTOM_SQL_STATE = "45000";
+
     public static final String DEF_USERS_BY_USERNAME_FULL_QUERY = "SELECT username, " +
             "password, enabled, account_locked, account_expired, " +
             "credentials_expired FROM user WHERE username =?";

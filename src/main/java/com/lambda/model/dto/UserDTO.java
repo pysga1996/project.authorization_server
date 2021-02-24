@@ -2,16 +2,19 @@ package com.lambda.model.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.lambda.util.CustomAuthoritySerializer;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Set;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class UserDTO implements UserDetails, Serializable {
 
@@ -21,8 +24,11 @@ public class UserDTO implements UserDetails, Serializable {
 
     private SettingDTO setting;
 
+    @NotBlank(message = "{validation.username.notBlank}")
     private String username;
 
+    @Size(min = 6, max = 15)
+    @NotBlank(message = "{validation.password.notBlank}")
     private String password;
 
     private boolean enabled;
@@ -33,12 +39,30 @@ public class UserDTO implements UserDetails, Serializable {
 
     private boolean credentialsNonExpired;
 
+    private Set<String> groupList;
+
     @JsonSerialize(using = CustomAuthoritySerializer.class)
     private Set<GrantedAuthority> authorities;
 
     public UserDTO(String username, String password, boolean enabled,
                    boolean accountNonExpired, boolean accountNonLocked,
                    boolean credentialsNonExpired, Set<GrantedAuthority> authorities) {
+        this.username = username;
+        this.password = password;
+        this.enabled = enabled;
+        this.accountNonExpired = accountNonExpired;
+        this.accountNonLocked = accountNonLocked;
+        this.credentialsNonExpired = credentialsNonExpired;
+        this.authorities = authorities;
+    }
+
+    public UserDTO(Long id, UserProfileDTO userProfile, SettingDTO setting,
+                   String username, String password,
+                   boolean enabled, boolean accountNonExpired, boolean accountNonLocked,
+                   boolean credentialsNonExpired, Set<GrantedAuthority> authorities) {
+        this.id = id;
+        this.userProfile = userProfile;
+        this.setting = setting;
         this.username = username;
         this.password = password;
         this.enabled = enabled;

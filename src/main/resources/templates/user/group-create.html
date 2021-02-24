@@ -5,7 +5,7 @@
 >
 <head>
     <meta charset="UTF-8">
-    <title>Client Management</title>
+    <title th:text="#{title.management.group}"></title>
     <th:block th:replace="~{fragment/general :: headerfiles}"/>
 </head>
 <body>
@@ -13,7 +13,7 @@
     <header th:insert="~{fragment/general :: header}"></header>
     <div class="d-flex justify-content-center">
         <form class="col-4" th:action="@{/group/create}" th:object="${newGroup}" th:method="POST">
-            <h4>Create Group</h4>
+            <h4 th:text="#{title.group.update}"></h4>
             <div class="form-group my-1">
                 <label for="groupName">Group Name</label>
                 <input class="form-control" id="groupName"

@@ -1,25 +1,21 @@
 package com.lambda.config.general;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.util.StringUtils;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.*;
-import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
-import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
 
 @Configuration
@@ -30,15 +26,22 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     private final Formatter<List<GrantedAuthority>> authoritiesFormatter;
 
+    private final Formatter<Timestamp> timestampFormatter;
+
     private final HandlerInterceptor localeChangeInterceptor;
+
+    private final MessageSource messageSource;
 
     @Autowired
     public WebMvcConfig(Formatter<Set<String>> stringSetFormatter,
                         Formatter<List<GrantedAuthority>> authoritiesFormatter,
-                        HandlerInterceptor localeChangeInterceptor) {
+                        Formatter<Timestamp> timestampFormatter, HandlerInterceptor localeChangeInterceptor,
+                        MessageSource messageSource) {
         this.stringSetFormatter = stringSetFormatter;
         this.authoritiesFormatter = authoritiesFormatter;
+        this.timestampFormatter = timestampFormatter;
         this.localeChangeInterceptor = localeChangeInterceptor;
+        this.messageSource = messageSource;
     }
 
     @Bean
@@ -51,6 +54,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
         localeResolver.setCookieSecure(false);
         localeResolver.setRejectInvalidCookies(false);
         return localeResolver;
+    }
+
+    @Bean
+    @Primary
+    public LocalValidatorFactoryBean getValidator() {
+        LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
+        bean.setValidationMessageSource(messageSource);
+        return bean;
     }
 
     @Override
@@ -72,8 +83,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addFormatters(FormatterRegistry registry) {
         registry.addFormatter(stringSetFormatter);
         registry.addFormatter(authoritiesFormatter);
+        registry.addFormatter(timestampFormatter);
     }
-
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {

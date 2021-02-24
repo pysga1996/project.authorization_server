@@ -5,7 +5,7 @@
 >
 <head>
     <meta charset="UTF-8">
-    <title>Client Management</title>
+    <title th:text="#{title.management.client}"></title>
     <th:block th:replace="~{fragment/general :: headerfiles}"/>
     <style>
         .form-check-label {
@@ -47,7 +47,7 @@
     <header th:insert="~{fragment/general :: header}"></header>
     <div class="d-flex justify-content-center">
         <form class="col-4" th:action="@{/client/create}" th:object="${newClient}" th:method="POST">
-            <h4>Create Client</h4>
+            <h4 th:text="#{title.client.create}"></h4>
             <div class="form-group my-1">
                 <label for="clientId">Client ID</label>
                 <input class="form-control" id="clientId" placeholder="Enter client ID" th:field="*{clientId}">

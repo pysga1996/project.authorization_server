@@ -3,14 +3,19 @@ package com.lambda.service;
 import com.lambda.model.dto.AuthenticationTokenDTO;
 import com.lambda.model.dto.SearchResponseDTO;
 import com.lambda.model.dto.UserDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 
 import java.net.UnknownHostException;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 
 @SuppressWarnings("deprecation")
 public interface UserService {
+
+    Page<UserDTO> getUserList(Pageable pageable);
 
     UserDTO getCurrentUser();
 
@@ -18,7 +23,9 @@ public interface UserService {
 
     UserDTO findByEmail(String email);
 
-    void save(UserDTO user, boolean createAction);
+    void register(UserDTO user);
+
+    void unregister(String username);
 
     void deleteById(Long id);
 

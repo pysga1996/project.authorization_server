@@ -1,33 +1,39 @@
 package com.lambda.dao.impl;
 
+import com.lambda.constant.CommonConstant;
+import com.lambda.constant.ErrorCode;
 import com.lambda.constant.JdbcConstant;
 import com.lambda.dao.UserDao;
 import com.lambda.dao.extractor.SqlResultExtractor;
+import com.lambda.error.BusinessException;
 import com.lambda.model.domain.Group;
 import com.lambda.model.domain.GroupInfo;
 import com.lambda.model.dto.UserDTO;
+import com.lambda.model.dto.UserProfileDTO;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import java.util.List;
-import java.util.Optional;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.lambda.constant.JdbcConstant.*;
 
+@Log4j2
 @Component
-@Transactional
 public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
 
     private final JdbcOperations jdbcOperations;
@@ -92,7 +98,7 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     }
 
     @Override
-    public void save(UserDTO user) {
+    public void saveProfile(UserProfileDTO userProfileDTO) {
 
     }
 
@@ -197,4 +203,97 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
         return count != null && count > 0;
     }
 
+    @Override
+    public void register(UserDTO userDTO) {
+        try {
+            SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(Objects.requireNonNull(this.getDataSource()))
+                    .withProcedureName("REGISTER");
+            MapSqlParameterSource in = new MapSqlParameterSource()
+                    .addValue("username", userDTO.getUsername())
+                    .addValue("password", userDTO.getPassword())
+                    .addValue("first_name", userDTO.getUserProfile().getFirstName())
+                    .addValue("last_name", userDTO.getUserProfile().getLastName())
+                    .addValue("gender", userDTO.getUserProfile().getGender().getValue())
+                    .addValue("date_of_birth", userDTO.getUserProfile().getDateOfBirth())
+                    .addValue("email", userDTO.getUserProfile().getEmail())
+                    .addValue("phone_number", userDTO.getUserProfile().getPhoneNumber())
+                    .addValue("group_name", CommonConstant.DEFAULT_GROUP);
+            simpleJdbcCall.execute(in);
+        } catch (UncategorizedSQLException ex) {
+            SQLException sqlException = ex.getSQLException();
+            if (CUSTOM_SQL_STATE.equals(sqlException.getSQLState())) {
+                switch (ErrorCode.get(sqlException.getMessage())) {
+                    case USERNAME_EXISTED:
+                        throw new BusinessException(sqlException.getErrorCode(), "validation.username.existed");
+                    case USER_PROFILE_EXISTED:
+                        throw new BusinessException(sqlException.getErrorCode(), "validation.userProfile.existed");
+                    case GROUP_NOT_FOUND:
+                        throw new BusinessException(sqlException.getErrorCode(), "validation.group.notFound");
+                }
+            }
+            throw ex;
+        }
+    }
+
+    @Override
+    public void unRegister(String username) {
+        try {
+            SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(Objects.requireNonNull(this.getDataSource()))
+                    .withProcedureName("UNREGISTER");
+            MapSqlParameterSource in = new MapSqlParameterSource()
+                    .addValue("username", username);
+            simpleJdbcCall.execute(in);
+        } catch (UncategorizedSQLException ex) {
+            SQLException sqlException = ex.getSQLException();
+            if (CUSTOM_SQL_STATE.equals(sqlException.getSQLState())) {
+                if (ErrorCode.get(sqlException.getMessage()) == ErrorCode.USERNAME_NOT_FOUND) {
+                    throw new BusinessException(sqlException.getErrorCode(), "validation.username.notFound");
+                }
+            }
+            throw ex;
+        }
+    }
+
+    @Override
+    public Page<UserDTO> userList(Pageable pageable) {
+        String sql = "SELECT user.id, user.username, password, enabled, account_locked,\n" +
+                "       account_expired, credentials_expired, `groups`.group_name\n" +
+                "FROM user\n" +
+                "LEFT JOIN group_members ON group_members.username = user.username\n" +
+                "LEFT JOIN `groups` ON `groups`.id = group_members.group_id " +
+                "LIMIT ?, ?";
+        List<UserDTO> userList = this.jdbcOperations.query(sql, rs -> {
+            List<UserDTO> users = new ArrayList<>();
+            UserDTO user = new UserDTO();
+            user.setGroupList(new HashSet<>());
+            long id = 0L;
+            while (rs.next()) {
+                if (rs.getLong("id") != id) {
+                    user = new UserDTO();
+                    user.setGroupList(new HashSet<>());
+                    id = rs.getLong("id");
+                    user.setUsername(rs.getString("username"));
+                    user.setPassword(rs.getString("password"));
+                    user.setEnabled(rs.getBoolean("enabled"));
+                    user.setAccountNonLocked(!rs.getBoolean("account_locked"));
+                    user.setAccountNonExpired(!rs.getBoolean("account_expired"));
+                    user.setCredentialsNonExpired(!rs.getBoolean("credentials_expired"));
+                }
+                if (rs.getString("group_name") != null) {
+                    user.getGroupList().add(rs.getString("group_name"));
+                }
+                if (!users.contains(user)) {
+                    users.add(user);
+                }
+            }
+            return users;
+        }, pageable.getOffset(), pageable.getPageSize());
+        if (userList == null) userList = new ArrayList<>();
+        String countSql = "SELECT COUNT(user.username) \n" +
+                "FROM user\n" +
+                "LEFT JOIN group_members ON group_members.username = user.username\n" +
+                "LEFT JOIN `groups` ON `groups`.id = group_members.group_id ";
+        Long count = this.jdbcOperations.queryForObject(countSql, Long.class);
+        return new PageImpl<>(userList, pageable, count == null ? 0 : count);
+    }
 }

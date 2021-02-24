@@ -45,7 +45,7 @@ public class UserRestController {
         String email = userDTO.getUserProfile().getEmail();
         String username = userDTO.getUsername();
         String clientRedirectUrl = registrationDTO.getRedirectUrl();
-        this.userService.save(userDTO, true);
+        this.userService.register(userDTO);
         Locale locale = request.getLocale();
         this.notificationClient.sendRegistrationEmail(username, email, clientRedirectUrl, locale);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -89,7 +89,7 @@ public class UserRestController {
                                                @RequestParam("token") String token) {
         UserDTO userDTO = this.userService.checkResetPassToken(token);
         userDTO.setPassword(this.passwordEncoder.encode(passwordDto.getNewPassword()));
-        this.userService.save(userDTO, true);
+        this.userService.register(userDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

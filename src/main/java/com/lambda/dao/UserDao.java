@@ -3,6 +3,7 @@ package com.lambda.dao;
 import com.lambda.model.domain.Group;
 import com.lambda.model.domain.GroupInfo;
 import com.lambda.model.dto.UserDTO;
+import com.lambda.model.dto.UserProfileDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,7 +31,7 @@ public interface UserDao extends UserDetailsManager, GroupManager {
 
     void deleteById(Long id);
 
-    void save(UserDTO user);
+    void saveProfile(UserProfileDTO userProfileDTO);
 
     List<GroupInfo> groupListWithCountInfo();
 
@@ -48,4 +49,9 @@ public interface UserDao extends UserDetailsManager, GroupManager {
 
     boolean checkUserExistInGroup(String groupName, String usernames);
 
+    void register(UserDTO userDTO);
+
+    void unRegister(String username);
+
+    Page<UserDTO> userList(Pageable pageable);
 }

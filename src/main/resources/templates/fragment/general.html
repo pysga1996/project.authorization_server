@@ -16,6 +16,21 @@
             padding-top: 5rem;
             padding-bottom: 5rem;
         }
+        ul.error_block {
+            padding-top: 0.5rem !important;
+            margin-top: 0.5rem;
+            padding-bottom: 0.5rem !important;
+        }
+        ul.error_block > li {
+            list-style-type: none;
+            font-size: small;
+        }
+        a.nav-link.active {
+            border-radius: 0.5rem;
+            /*filter: brightness(80%);*/
+            background: lightblue;
+            /*color: beige !important;*/
+        }
     </style>
     <script type="text/javascript" th:src="@{/js/bootstrap.bundle.js}"></script>
     <script>
@@ -68,19 +83,23 @@
                         <a class="nav-link" aria-current="page" href="#"><h4>Home</h4></a>
                     </li>
                     <li class="nav-item">
+                        <a th:href="@{/user/list}" class="nav-link" href="#">
+                            <h4 th:text="#{title.nav.user}"></h4>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a th:href="@{/group/list}" class="nav-link" href="#">
-                            <h4>Group</h4>
+                            <h4 th:text="#{title.nav.group}"></h4>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a th:href="@{/client/list}" class="nav-link" href="#">
-                            <h4>Client</h4>
+                            <h4 th:text="#{title.nav.client}"></h4>
                         </a>
                     </li>
-
                     <li class="nav-item">
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">
-                            <h4>Disabled</h4>
+                        <a th:href="@{/user/register}" class="nav-link" href="#">
+                            <h4 th:text="#{title.nav.register}"></h4>
                         </a>
                     </li>
                 </ul>
