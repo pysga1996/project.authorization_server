@@ -64,7 +64,7 @@ public class UserController {
                                  RedirectAttributes redirectAttributes, HttpServletRequest request) {
         try {
             if (userBindingResult.hasErrors() || userProfileBindingResult.hasErrors()) {
-                return new ModelAndView("/user/register", modelMap);
+                return new ModelAndView("user/register", modelMap);
             }
             user.setUserProfile(userProfile);
             this.userService.register(user);
@@ -74,7 +74,7 @@ public class UserController {
         } catch (BusinessException ex) {
             String msg = this.messageSource.getMessage(ex.getMessage(), null, request.getLocale());
             modelMap.addAttribute("viewMessage", new ViewMessage(msg, false));
-            return new ModelAndView("/user/register", modelMap);
+            return new ModelAndView("user/register", modelMap);
         }
     }
 
@@ -93,7 +93,7 @@ public class UserController {
         } catch (BusinessException ex) {
             String msg = this.messageSource.getMessage(ex.getMessage(), null, request.getLocale());
             modelMap.addAttribute("viewMessage", new ViewMessage(msg, false));
-            return new ModelAndView("/user/register", modelMap);
+            return new ModelAndView("user/register", modelMap);
         }
     }
 
@@ -102,10 +102,10 @@ public class UserController {
     public String userList(ModelMap modelMap, @PageableDefault Pageable pageable) {
         modelMap.addAttribute("groupList", this.groupService.groupList());
         modelMap.addAttribute("userPage", this.userService.getUserList(pageable));
-        return "/user/user-list";
+        return "user/user-list";
     }
 
-//    @PreAuthorize("hasAuthority('UPDATE_USER')")
+    @PreAuthorize("hasAuthority('UPDATE_USER')")
     @PostMapping("/update")
     public RedirectView updateUser(@RequestParam("enabled") boolean enabled,
                                    @RequestParam("account_locked") boolean accountLocked,
