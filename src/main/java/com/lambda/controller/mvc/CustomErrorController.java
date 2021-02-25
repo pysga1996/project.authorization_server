@@ -1,5 +1,6 @@
 package com.lambda.controller.mvc;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -9,8 +10,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
+@Log4j2
 @Controller
 @RequestMapping("")
 public class CustomErrorController implements ErrorController {
@@ -27,7 +30,9 @@ public class CustomErrorController implements ErrorController {
     }
 
     @GetMapping("/error/{status}")
-    public ModelAndView error(@PathVariable("status") String status) {
+    public ModelAndView error(@PathVariable("status") String status, HttpServletRequest request) {
+        Object err = request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
+        log.info(err);
         return new ModelAndView("error/" + status);
     }
 

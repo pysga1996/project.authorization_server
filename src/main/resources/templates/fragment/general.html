@@ -43,28 +43,28 @@
                 clearTimeout(timeout);
             }, 5000);
         }
-        document.addEventListener('DOMContentLoaded', function() {
-            const btnContainer = document.getElementById("navBar");
-
-            // Get all buttons with class="btn" inside the container
-            const btns = btnContainer.getElementsByTagName("a");
-            const currentUrl = (window.location.href);
-            // Loop through the buttons and add the active class to the current/clicked button
-            for (let i = 0; i < btns.length; i++) {
-                const btnUrl = (window.location.protocol + "//" + window.location.host + btns[i].getAttribute("href"));
-                if (currentUrl.startsWith(btnUrl)) {
-                    const currents = document.getElementsByClassName("active");
-                    if (currents.length > 0) {
-                        for (let current of currents) {
-                            current.className = current.className.replace(" active", "");
-                        }
-                    }
-                    btns[i].className += " active";
-                    break;
-                }
-            }
-            hideMessage();
-        }, false);
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const btnContainer = document.getElementById("navBar");
+        //
+        //     // Get all buttons with class="btn" inside the container
+        //     const btns = btnContainer.getElementsByTagName("a");
+        //     const currentUrl = (window.location.href);
+        //     // Loop through the buttons and add the active class to the current/clicked button
+        //     for (let i = 0; i < btns.length; i++) {
+        //         const btnUrl = (window.location.protocol + "//" + window.location.host + btns[i].getAttribute("href"));
+        //         if (currentUrl.startsWith(btnUrl)) {
+        //             const currents = document.getElementsByClassName("active");
+        //             if (currents.length > 0) {
+        //                 for (let current of currents) {
+        //                     current.className = current.className.replace(" active", "");
+        //                 }
+        //             }
+        //             btns[i].className += " active";
+        //             break;
+        //         }
+        //     }
+        //     hideMessage();
+        // }, false);
     </script>
 </head>
 <body>
@@ -83,22 +83,26 @@
                         <a class="nav-link" aria-current="page" href="#"><h4>Home</h4></a>
                     </li>
                     <li class="nav-item">
-                        <a th:href="@{/user/list}" class="nav-link" href="#">
+                        <a th:href="@{/user/list}" class="nav-link"
+                           th:classappend="${#httpServletRequest.requestURI.contains('/user') && !#httpServletRequest.requestURI.contains('/register')} ? active : ''">
                             <h4 th:text="#{title.nav.user}"></h4>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a th:href="@{/group/list}" class="nav-link" href="#">
+                        <a th:href="@{/group/list}" class="nav-link"
+                           th:classappend="${#httpServletRequest.requestURI.contains('/group')} ? active : ''">
                             <h4 th:text="#{title.nav.group}"></h4>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a th:href="@{/client/list}" class="nav-link" href="#">
+                        <a th:href="@{/client/list}" class="nav-link"
+                           th:classappend="${#httpServletRequest.requestURI.contains('/client')} ? active : ''">
                             <h4 th:text="#{title.nav.client}"></h4>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a th:href="@{/user/register}" class="nav-link" href="#">
+                        <a th:href="@{/user/register}" class="nav-link"
+                           th:classappend="${#httpServletRequest.requestURI.contains('/user/register')} ? active : ''">
                             <h4 th:text="#{title.nav.register}"></h4>
                         </a>
                     </li>

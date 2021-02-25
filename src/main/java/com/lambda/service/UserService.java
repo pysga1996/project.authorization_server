@@ -9,7 +9,6 @@ import org.springframework.security.oauth2.common.exceptions.InvalidTokenExcepti
 
 import java.net.UnknownHostException;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Optional;
 
 @SuppressWarnings("deprecation")
@@ -37,8 +36,6 @@ public interface UserService {
 
     UserDTO checkResetPassToken(String token);
 
-
-
     default void validateToken(AuthenticationTokenDTO authenticationTokenDTO) {
         if (authenticationTokenDTO == null) {
             throw new InvalidTokenException("Token not found");
@@ -48,4 +45,8 @@ public interface UserService {
             throw new InvalidTokenException("Expired token");
         }
     }
+
+    void updateUser(String username, String password, boolean enabled,
+                    boolean accountLocked, boolean accountExpired,
+                    boolean credentialsExpired, String groups);
 }

@@ -152,6 +152,7 @@ public class CustomBeanConfig {
             server.addErrorPages(error400, error500, error404, error403, error503
                     , error401
             );
+
         };
     }
 

@@ -1,8 +1,8 @@
 package com.lambda.model.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.lambda.model.domain.Group;
 import com.lambda.util.CustomAuthoritySerializer;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -39,7 +39,7 @@ public class UserDTO implements UserDetails, Serializable {
 
     private boolean credentialsNonExpired;
 
-    private Set<String> groupList;
+    private Set<Group> groupList;
 
     @JsonSerialize(using = CustomAuthoritySerializer.class)
     private Set<GrantedAuthority> authorities;
@@ -110,7 +110,6 @@ public class UserDTO implements UserDetails, Serializable {
     public UserDetails getBasicInfo() {
         return User.withUserDetails(this).build();
     }
-
 
 }
 

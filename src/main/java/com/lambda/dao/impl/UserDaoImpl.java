@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,6 +57,21 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     @Override
     public Page<UserDTO> findAll(Pageable pageable) {
         return null;
+    }
+
+    @Override
+    public List<Group> findGroupList() {
+        String sql = "SELECT id, group_name FROM `groups`";
+        return this.jdbcOperations.query(sql, rs -> {
+            List<Group> groupList = new ArrayList<>();
+            while (rs.next()) {
+                Group group = new Group();
+                group.setId(rs.getLong("id"));
+                group.setName(rs.getString("group_name"));
+                groupList.add(group);
+            }
+            return groupList;
+        });
     }
 
     @Override
@@ -134,7 +150,7 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     public Page<GrantedAuthority> findGroupAuthorityPageById(Long id, Pageable pageable) {
         long offset = pageable.getOffset();
         int pageSize = pageable.getPageSize();
-        String sql= "SELECT ga.authority FROM `groups`\n" +
+        String sql = "SELECT ga.authority FROM `groups`\n" +
                 "INNER JOIN group_authorities ga on `groups`.id = ga.group_id\n" +
                 "WHERE id = ?\n" +
                 "ORDER BY ga.authority LIMIT ?, ?";
@@ -143,7 +159,7 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
                 .stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
-        String countSql= "SELECT COUNT(ga.authority) FROM `groups`\n" +
+        String countSql = "SELECT COUNT(ga.authority) FROM `groups`\n" +
                 "INNER JOIN group_authorities ga on `groups`.id = ga.group_id\n" +
                 "WHERE id = ?";
         Long count = this.jdbcOperations.queryForObject(countSql, Long.class, id);
@@ -157,13 +173,13 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     public Page<String> findGroupUserPageById(Long id, Pageable pageable) {
         long offset = pageable.getOffset();
         int pageSize = pageable.getPageSize();
-        String sql= "SELECT gm.username FROM `groups`\n" +
+        String sql = "SELECT gm.username FROM `groups`\n" +
                 "INNER JOIN group_members gm on `groups`.id = gm.group_id\n" +
                 "WHERE id = ?\n" +
                 "ORDER BY gm.username LIMIT ?, ?";
         List<String> authorities = this.jdbcOperations
                 .queryForList(sql, String.class, id, offset, pageSize);
-        String countSql= "SELECT COUNT(gm.username) FROM `groups`\n" +
+        String countSql = "SELECT COUNT(gm.username) FROM `groups`\n" +
                 "INNER JOIN group_members gm on `groups`.id = gm.group_id\n" +
                 "WHERE id = ?";
         Long count = this.jdbcOperations.queryForObject(countSql, Long.class, id);
@@ -257,7 +273,7 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     @Override
     public Page<UserDTO> userList(Pageable pageable) {
         String sql = "SELECT user.id, user.username, password, enabled, account_locked,\n" +
-                "       account_expired, credentials_expired, `groups`.group_name\n" +
+                "       account_expired, credentials_expired, `groups`.id AS group_id, `groups`.group_name\n" +
                 "FROM user\n" +
                 "LEFT JOIN group_members ON group_members.username = user.username\n" +
                 "LEFT JOIN `groups` ON `groups`.id = group_members.group_id " +
@@ -272,6 +288,7 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
                     user = new UserDTO();
                     user.setGroupList(new HashSet<>());
                     id = rs.getLong("id");
+                    user.setId(id);
                     user.setUsername(rs.getString("username"));
                     user.setPassword(rs.getString("password"));
                     user.setEnabled(rs.getBoolean("enabled"));
@@ -280,7 +297,10 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
                     user.setCredentialsNonExpired(!rs.getBoolean("credentials_expired"));
                 }
                 if (rs.getString("group_name") != null) {
-                    user.getGroupList().add(rs.getString("group_name"));
+                    Group group = new Group();
+                    group.setId(rs.getLong("group_id"));
+                    group.setName(rs.getString("group_name"));
+                    user.getGroupList().add(group);
                 }
                 if (!users.contains(user)) {
                     users.add(user);
@@ -295,5 +315,55 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
                 "LEFT JOIN `groups` ON `groups`.id = group_members.group_id ";
         Long count = this.jdbcOperations.queryForObject(countSql, Long.class);
         return new PageImpl<>(userList, pageable, count == null ? 0 : count);
+    }
+
+    @Override
+    public Set<Long> findGroupIdSetByUsername(String username) {
+        String sql = "SELECT group_id FROM group_members WHERE username = ?";
+        return this.jdbcOperations.query(sql, rs -> {
+            Set<Long> ids = new HashSet<>();
+            while (rs.next()) {
+                ids.add(rs.getLong("group_id"));
+            }
+            return ids;
+        }, username);
+    }
+
+    @Override
+    public void updateUserAndGroup(String username, String newPassword, boolean enabled, boolean accountLocked, boolean accountExpired,
+                                   boolean credentialsExpired, Set<Long> insertGroups, Set<Long> deleteGroups) {
+        String updateSql;
+        if (newPassword != null) {
+            updateSql = "UPDATE user SET password = ?, enabled = ?, account_locked = ?, \n" +
+                    "account_expired = ?, credentials_expired = ? WHERE username = ?";
+        } else {
+            updateSql = "UPDATE user SET enabled = ?, account_locked = ?, \n" +
+                    "account_expired = ?, credentials_expired = ? WHERE username = ?";
+        }
+
+        Object[] params;
+        int[] argTypes;
+        if (newPassword != null) {
+            params = new Object[]{newPassword, enabled, accountLocked, accountExpired, credentialsExpired, username};
+            argTypes = new int[]{Types.VARCHAR, Types.BIT, Types.BIT, Types.BIT, Types.BIT, Types.VARCHAR};
+        } else {
+            params = new Object[]{enabled, accountLocked, accountExpired, credentialsExpired, username};
+            argTypes = new int[]{Types.BIT, Types.BIT, Types.BIT, Types.BIT, Types.VARCHAR};
+        }
+        this.jdbcOperations.update(updateSql, params, argTypes);
+        if (!deleteGroups.isEmpty()) {
+            String deleteSql = "DELETE FROM group_members WHERE group_id IN (%s) AND username = ?";
+            String ids = String.join(",", deleteGroups.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.toSet()));
+            this.jdbcOperations.update(String.format(deleteSql, ids), username);
+        }
+        if (!insertGroups.isEmpty()) {
+            String insertSql = "INSERT INTO group_members (username, group_id) VALUES (?, ?)";
+            this.jdbcOperations.batchUpdate(insertSql, insertGroups, 10, (ps, argument) -> {
+                ps.setString(1, username);
+                ps.setLong(2, argument);
+            });
+        }
     }
 }

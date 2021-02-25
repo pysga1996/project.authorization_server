@@ -12,10 +12,13 @@ import org.springframework.security.provisioning.UserDetailsManager;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserDao extends UserDetailsManager, GroupManager {
 
     Page<UserDTO> findAll(Pageable pageable);
+
+    List<Group> findGroupList();
 
     Optional<UserDTO> findByUsername(String username);
 
@@ -54,4 +57,9 @@ public interface UserDao extends UserDetailsManager, GroupManager {
     void unRegister(String username);
 
     Page<UserDTO> userList(Pageable pageable);
+
+    Set<Long> findGroupIdSetByUsername(String username);
+
+    void updateUserAndGroup(String username, String newPassword, boolean enabled, boolean accountLocked, boolean accountExpired,
+                            boolean credentialsExpired, Set<Long> insertGroups, Set<Long> deleteGroups);
 }
