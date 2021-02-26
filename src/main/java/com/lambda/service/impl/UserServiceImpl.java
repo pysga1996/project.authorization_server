@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -137,6 +138,7 @@ public class UserServiceImpl implements UserService {
         }
         String[] insertArr = Strings.split(groups, ',');
         Set<Long> insertSet = new HashSet<>(Arrays.asList(insertArr)).stream()
+                .filter(e -> (e != null && Pattern.compile("^\\d+$").matcher(e).matches()))
                 .map(Long::valueOf)
                 .collect(Collectors.toSet());
         Set<Long> tmpSet = new HashSet<>(insertSet);
