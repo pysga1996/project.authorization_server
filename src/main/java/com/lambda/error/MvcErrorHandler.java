@@ -1,5 +1,7 @@
 package com.lambda.error;
 
+import com.lambda.model.dto.ViewMessage;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
@@ -9,8 +11,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+@Log4j2
 @ControllerAdvice(annotations = {Controller.class})
-@SuppressWarnings("deprecation")
 public class MvcErrorHandler {
 
     @ExceptionHandler(Exception.class)
@@ -20,8 +22,9 @@ public class MvcErrorHandler {
         if (ex instanceof AccessDeniedException) {
             throw ex;
         }
-        ex.printStackTrace();
-        return new ModelAndView("error");
+        log.error(ex);
+        return new ModelAndView("error/500", "viewMessage",
+                new ViewMessage(ex.getMessage(), false));
     }
 //
 //    @ExceptionHandler(Exception.class)

@@ -30,9 +30,7 @@ public class CustomErrorController implements ErrorController {
     }
 
     @GetMapping("/error/{status}")
-    public ModelAndView error(@PathVariable("status") String status, HttpServletRequest request) {
-        Object err = request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
-        log.info(err);
+    public ModelAndView error(@PathVariable("status") String status) {
         return new ModelAndView("error/" + status);
     }
 
