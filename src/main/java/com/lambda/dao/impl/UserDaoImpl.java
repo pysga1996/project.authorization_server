@@ -276,18 +276,18 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
                 "       account_expired, credentials_expired, `groups`.id AS group_id, `groups`.group_name\n" +
                 "FROM user\n" +
                 "LEFT JOIN group_members ON group_members.username = user.username\n" +
-                "LEFT JOIN `groups` ON `groups`.id = group_members.group_id " +
+                "LEFT JOIN `groups` ON `groups`.id = group_members.group_id\n" +
                 "LIMIT ?, ?";
         List<UserDTO> userList = this.jdbcOperations.query(sql, rs -> {
-            List<UserDTO> users = new ArrayList<>();
-            UserDTO user = new UserDTO();
-            user.setGroupList(new HashSet<>());
-            long id = 0L;
+            UserDTO user;
+            long id;
+            Map<Long, UserDTO> userMap = new HashMap<>();
             while (rs.next()) {
-                if (rs.getLong("id") != id) {
+                id = rs.getLong("id");
+                if (userMap.containsKey(id)) {
+                    user = userMap.get(id);
+                } else {
                     user = new UserDTO();
-                    user.setGroupList(new HashSet<>());
-                    id = rs.getLong("id");
                     user.setId(id);
                     user.setUsername(rs.getString("username"));
                     user.setPassword(rs.getString("password"));
@@ -295,6 +295,8 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
                     user.setAccountNonLocked(!rs.getBoolean("account_locked"));
                     user.setAccountNonExpired(!rs.getBoolean("account_expired"));
                     user.setCredentialsNonExpired(!rs.getBoolean("credentials_expired"));
+                    user.setGroupList(new HashSet<>());
+                    userMap.put(id, user);
                 }
                 if (rs.getString("group_name") != null) {
                     Group group = new Group();
@@ -302,11 +304,11 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
                     group.setName(rs.getString("group_name"));
                     user.getGroupList().add(group);
                 }
-                if (!users.contains(user)) {
-                    users.add(user);
-                }
             }
-            return users;
+            return userMap.values()
+                    .stream()
+                    .sorted(Comparator.comparing(UserDTO::getUsername))
+                    .collect(Collectors.toList());
         }, pageable.getOffset(), pageable.getPageSize());
         if (userList == null) userList = new ArrayList<>();
         String countSql = "SELECT COUNT(user.username) \n" +
