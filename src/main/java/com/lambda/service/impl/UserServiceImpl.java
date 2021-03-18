@@ -113,11 +113,12 @@ public class UserServiceImpl implements UserService {
 
 
     private boolean emailExist(String email) {
-        UserDTO user = userDao.findByEmail(email);
+        UserDTO user = this.userDao.findByEmail(email);
         return user != null;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDTO checkResetPassToken(String token) {
         AuthenticationTokenDTO authenticationTokenDTO = this.tokenDao.findToken(token, TokenType.RESET_PASSWORD, TokenStatus.ACTIVE);
         this.validateToken(authenticationTokenDTO);

@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 @Component
-public class RestAccessDeniedHandler implements AccessDeniedHandler {
+public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,

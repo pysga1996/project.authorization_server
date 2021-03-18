@@ -81,3 +81,8 @@ webservices:
 security:
   oath2:
     resource-id: user
+custom:
+  http-port: 8081
+  https-port: 8082
+  security-policy: CONFIDENTAL
+  connector-scheme: http

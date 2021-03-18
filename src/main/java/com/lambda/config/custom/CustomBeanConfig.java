@@ -1,12 +1,18 @@
 package com.lambda.config.custom;
 
 import com.cloudinary.Cloudinary;
+import org.apache.catalina.Context;
+import org.apache.catalina.connector.Connector;
+import org.apache.coyote.http2.Http2Protocol;
+import org.apache.tomcat.util.descriptor.web.SecurityCollection;
+import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -29,7 +35,6 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
@@ -49,6 +54,18 @@ public class CustomBeanConfig {
 
     @Value("${spring.profiles.active:Default}")
     private String activeProfile;
+
+    @Value("${custom.http-port}")
+    private Integer httpPort;
+
+    @Value("${custom.https-port}")
+    private Integer httpsPort;
+
+    @Value("${custom.security-policy}")
+    private String securityPolicy;
+
+    @Value("${custom.connector-scheme}")
+    private String connectorScheme;
 
     @Autowired
     public CustomBeanConfig(DataSource dataSource,
@@ -177,5 +194,35 @@ public class CustomBeanConfig {
                 serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
         }
         return serializer;
+    }
+
+    @Bean
+    @Profile({"default","poweredge"})
+    public ServletWebServerFactory servletContainer() {
+        TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
+            @Override
+            protected void postProcessContext(Context context) {
+                SecurityConstraint securityConstraint = new SecurityConstraint();
+                // set to CONFIDENTIAL to automatically redirect from http to https port
+                securityConstraint.setUserConstraint(securityPolicy);
+//                securityConstraint.setUserConstraint("NONE");
+                SecurityCollection collection = new SecurityCollection();
+                collection.addPattern("/*");
+                securityConstraint.addCollection(collection);
+                context.addConstraint(securityConstraint);
+            }
+        };
+        tomcat.addAdditionalTomcatConnectors(getHttpConnector());
+        return tomcat;
+    }
+
+    private Connector getHttpConnector() {
+        Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
+        connector.setScheme(connectorScheme);
+        connector.setPort(httpPort);
+        connector.setSecure(false);
+        connector.setRedirectPort(httpsPort);
+        connector.addUpgradeProtocol(new Http2Protocol());
+        return connector;
     }
 }

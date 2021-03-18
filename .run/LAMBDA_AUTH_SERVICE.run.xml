@@ -11,6 +11,8 @@
         <ENTRY IS_ENABLED="true" PARSER="runconfig" />
         <ENTRY IS_ENABLED="true" PARSER="env" PATH="environment/storage.env" />
         <ENTRY IS_ENABLED="true" PARSER="env" PATH="environment/redis.env" />
+        <ENTRY IS_ENABLED="true" PARSER="env" PATH="environment/ssl_certification.env" />
+        <ENTRY IS_ENABLED="true" PARSER="env" PATH="environment/mysql.env" />
       </ENTRIES>
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.lambda.LambdaAuthServiceApplication" />

@@ -19,12 +19,12 @@ import java.io.OutputStream;
 
 @Log4j2
 @Component
-public class RestAuthenticationFailureHandler implements AuthenticationFailureHandler {
+public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
 	private final ObjectMapper objectMapper;
 
 	@Autowired
-	public RestAuthenticationFailureHandler(ObjectMapper objectMapper) {
+	public CustomAuthenticationFailureHandler(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
 	}
 

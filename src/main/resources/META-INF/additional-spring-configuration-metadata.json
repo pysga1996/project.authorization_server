@@ -19,5 +19,35 @@
       "name": "storage.cloudinary.url",
       "type": "java.lang.String",
       "description": "Description for storage.cloudinary.url."
+    },
+    {
+      "name": "custom.http-port",
+      "type": "java.lang.String",
+      "description": "Description for custom.http-port."
+    },
+    {
+      "name": "custom.https-port",
+      "type": "java.lang.String",
+      "description": "Description for custom.https-port."
+    },
+    {
+      "name": "custom.security-policy",
+      "type": "java.lang.String",
+      "description": "Description for custom.security-policy."
+    },
+    {
+      "name": "custom.connector-scheme",
+      "type": "java.lang.String",
+      "description": "Description for custom.connector-scheme."
+    },
+    {
+      "name": "custom.trust-store-password",
+      "type": "java.lang.String",
+      "description": "Description for custom.trust-store-password."
+    },
+    {
+      "name": "custom.trust-store-type",
+      "type": "java.lang.String",
+      "description": "Description for custom.trust-store-type."
     }
   ] }

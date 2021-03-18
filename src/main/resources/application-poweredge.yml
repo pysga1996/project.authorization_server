@@ -14,7 +14,7 @@ logging:
           core: TRACE
   config: classpath:log4j-spring.xml
 server:
-  port: 8081
+  port: 8082
   servlet:
     context-path: /lambda-auth
     encoding:
@@ -24,11 +24,26 @@ server:
     whitelabel:
       enabled: false
     path: /error
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+  http2:
+    enabled: true
+  ssl:
+    enabled: true
+    enabled-protocols: TLSv1.2
+    key-alias: ${SSL_KEY_ALIAS:}
+    key-password: ${SSL_KEY_PASSWORD:}
+    key-store: classpath:vengeance.jks
+    key-store-password: ${SSL_KEYSTORE_PASSWORD:}
+    key-store-type: JKS
+    protocol: TLS
 spring:
   redis:
-    host: 192.168.0.100
-    port: 6379
-    database: 1
+    host: ${REDIS_HOST:}
+    port: ${REDIS_PORT:}
+    database: ${REDIS_DB:}
     password: ${REDIS_PASSWORD:}
   session:
     store-type: redis
@@ -38,7 +53,7 @@ spring:
       cleanup-cron: "0 * * * * *"
     timeout: 1h
   datasource:
-    driver-class-name: ${SPRING_DATASOURCE_DRIVER:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       connectionTimeout: 30000
       idleTimeout: 100000
@@ -46,9 +61,9 @@ spring:
       maximum-pool-size: 20
       minimum-idle: 10
     initialization-mode: never
-    password: ${SPRING_DATASOURCE_PASSWORD:}
-    url: ${SPRING_DATASOURCE_URL:}
-    username: ${SPRING_DATASOURCE_USERNAME:}
+    password: v3ng34nc3
+    url: jdbc:mysql://192.168.0.101:3306/user_management?useUnicode=true&characterEncoding=UTF-8
+    username: root
   main:
     allow-bean-definition-overriding: true
   messages:
@@ -86,3 +101,10 @@ webservices:
 security:
   oath2:
     resource-id: user
+custom:
+  http-port: 8081
+  https-port: 8082
+  security-policy: CONFIDENTAL
+  connector-scheme: http
+  trust-store-password: ${SSL_TRUSTSTORE_PASSWORD:}
+  trust-store-type: JKS
