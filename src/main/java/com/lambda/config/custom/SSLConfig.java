@@ -3,6 +3,7 @@ package com.lambda.config.custom;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 
 import javax.annotation.PostConstruct;
@@ -20,6 +21,7 @@ import java.security.cert.CertificateException;
 
 @Log4j2
 @Configuration
+@Profile({"default","poweredge"})
 public class SSLConfig {
 
     @Value("classpath:vengeance.jks")
