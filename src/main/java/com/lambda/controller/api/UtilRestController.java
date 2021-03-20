@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/util")
 public class UtilRestController {
 
     @RequestMapping(value = "/ping", method = {RequestMethod.HEAD})
