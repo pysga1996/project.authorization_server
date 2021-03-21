@@ -56,6 +56,8 @@ public interface UserDao extends UserDetailsManager, GroupManager {
 
     void unRegister(String username);
 
+    List<String> userList();
+
     Page<UserDTO> userList(Pageable pageable);
 
     Set<Long> findGroupIdSetByUsername(String username);

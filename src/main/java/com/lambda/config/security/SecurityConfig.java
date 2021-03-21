@@ -14,6 +14,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -42,18 +44,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final LogoutSuccessHandler logoutSuccessHandler;
 
+    private final OpaqueTokenIntrospector opaqueTokenIntrospector;
+
     @Autowired
     public SecurityConfig(DataSource dataSource, PasswordEncoder passwordEncoder,
                           AuthenticationEntryPoint authenticationEntryPoint,
                           AccessDeniedHandler accessDeniedHandler,
                           AuthenticationFailureHandler authenticationFailureHandler,
-                          LogoutSuccessHandler logoutSuccessHandler) {
+                          LogoutSuccessHandler logoutSuccessHandler, OpaqueTokenIntrospector opaqueTokenIntrospector) {
         this.dataSource = dataSource;
         this.passwordEncoder = passwordEncoder;
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.accessDeniedHandler = accessDeniedHandler;
         this.authenticationFailureHandler = authenticationFailureHandler;
         this.logoutSuccessHandler = logoutSuccessHandler;
+        this.opaqueTokenIntrospector = opaqueTokenIntrospector;
     }
 
     @Autowired
@@ -120,6 +125,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                .and()
+                .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer -> {
+                    DefaultBearerTokenResolver bearerTokenResolver = new DefaultBearerTokenResolver();
+                    bearerTokenResolver.setAllowUriQueryParameter(true);
+                    httpSecurityOAuth2ResourceServerConfigurer.opaqueToken(opaqueTokenConfigurer ->
+                            opaqueTokenConfigurer.introspector(opaqueTokenIntrospector)).bearerTokenResolver(bearerTokenResolver);
+                })
         ;
     }
 }

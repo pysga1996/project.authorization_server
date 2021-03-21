@@ -9,10 +9,14 @@ import org.springframework.security.oauth2.common.exceptions.InvalidTokenExcepti
 
 import java.net.UnknownHostException;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @SuppressWarnings("deprecation")
 public interface UserService {
+
+    Map<String, Boolean> getUserStatusMap();
 
     Page<UserDTO> getUserList(Pageable pageable);
 

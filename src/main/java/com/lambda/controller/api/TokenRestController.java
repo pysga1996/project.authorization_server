@@ -1,6 +1,7 @@
 package com.lambda.controller.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
@@ -14,6 +15,8 @@ import java.security.NoSuchAlgorithmException;
 @RestController
 @RequestMapping("/oauth/token")
 @SuppressWarnings("deprecation")
+@CrossOrigin(originPatterns = "*", allowedHeaders = "*", allowCredentials = "true",
+        exposedHeaders = {HttpHeaders.SET_COOKIE})
 public class TokenRestController {
 
     private final ConsumerTokenServices tokenServices;

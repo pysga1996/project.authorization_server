@@ -16,8 +16,10 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.Locale;
+import java.util.Map;
 
-@CrossOrigin(origins = {"https://climax-sound.netlify.com", "http://localhost:4200"}, originPatterns = "*", allowedHeaders = "*")
+@CrossOrigin(originPatterns = "*", allowedHeaders = "*", allowCredentials = "true",
+        exposedHeaders = {HttpHeaders.SET_COOKIE})
 @RestController
 @RequestMapping("/api/user")
 public class UserRestController {
@@ -104,6 +106,13 @@ public class UserRestController {
     public ResponseEntity<Void> deleteUser(@RequestParam("id") Long id) {
         this.userService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(path = "/status-map")
+    public ResponseEntity<Map<String, Boolean>> getUserStatusMap() {
+        Map<String, Boolean> userStatusMap = this.userService.getUserStatusMap();
+        return new ResponseEntity<>(userStatusMap, HttpStatus.OK);
     }
 
 }

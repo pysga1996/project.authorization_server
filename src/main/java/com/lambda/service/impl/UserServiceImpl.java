@@ -40,6 +40,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    public Map<String, Boolean> getUserStatusMap() {
+        List<String> users = this.userDao.userList();
+        return users
+                .stream()
+                .collect(Collectors.toMap(e -> e,  e -> false));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<UserDTO> getUserList(Pageable pageable) {
         return this.userDao.userList(pageable);
     }

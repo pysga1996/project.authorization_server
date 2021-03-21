@@ -271,6 +271,12 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     }
 
     @Override
+    public List<String> userList() {
+        String sql = "SELECT user.username FROM user";
+        return this.jdbcOperations.query(sql, (rs, rowNum) -> rs.getString("username"));
+    }
+
+    @Override
     public Page<UserDTO> userList(Pageable pageable) {
         String sql = "SELECT user.id, user.username, password, enabled, account_locked,\n" +
                 "       account_expired, credentials_expired, `groups`.id AS group_id, `groups`.group_name\n" +
