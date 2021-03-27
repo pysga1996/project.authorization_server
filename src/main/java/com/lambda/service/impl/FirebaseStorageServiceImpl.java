@@ -9,8 +9,8 @@ import com.lambda.error.FileStorageException;
 import com.lambda.model.dto.UploadDTO;
 import com.lambda.service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @Service
-@ConditionalOnBean(StorageClient.class)
+@DependsOn("firebaseStorage")
 @ConditionalOnProperty(prefix = "storage", name = "storage-type", havingValue = "firebase")
 public class FirebaseStorageServiceImpl extends StorageService {
 
@@ -30,7 +30,7 @@ public class FirebaseStorageServiceImpl extends StorageService {
     }
 
     @Override
-    public String upload(MultipartFile multipartFile, UploadDTO uploadDTO) throws IOException {
+    public String upload(MultipartFile multipartFile, UploadDTO uploadDTO) {
         String ext = this.getExtension(multipartFile);
         String fileName = uploadDTO.createFileName(ext);
         this.normalizeFileName(fileName);
