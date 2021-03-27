@@ -23,4 +23,6 @@ public interface GroupService {
     void addUserToGroup(String groupName, String authority);
 
     void removeAuthority(String groupName, String authority);
+
+    void removeGroup(String groupName);
 }

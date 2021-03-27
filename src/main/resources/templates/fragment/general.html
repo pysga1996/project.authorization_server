@@ -43,7 +43,7 @@
                 clearTimeout(timeout);
             }, 5000);
         }
-        // document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
         //     const btnContainer = document.getElementById("navBar");
         //
         //     // Get all buttons with class="btn" inside the container
@@ -63,8 +63,8 @@
         //             break;
         //         }
         //     }
-        //     hideMessage();
-        // }, false);
+            hideMessage();
+        }, false);
     </script>
 </head>
 <body>
@@ -80,7 +80,9 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="#"><h4>Home</h4></a>
+                        <a class="nav-link" aria-current="page" th:href="@{/homepage.html}"
+                           th:classappend="${#httpServletRequest.requestURI.contains('/homepage.html')} ? active : ''">
+                            <h4>Home</h4></a>
                     </li>
                     <li class="nav-item">
                         <a th:href="@{/user/list}" class="nav-link"

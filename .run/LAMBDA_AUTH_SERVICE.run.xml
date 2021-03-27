@@ -17,7 +17,7 @@
       </ENTRIES>
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.lambda.LambdaAuthServiceApplication" />
-    <option name="ACTIVE_PROFILES" value="heroku" />
+    <option name="ACTIVE_PROFILES" value="default" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="SHORTEN_COMMAND_LINE" value="CLASSPATH_FILE" />
     <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndResources" />

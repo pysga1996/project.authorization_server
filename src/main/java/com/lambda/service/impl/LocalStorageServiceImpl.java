@@ -1,6 +1,5 @@
 package com.lambda.service.impl;
 
-import com.google.firebase.cloud.StorageClient;
 import com.lambda.config.properties.LocalStorageProperty;
 import com.lambda.error.FileNotFoundException;
 import com.lambda.error.FileStorageException;
@@ -8,7 +7,6 @@ import com.lambda.model.dto.UploadDTO;
 import com.lambda.service.StorageService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;

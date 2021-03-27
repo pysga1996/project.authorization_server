@@ -408,4 +408,13 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
         String sql2 = "UPDATE user_profile SET other_info = ? WHERE username = ?";
         this.jdbcOperations.update(sql2, newInfoJson, username);
     }
+
+    @Override
+    public void deleteGroup(String groupName) {
+        SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(Objects.requireNonNull(this.getDataSource()))
+                .withProcedureName("DELETE_GROUP");
+        MapSqlParameterSource in = new MapSqlParameterSource()
+                .addValue("groupName", groupName);
+        simpleJdbcCall.execute(in);
+    }
 }

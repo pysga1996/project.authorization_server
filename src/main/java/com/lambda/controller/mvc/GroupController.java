@@ -114,4 +114,14 @@ public class GroupController {
             return new RedirectView("/group/update/" + group.getId(), true);
         }
     }
+
+    @PreAuthorize("hasAuthority('DELETE_GROUP')")
+    @PostMapping("/remove")
+    public RedirectView deleteGroup(@RequestParam("group-name") String groupName,
+                                    RedirectAttributes redirectAttributes) {
+        this.groupService.removeGroup(groupName);
+        redirectAttributes.addFlashAttribute("viewMessage",
+                new ViewMessage("Remove group successfully!", true));
+        return new RedirectView("/group/list", true);
+    }
 }

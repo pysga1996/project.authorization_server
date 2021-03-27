@@ -125,32 +125,28 @@ create unique index authentication_token_token_uindex
 drop table if exists user;
 create table user
 (
-    id                  bigint auto_increment not null primary key,
     account_expired     bit                   not null,
     account_locked      bit                   not null,
     credentials_expired bit                   not null,
     enabled             bit                   not null,
     password            varchar(255)          null,
-    username            varchar(255)          null
+    username            varchar(255)          not null primary key
 );
 
 drop table if exists setting;
 create table setting
 (
-    id        bigint auto_increment not null
-        primary key,
-    dark_mode bit                   null,
-    user_id   bigint                null
+    username        varchar(50) not null primary key,
+    alert bit                   null,
+    theme varchar(10)           null,
+    constraint user_setting_username_fk
+        foreign key (username) references user (username)
 );
-
-create index FKfpo2eyle43nv23h6531y0f8q6
-    on setting (user_id);
 
 drop table if exists user_profile;
 create table user_profile
 (
-    id            BIGINT auto_increment not null primary key,
-    user_id       BIGINT                null,
+    username       varchar(50)          not null primary key,
     first_name    NVARCHAR(50)          null,
     last_name     NVARCHAR(50)          null,
     date_of_birth TIMESTAMP             null,
@@ -158,10 +154,8 @@ create table user_profile
     phone_number  VARCHAR(20)           null,
     email         VARCHAR(20)           null,
     avatar_url    VARCHAR(100)          null,
-    constraint user_profile_pk
-        primary key (id),
-    constraint user_profile_user_id_fk
-        foreign key (user_id) references user (id)
+    constraint user_profile_username_fk
+        foreign key (username) references user (username)
 );
 
 DELIMITER $$
@@ -177,34 +171,70 @@ proc: BEGIN
             ROLLBACK;
             RESIGNAL;
         END;
-    IF (EXISTS(SELECT id FROM user WHERE user.username = username)) THEN
+    IF (EXISTS(SELECT 1 FROM user WHERE user.username = username)) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'USERNAME_EXISTED';
     ELSE
-        SET @id = (SELECT id FROM user WHERE user.username = username);
         INSERT INTO user (account_expired, account_locked, credentials_expired,
                           enabled, password, username)
-        VALUES (true, true, true, false, password, username);
+        VALUES (false, false, false, false, password, username);
     END IF;
     #     SET @user_id = (SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'user'
 #         AND TABLE_SCHEMA = (SELECT DATABASE()));
-    SET @user_id = (SELECT LAST_INSERT_ID());
-    IF (EXISTS(SELECT id FROM user_profile WHERE user_profile.user_id = @user_id)) THEN
+    IF (EXISTS(SELECT 1 FROM user_profile WHERE user_profile.username = username)) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'USER_PROFILE_EXISTED';
     ELSE
         INSERT INTO user_profile (username, first_name, last_name, date_of_birth, gender, phone_number, email)
-        VALUES (@user_id, first_name, last_name, date_of_birth, gender, phone_number, email);
+        VALUES (username, first_name, last_name, date_of_birth, gender, phone_number, email);
     END IF;
-    IF (EXISTS(SELECT id FROM setting WHERE setting.user_id = @user_id)) THEN
+    IF (EXISTS(SELECT 1 FROM setting WHERE setting.username = username)) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'SETTING_EXISTED';
     ELSE
-        INSERT INTO setting (alert, user_id)
-        VALUES (0, @user_id);
+        INSERT INTO setting (username, alert, theme)
+        VALUES (username, 1, 'light');
     END IF;
     SET @check_group = (SELECT id FROM `groups` WHERE `groups`.group_name = group_name);
     IF (NOT ISNULL(@check_group)) THEN
         INSERT INTO group_members(username, group_id) VALUES (username, @check_group);
     ELSE
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'GROUP_NOT_FOUND';
+    END IF;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS UNREGISTER $$
+CREATE PROCEDURE UNREGISTER(IN username VARCHAR(255))
+proc: BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+        BEGIN
+            SHOW ERRORS;
+            ROLLBACK;
+            RESIGNAL;
+        END;
+    DELETE FROM user_profile WHERE user_profile.username = username;
+    DELETE FROM setting WHERE setting.username = username;
+    DELETE FROM user WHERE user.username = username;
+END $$
+DELIMITER ;
+
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS DELETE_GROUP $$
+CREATE PROCEDURE DELETE_GROUP(IN groupName VARCHAR(255))
+proc: BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+        BEGIN
+            SHOW ERRORS;
+            ROLLBACK;
+            RESIGNAL;
+        END;
+    SET @id = (SELECT id FROM `groups` WHERE `groups`.group_name = groupName);
+    IF (ISNULL(@id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'GROUP_NOT_FOUND';
+    ELSE
+        DELETE FROM group_members WHERE group_members.group_id = @id;
+        DELETE FROM group_authorities WHERE group_authorities.group_id = @id;
+        DELETE FROM `groups` WHERE `groups`.id = @id;
     END IF;
 END $$
 DELIMITER ;

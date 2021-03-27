@@ -7,6 +7,15 @@
     <meta charset="UTF-8">
     <title th:text="#{title.management.group}"></title>
     <th:block th:replace="~{fragment/general :: headerfiles}" />
+    <script>
+        function removeGroup(name) {
+            const deleteForm = document.getElementById("deleteForm_" + name);
+            const agree = confirm("[[#{message.group.confirmDelete}]]");
+            if (agree) {
+                deleteForm.submit();
+            }
+        }
+    </script>
 </head>
 <body>
 <div class="container" sec:authorize="isAuthenticated()">
@@ -44,9 +53,14 @@
                            th:href="@{/group/update/{id}(id=${group.id})}">
                             <i class="bi bi-pencil-fill"></i>
                         </a>
-                        <button class="d-inline-block btn btn-sm btn-danger ">
-                            <i class="bi bi-trash-fill"></i>
-                        </button>
+                        <form th:id="deleteForm_ + ${group.name}" class="d-inline-block" th:action="@{/group/remove}"
+                              th:method="POST">
+                            <label><input type="hidden" th:name="group-name" th:value="${group.name}"></label>
+                            <button class="d-inline-block btn btn-sm btn-danger "
+                                    th:data-thing="${group.id}" onclick="removeGroup(this.getAttribute('data-thing'))">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </form>
                     </div>
                 </li>
             </ul>

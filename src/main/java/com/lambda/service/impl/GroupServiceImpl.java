@@ -111,4 +111,10 @@ public class GroupServiceImpl implements GroupService {
         }
         this.userDao.removeGroupAuthority(groupName, new SimpleGrantedAuthority(authority));
     }
+
+    @Override
+    @Transactional
+    public void removeGroup(String groupName) {
+        this.userDao.deleteGroup(groupName);
+    }
 }

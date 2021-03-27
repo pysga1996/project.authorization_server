@@ -9,9 +9,15 @@
 </head>
 <body>
 <div class="container">
-    <h1>Homepage</h1>
     <header th:insert="~{fragment/general :: header}"> </header>
-    <p class="bg-primary">Test</p>
+    <div class="container-fluid">
+        <h1>Homepage</h1>
+        <div class="d-flex">
+            <p>
+                Welcome to Lambda Authorization Service
+            </p>
+        </div>
+    </div>
     <div th:replace="~{fragment/general :: message}"></div>
 </div>
 </body>
