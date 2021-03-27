@@ -1,5 +1,6 @@
 package com.lambda.dao;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lambda.model.domain.Group;
 import com.lambda.model.domain.GroupInfo;
 import com.lambda.model.dto.UserDTO;
@@ -11,6 +12,7 @@ import org.springframework.security.provisioning.GroupManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,11 +24,11 @@ public interface UserDao extends UserDetailsManager, GroupManager {
 
     Optional<UserDTO> findByUsername(String username);
 
+    Map<String, Object> getCurrentUserShortInfo(String username);
+
     Page<UserDTO> findByUsernameContaining(String username, Pageable pageable);
 
     Page<UserDTO> findByAuthorities_Authority(String authority, Pageable pageable);
-
-    Optional<UserDTO> findById(Long id);
 
     UserDTO findByEmail(String email);
 
@@ -56,7 +58,7 @@ public interface UserDao extends UserDetailsManager, GroupManager {
 
     void unRegister(String username);
 
-    List<String> userList();
+    Map<String, UserProfileDTO> userList();
 
     Page<UserDTO> userList(Pageable pageable);
 
@@ -64,4 +66,6 @@ public interface UserDao extends UserDetailsManager, GroupManager {
 
     void updateUserAndGroup(String username, String newPassword, boolean enabled, boolean accountLocked, boolean accountExpired,
                             boolean credentialsExpired, Set<Long> insertGroups, Set<Long> deleteGroups);
+
+    void updateOtherInfo(String username, Map<String, Object> infoJson) throws JsonProcessingException;
 }

@@ -2,10 +2,13 @@ package com.lambda.service.impl;
 
 import com.lambda.dao.SettingDao;
 import com.lambda.model.dto.SettingDTO;
-import com.lambda.model.dto.UserDTO;
 import com.lambda.service.SettingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class SettingServiceImpl implements SettingService {
@@ -18,15 +21,32 @@ public class SettingServiceImpl implements SettingService {
     }
 
     @Override
-    public void createSetting(UserDTO user) {
-        SettingDTO settingDTO = new SettingDTO();
-//        settingDTO.setUser(user);
-        this.settingDAO.save(settingDTO);
+    @Transactional
+    public SettingDTO getSetting() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<SettingDTO> existedSetting = this.settingDAO.getSetting(username);
+        if (existedSetting.isPresent()) {
+            return existedSetting.get();
+        } else {
+            SettingDTO setting = new SettingDTO();
+            setting.setUsername(username);
+            setting.setAlert(false);
+            setting.setTheme("light");
+            this.settingDAO.create(setting);
+            return setting;
+        }
     }
 
     @Override
-    public void changeSetting(SettingDTO settingDTO) {
-//        settingDTO.setUser(this.getCurrentUser());
-        this.settingDAO.save(settingDTO);
+    @Transactional
+    public void changeSetting(SettingDTO setting) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<SettingDTO> existedSetting = this.settingDAO.getSetting(username);
+        setting.setUsername(username);
+        if (existedSetting.isPresent()) {
+            this.settingDAO.update(setting);
+        } else {
+            this.settingDAO.create(setting);
+        }
     }
 }

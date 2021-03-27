@@ -71,8 +71,10 @@ spring:
     encoding: UTF-8
   servlet:
     multipart:
-      file-size-threshold: 5MB
-      max-file-size: 10MB
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
   mvc:
     static-path-pattern: /
     log-resolved-exception: true
@@ -92,9 +94,16 @@ spring:
 #      static-locations: classpath:/static/**
 #      add-mappings: false
 storage:
-  temp: ./tmp
+  storage-type: local
+  temp: ${TEMP_DIR:}
   cloudinary:
     url: ${CLOUDINARY_URL:}
+  firebase:
+    database-url: ${FIREBASE_DATABASE_URL:}
+    storage-bucket: ${FIREBASE_STORAGE_BUCKET:}
+    credentials: ${FIREBASE_CREDENTIALS:}
+  local:
+    upload-dir: ${UPLOAD_DIR:}
 webservices:
   url:
     notification: http://192.168.0.100:8095/delta-notification/webservice/notification.wsdl

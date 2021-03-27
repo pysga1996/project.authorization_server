@@ -1,5 +1,6 @@
 package com.lambda.config.custom;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +10,10 @@ import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
 
+@Log4j2
 @Component
 @Profile("default")
 public class LocalHostResolver implements HostResolver {
-
-    private static final Logger logger = LogManager.getLogger(LocalHostResolver.class);
 
     private final Environment environment;
 
@@ -28,7 +28,7 @@ public class LocalHostResolver implements HostResolver {
         int port = this.environment.getProperty("server.port", Integer.class, 8081);
         String context = this.environment.getProperty("server.servlet.context-path", String.class, "/");
         String url = ip + ":" + port + context;
-        logger.info("Current url: {}", url);
+        log.info("Current url: {}", url);
         return url;
     }
 }

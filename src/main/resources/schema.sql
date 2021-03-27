@@ -191,13 +191,13 @@ proc: BEGIN
     IF (EXISTS(SELECT id FROM user_profile WHERE user_profile.user_id = @user_id)) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'USER_PROFILE_EXISTED';
     ELSE
-        INSERT INTO user_profile (user_id, first_name, last_name, date_of_birth, gender, phone_number, email)
+        INSERT INTO user_profile (username, first_name, last_name, date_of_birth, gender, phone_number, email)
         VALUES (@user_id, first_name, last_name, date_of_birth, gender, phone_number, email);
     END IF;
     IF (EXISTS(SELECT id FROM setting WHERE setting.user_id = @user_id)) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'SETTING_EXISTED';
     ELSE
-        INSERT INTO setting (dark_mode, user_id)
+        INSERT INTO setting (alert, user_id)
         VALUES (0, @user_id);
     END IF;
     SET @check_group = (SELECT id FROM `groups` WHERE `groups`.group_name = group_name);

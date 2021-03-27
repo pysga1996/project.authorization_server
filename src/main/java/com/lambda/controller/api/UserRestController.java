@@ -1,5 +1,6 @@
 package com.lambda.controller.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lambda.client.NotificationClient;
 import com.lambda.model.dto.*;
 import com.lambda.service.UserService;
@@ -109,10 +110,18 @@ public class UserRestController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping(path = "/status-map")
-    public ResponseEntity<Map<String, Boolean>> getUserStatusMap() {
-        Map<String, Boolean> userStatusMap = this.userService.getUserStatusMap();
+    @GetMapping(path = "/profile-map")
+    public ResponseEntity<Map<String, UserProfileDTO>> getUserStatusMap() {
+        Map<String, UserProfileDTO> userStatusMap = this.userService.getUserStatusMap();
         return new ResponseEntity<>(userStatusMap, HttpStatus.OK);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PatchMapping(path = "/update-other-info")
+    public ResponseEntity<Void> updateOtherInfo(@RequestBody Map<String, Object> otherInfo)
+            throws JsonProcessingException {
+        this.userService.updateOtherInfo(otherInfo);
+        return ResponseEntity.ok().build();
     }
 
 }

@@ -5,7 +5,7 @@ import lombok.Value;
 @Value
 public class SettingColumn {
 
-    public static final String SETTING_ID = "setting_id";
+    public static final String SETTING_ALERT = "setting_alert";
 
-    public static final String SETTING_DARK_MODE = "setting_dark_mode";
+    public static final String SETTING_THEME = "setting_theme";
 }

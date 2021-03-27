@@ -23,27 +23,29 @@ public class UserExtractor implements SqlResultExtractor<UserDTO> {
     public ResultSetExtractor<Optional<UserDTO>> singleExtractor() {
         return rs -> {
             UserDTO userDTO = null;
-            Long previousId = -1L;
+            String previousName = null;
             while (rs.next()) {
-                Long id = rs.getLong(UserColumn.ID);
-                if (previousId != -1 && !id.equals(previousId)) break;
-                if (!id.equals(previousId)) {
+                String username = rs.getString(UserColumn.USERNAME);
+                if (previousName != null && !previousName.equals(username)) break;
+                if (!username.equals(previousName)) {
                     userDTO = new UserDTO(
-                            id, null, null,
-                            rs.getString(UserColumn.USERNAME),
+                            null, null, username,
                             rs.getString(UserColumn.PASSWORD),
                             rs.getBoolean(UserColumn.ENABLED),
                             !rs.getBoolean(UserColumn.ACCOUNT_EXPIRED),
                             !rs.getBoolean(UserColumn.ACCOUNT_LOCKED),
                             !rs.getBoolean(UserColumn.CREDENTIALS_EXPIRED),
                             new HashSet<>());
-                    if (rs.getLong(SettingColumn.SETTING_ID) != 0) {
-                        userDTO.setSetting(new SettingDTO(rs.getLong(SettingColumn.SETTING_ID),
-                                id, rs.getBoolean(SettingColumn.SETTING_DARK_MODE)));
+                    if (rs.getString(UserColumn.USERNAME) != null) {
+                        userDTO.setSetting(new SettingDTO(
+                                rs.getString(UserColumn.USERNAME),
+                                rs.getBoolean(SettingColumn.SETTING_ALERT),
+                                rs.getString(SettingColumn.SETTING_THEME)));
                     }
-                    if (rs.getLong(UserProfileColumn.USER_PROFILE_ID) != 0) {
-                        userDTO.setUserProfile(new UserProfileDTO(rs.getLong(UserProfileColumn.USER_PROFILE_ID),
-                                id, rs.getString(UserProfileColumn.FIRST_NAME),
+                    if (rs.getString(UserColumn.USERNAME) != null) {
+                        userDTO.setUserProfile(new UserProfileDTO(
+                                rs.getString(UserColumn.USERNAME),
+                                rs.getString(UserProfileColumn.FIRST_NAME),
                                 rs.getString(UserProfileColumn.LAST_NAME),
                                 rs.getTimestamp(UserProfileColumn.DATE_OF_BIRTH),
                                 Gender.fromValue(rs.getInt(UserProfileColumn.GENDER)),
@@ -52,12 +54,10 @@ public class UserExtractor implements SqlResultExtractor<UserDTO> {
                                 rs.getString(UserProfileColumn.AVATAR_URL)));
                     }
 
-                    previousId = id;
+                    previousName = username;
                 }
-                if (userDTO != null) {
-                    GrantedAuthority role = new SimpleGrantedAuthority(rs.getString(UserColumn.AUTHORITY));
-                    userDTO.getAuthorities().add(role);
-                }
+                GrantedAuthority role = new SimpleGrantedAuthority(rs.getString(UserColumn.AUTHORITY));
+                userDTO.getAuthorities().add(role);
             }
             return Optional.ofNullable(userDTO);
         };
@@ -65,35 +65,36 @@ public class UserExtractor implements SqlResultExtractor<UserDTO> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public ResultSetExtractor<List<UserDTO>> listExtractor() {
+    public ResultSetExtractor<List<UserDTO>> customListExtractor() {
         return rs -> {
-            Map<Long, Map<String, Object>> customUserMap = new HashMap<>();
-            Long previousId = -1L;
+            Map<String, Map<String, Object>> customUserMap = new HashMap<>();
+            String previousName = null;
             while (rs.next()) {
-                Long id = rs.getLong(UserColumn.ID);
-                if (!id.equals(previousId)) {
+                String username = rs.getString(UserColumn.USERNAME);
+                if (!username.equals(previousName)) {
                     Map<String, Object> props = new HashMap<>();
-                    props.put(UserColumn.USERNAME, rs.getString(UserColumn.USERNAME));
+                    props.put(UserColumn.USERNAME, username);
                     props.put(UserColumn.PASSWORD, rs.getString(UserColumn.PASSWORD));
                     props.put(UserColumn.ENABLED, rs.getBoolean(UserColumn.ENABLED));
                     props.put(UserColumn.ACCOUNT_EXPIRED, rs.getBoolean(UserColumn.ACCOUNT_EXPIRED));
                     props.put(UserColumn.ACCOUNT_LOCKED, rs.getBoolean(UserColumn.ACCOUNT_LOCKED));
                     props.put(UserColumn.CREDENTIALS_EXPIRED, rs.getBoolean(UserColumn.CREDENTIALS_EXPIRED));
-                    props.put(UserColumn.SETTING, new SettingDTO(rs.getLong(SettingColumn.SETTING_ID),
-                            id, rs.getBoolean(SettingColumn.SETTING_DARK_MODE)));
+                    props.put(UserColumn.SETTING, new SettingDTO(
+                            rs.getString(UserColumn.USERNAME),
+                            rs.getBoolean(SettingColumn.SETTING_ALERT),
+                            rs.getString(SettingColumn.SETTING_THEME)));
                     props.put(UserColumn.AUTHORITY, new HashSet<>());
-                    customUserMap.put(id, props);
-                    previousId = id;
+                    customUserMap.put(username, props);
+                    previousName = username;
                 }
-                if (customUserMap.get(id) != null) {
+                if (customUserMap.get(username) != null) {
                     GrantedAuthority role = new SimpleGrantedAuthority(rs.getString(UserColumn.AUTHORITY));
-                    ((Set<GrantedAuthority>) customUserMap.get(id).get(UserColumn.AUTHORITY)).add(role);
+                    ((Set<GrantedAuthority>) customUserMap.get(username).get(UserColumn.AUTHORITY)).add(role);
                 }
             }
-            return customUserMap.entrySet()
+            return customUserMap.values()
                     .stream()
-                    .map(e -> {
-                        Map<String, Object> val = e.getValue();
+                    .map(val -> {
                         UserDTO userDTO = new UserDTO(
                                 (String) val.get(UserColumn.USERNAME),
                                 (String) val.get(UserColumn.PASSWORD),
@@ -102,12 +103,10 @@ public class UserExtractor implements SqlResultExtractor<UserDTO> {
                                 !(boolean) val.get(UserColumn.ACCOUNT_LOCKED),
                                 !(boolean) val.get(UserColumn.CREDENTIALS_EXPIRED),
                                 (Set<GrantedAuthority>) val.get(UserColumn.AUTHORITY));
-                        userDTO.setId(e.getKey());
                         userDTO.setSetting((SettingDTO) val.get(UserColumn.SETTING));
                         return userDTO;
                     })
                     .collect(Collectors.toList());
-
         };
     }
 

@@ -18,8 +18,6 @@ import java.util.Set;
 @NoArgsConstructor
 public class UserDTO implements UserDetails, Serializable {
 
-    private Long id;
-
     private UserProfileDTO userProfile;
 
     private SettingDTO setting;
@@ -56,11 +54,10 @@ public class UserDTO implements UserDetails, Serializable {
         this.authorities = authorities;
     }
 
-    public UserDTO(Long id, UserProfileDTO userProfile, SettingDTO setting,
+    public UserDTO(UserProfileDTO userProfile, SettingDTO setting,
                    String username, String password,
                    boolean enabled, boolean accountNonExpired, boolean accountNonLocked,
                    boolean credentialsNonExpired, Set<GrantedAuthority> authorities) {
-        this.id = id;
         this.userProfile = userProfile;
         this.setting = setting;
         this.username = username;

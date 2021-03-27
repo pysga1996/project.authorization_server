@@ -23,6 +23,14 @@ public class SettingRestController {
     }
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping
+    public ResponseEntity<SettingDTO> getSetting() {
+        SettingDTO setting = this.settingService.getSetting();
+        return new ResponseEntity<>(setting, HttpStatus.OK);
+    }
+
+
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<Void> changeSetting(@RequestBody SettingDTO settingDTO) {
         this.settingService.changeSetting(settingDTO);

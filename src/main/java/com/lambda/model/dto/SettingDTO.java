@@ -17,10 +17,10 @@ public class SettingDTO implements Serializable {
 
     private static final long serialVersionUID = 43L;
 
-    private Long id;
-
-    private Long userId;
+    private String username;
 
     @Builder.Default
-    private Boolean darkMode = true;
+    private Boolean alert = true;
+
+    private String theme;
 }

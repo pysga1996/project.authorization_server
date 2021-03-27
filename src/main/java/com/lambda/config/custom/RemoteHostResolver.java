@@ -1,7 +1,6 @@
 package com.lambda.config.custom;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -11,11 +10,10 @@ import org.springframework.stereotype.Component;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+@Log4j2
 @Component
 @Profile({"heroku", "poweredge"})
 public class RemoteHostResolver implements HostResolver {
-
-    private static final Logger logger = LogManager.getLogger(RemoteHostResolver.class);
 
     @Value("${spring.profiles.active:default}")
     private String activeProfile;
@@ -40,7 +38,7 @@ public class RemoteHostResolver implements HostResolver {
             int port = this.environment.getProperty("server.port", Integer.class, 8081);
             url = ip + ":" + port + context + path;
         }
-        logger.info("Current url: {}", url);
+        log.info("Current url: {}", url);
         return url;
     }
 }

@@ -1,6 +1,11 @@
 package com.lambda.config.custom;
 
 import com.cloudinary.Cloudinary;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.cloud.StorageClient;
+import com.lambda.error.FileStorageException;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http2.Http2Protocol;
@@ -9,6 +14,9 @@ import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -39,6 +47,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 import javax.sql.DataSource;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 
 @Configuration
 @DependsOn({"dataSource"})
@@ -51,6 +63,15 @@ public class CustomBeanConfig {
 
     @Value("${storage.cloudinary.url}")
     private String cloudinaryUrl;
+
+    @Value("${storage.firebase.database-url}")
+    private String firebaseDatabaseUrl;
+
+    @Value("${storage.firebase.storage-bucket}")
+    private String firebaseStorageBucket;
+
+    @Value("${storage.firebase.credentials}")
+    private String firebaseCredentials;
 
     @Value("${spring.profiles.active:Default}")
     private String activeProfile;
@@ -153,8 +174,35 @@ public class CustomBeanConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "storage", name = "storage-type", havingValue = "cloudinary")
     public Cloudinary cloudinary() {
         return new Cloudinary(cloudinaryUrl);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "storage", name = "storage-type", havingValue = "firebase")
+    public StorageClient firebaseStorage() {
+        try {
+            GoogleCredentials credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(this.firebaseCredentials.getBytes()));
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(credentials)
+                    .setDatabaseUrl(this.firebaseDatabaseUrl)
+                    .setStorageBucket(this.firebaseStorageBucket)
+                    .build();
+
+            FirebaseApp fireApp = null;
+            List<FirebaseApp> firebaseApps = FirebaseApp.getApps();
+            if (firebaseApps != null && !firebaseApps.isEmpty()) {
+                for (FirebaseApp app : firebaseApps) {
+                    if (app.getName().equals(FirebaseApp.DEFAULT_APP_NAME))
+                        fireApp = app;
+                }
+            } else
+                fireApp = FirebaseApp.initializeApp(options);
+            return StorageClient.getInstance(Objects.requireNonNull(fireApp));
+        } catch (IOException ex) {
+            throw new FileStorageException("Could not get admin-sdk json file. Please try again!", ex);
+        }
     }
 
     @Bean
@@ -197,7 +245,8 @@ public class CustomBeanConfig {
     }
 
     @Bean
-    @Profile({"default","poweredge"})
+    @ConditionalOnCloudPlatform(CloudPlatform.NONE)
+//    @Profile({"default","poweredge"})
     public ServletWebServerFactory servletContainer() {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
             @Override

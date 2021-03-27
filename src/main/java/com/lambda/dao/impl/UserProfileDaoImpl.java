@@ -2,62 +2,68 @@ package com.lambda.dao.impl;
 
 import com.lambda.constant.Gender;
 import com.lambda.dao.UserProfileDao;
+import com.lambda.dao.extractor.SqlResultExtractor;
 import com.lambda.model.dto.UserProfileDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.Optional;
 
 @Repository
 public class UserProfileDaoImpl implements UserProfileDao {
 
     private final JdbcOperations jdbcOperations;
 
-    private final RowMapper<UserProfileDTO> mapper;
+    private final SqlResultExtractor<UserProfileDTO> userProfileExtractor;
 
     @Autowired
-    public UserProfileDaoImpl(JdbcOperations jdbcOperations) {
+    public UserProfileDaoImpl(JdbcOperations jdbcOperations,
+                              SqlResultExtractor<UserProfileDTO> mapper) {
         this.jdbcOperations = jdbcOperations;
-        this.mapper = new BeanPropertyRowMapper<>();
+        this.userProfileExtractor = mapper;
     }
 
     @Override
-    public UserProfileDTO findProfileById(Long id) {
-        String sql = "SELECT * FROM user_profile WHERE id=:id";
-        return this.jdbcOperations.queryForObject(sql, this.mapper, id);
+    public Optional<UserProfileDTO> findProfileByUsername(String username) {
+        String sql = "SELECT * FROM user_profile WHERE username = ?";
+        return this.jdbcOperations.query(sql, this.userProfileExtractor.singleExtractor(), username);
     }
 
     @Override
+    @Transactional
     public void createProfile(UserProfileDTO userProfileDTO) {
-        Long userId = userProfileDTO.getUserId();
+        String username = userProfileDTO.getUsername();
         String firstName = userProfileDTO.getFirstName();
         String lastName = userProfileDTO.getLastName();
         Timestamp dateOfBirth = userProfileDTO.getDateOfBirth();
         Gender gender = userProfileDTO.getGender();
         String phoneNumber = userProfileDTO.getPhoneNumber();
         String email = userProfileDTO.getEmail();
-        String sql = "INSERT INTO user_profile(user_id, first_name, last_name, date_of_birth, " +
-                "gender, phone_number, email) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        this.jdbcOperations.update(sql, userId, firstName, lastName, dateOfBirth,
-                gender.getValue(), phoneNumber, email);
+        String otherInfo = userProfileDTO.getOtherInfo();
+        String sql = "INSERT INTO user_profile(username, first_name, last_name, date_of_birth, " +
+                "gender, phone_number, email, other_info) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        this.jdbcOperations.update(sql, username, firstName, lastName, dateOfBirth,
+                gender.getValue(), phoneNumber, email, otherInfo);
     }
 
     @Override
+    @Transactional
     public void updateProfile(UserProfileDTO userProfileDTO) {
         String firstName = userProfileDTO.getFirstName();
         String lastName = userProfileDTO.getLastName();
         Timestamp dateOfBirth = userProfileDTO.getDateOfBirth();
-        Gender gender = userProfileDTO.getGender();
+        Gender gender = (userProfileDTO.getGender() == null) ? Gender.UNKNOWN : userProfileDTO.getGender();
         String phoneNumber = userProfileDTO.getPhoneNumber();
         String email = userProfileDTO.getEmail();
         String avatarUrl = userProfileDTO.getAvatarUrl();
+        String otherInfo = userProfileDTO.getOtherInfo();
         String sql = "UPDATE user_profile SET first_name=?, " +
                 "last_name=?, date_of_birth=?, gender=?, phone_number=?," +
-                " email=?, avatar_url=? WHERE id=?";
+                " email=?, avatar_url=?, other_info=? WHERE username=?";
         this.jdbcOperations.update(sql, firstName, lastName, dateOfBirth, gender.getValue(),
-                phoneNumber, email, avatarUrl, userProfileDTO.getId());
+                phoneNumber, email, avatarUrl, otherInfo, userProfileDTO.getUsername());
     }
 }

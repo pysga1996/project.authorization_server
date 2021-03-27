@@ -8,8 +8,11 @@ import com.lambda.model.dto.UserProfileDTO;
 import com.lambda.service.UserProfileService;
 import com.lambda.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class UserProfileServiceImpl implements UserProfileService {
@@ -25,16 +28,19 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Override
-    public UserProfileDTO getProfileById(Long id) {
-        return this.userProfileDao.findProfileById(id);
-    }
-
-    @Override
-    public UserProfileDTO getCurrentProfile() {
-        UserDTO userDTO = this.userService.getCurrentUser();
-        if (userDTO != null) {
-            return userDTO.getUserProfile();
-        } throw new UserNotFoundException();
+    @Transactional
+    public UserProfileDTO getProfileByUsername(String username) {
+        if (username == null) {
+            username = SecurityContextHolder.getContext().getAuthentication().getName();
+        }
+        Optional<UserProfileDTO> optionalUserProfile = this.userProfileDao.findProfileByUsername(username);;
+        if (!optionalUserProfile.isPresent()) {
+            UserProfileDTO userProfile = new UserProfileDTO();
+            userProfile.setUsername(username);
+            this.userProfileDao.createProfile(userProfile);
+            return userProfile;
+        }
+        return optionalUserProfile.get();
     }
 
     @Override
@@ -45,7 +51,7 @@ public class UserProfileServiceImpl implements UserProfileService {
             if (userDTO.getUserProfile() != null) {
                 throw new BusinessException(1250, "User profile existed!");
             }
-            userProfileDTO.setUserId(userDTO.getId());
+            userProfileDTO.setUsername(userDTO.getUsername());
             this.userProfileDao.createProfile(userProfileDTO);
         } else throw new UserNotFoundException();
     }
@@ -58,7 +64,7 @@ public class UserProfileServiceImpl implements UserProfileService {
             if (userDTO.getUserProfile() == null) {
                 throw new BusinessException(1250, "User profile not found!");
             }
-            userProfileDTO.setId(userDTO.getUserProfile().getId());
+            userProfileDTO.setUsername(userDTO.getUserProfile().getUsername());
             this.userProfileDao.updateProfile(userProfileDTO);
         } else throw new UserNotFoundException();
     }

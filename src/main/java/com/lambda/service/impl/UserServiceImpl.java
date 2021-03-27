@@ -1,5 +1,6 @@
 package com.lambda.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lambda.constant.TokenStatus;
 import com.lambda.constant.TokenType;
 import com.lambda.dao.TokenDao;
@@ -8,13 +9,17 @@ import com.lambda.error.BusinessException;
 import com.lambda.model.dto.AuthenticationTokenDTO;
 import com.lambda.model.dto.SearchResponseDTO;
 import com.lambda.model.dto.UserDTO;
+import com.lambda.model.dto.UserProfileDTO;
 import com.lambda.service.UserService;
+import lombok.extern.log4j.Log4j2;
 import org.bouncycastle.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +27,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Log4j2
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -40,11 +46,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Boolean> getUserStatusMap() {
-        List<String> users = this.userDao.userList();
-        return users
-                .stream()
-                .collect(Collectors.toMap(e -> e,  e -> false));
+    public Map<String, UserProfileDTO> getUserStatusMap() {
+        return this.userDao.userList();
     }
 
     @Override
@@ -57,8 +60,13 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserDTO getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<UserDTO> optionalUserDTO = userDao.findByUsername(username);
+        Optional<UserDTO> optionalUserDTO = this.userDao.findByUsername(username);
         return optionalUserDTO.orElse(null);
+    }
+
+    @Override
+    public Map<String, Object> getUserShortInfo(String username) {
+        return this.userDao.getCurrentUserShortInfo(username);
     }
 
     @Override
@@ -135,6 +143,26 @@ public class UserServiceImpl implements UserService {
         Optional<UserDTO> optionalUserDTO =
                 this.userDao.findByUsername(authenticationTokenDTO.getUsername());
         return optionalUserDTO.orElseThrow(() -> new BusinessException(1001, "User was not found or might be removed from our system"));
+    }
+
+    @Override
+    @Transactional
+    public void updateOtherInfo(Map<String, Object> otherInfo) throws JsonProcessingException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getPrincipal() instanceof OAuth2AuthenticatedPrincipal) {
+//            String infoJson = this.objectMapper.writeValueAsString(otherInfo);
+            OAuth2AuthenticatedPrincipal principal = (OAuth2AuthenticatedPrincipal) authentication.getPrincipal();
+            String username = principal.getAttribute("username");
+            if (username != null) {
+                this.userDao.updateOtherInfo(username, otherInfo);
+            } else {
+                log.error("User id not found in oauth2 principal");
+                throw new BusinessException(500, "User id not found in oauth2 principal");
+            }
+        } else {
+            log.error("Principal is not of type oauth2");
+            throw new BusinessException(500, "Principal is not of type oauth2");
+        }
     }
 
     @Override

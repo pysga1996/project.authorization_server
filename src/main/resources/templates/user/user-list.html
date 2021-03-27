@@ -15,60 +15,60 @@
                 document.getElementById("password_" + id).type = "password";
             }
         }
-        function enableEdit(id) {
-            if (document.getElementById('user_' + id).hasAttribute("enabled")) {
-                document.getElementById("encoded_password_" + id).style.display = "block";
-                document.getElementById("raw_password_" + id).style.display = "none";
-                document.getElementById('enabled_' + id).disabled = true;
-                document.getElementById('account_locked_' + id).disabled = true;
-                document.getElementById('account_expired_' + id).disabled = true;
-                document.getElementById('credentials_expired_' + id).disabled = true;
-                document.getElementById('groups_' + id).disabled = true;
-                document.getElementById('save_btn_' + id).disabled = true;
-                document.getElementById('user_' + id).removeAttribute("enabled");
+        function enableEdit(username) {
+            if (document.getElementById('user_' + username).hasAttribute("enabled")) {
+                document.getElementById("encoded_password_" + username).style.display = "block";
+                document.getElementById("raw_password_" + username).style.display = "none";
+                document.getElementById('enabled_' + username).disabled = true;
+                document.getElementById('account_locked_' + username).disabled = true;
+                document.getElementById('account_expired_' + username).disabled = true;
+                document.getElementById('credentials_expired_' + username).disabled = true;
+                document.getElementById('groups_' + username).disabled = true;
+                document.getElementById('save_btn_' + username).disabled = true;
+                document.getElementById('user_' + username).removeAttribute("enabled");
             } else {
-                document.getElementById("encoded_password_" + id).style.display = "none";
-                document.getElementById("raw_password_" + id).style.display = "block";
-                document.getElementById('enabled_' + id).disabled = false;
-                document.getElementById('account_locked_' + id).disabled = false;
-                document.getElementById('account_expired_' + id).disabled = false;
-                document.getElementById('credentials_expired_' + id).disabled = false;
-                document.getElementById('groups_' + id).disabled = false;
-                document.getElementById('save_btn_' + id).disabled = false;
-                document.getElementById('user_' + id).setAttribute("enabled", null);
+                document.getElementById("encoded_password_" + username).style.display = "none";
+                document.getElementById("raw_password_" + username).style.display = "block";
+                document.getElementById('enabled_' + username).disabled = false;
+                document.getElementById('account_locked_' + username).disabled = false;
+                document.getElementById('account_expired_' + username).disabled = false;
+                document.getElementById('credentials_expired_' + username).disabled = false;
+                document.getElementById('groups_' + username).disabled = false;
+                document.getElementById('save_btn_' + username).disabled = false;
+                document.getElementById('user_' + username).setAttribute("enabled", null);
             }
         }
-        function disableEdit(id) {
-            document.getElementById("encoded_password_" + id).style.display = "block";
-            document.getElementById("raw_password_" + id).style.display = "none";
-            document.getElementById('enabled_' + id).disabled = true;
-            document.getElementById('account_locked_' + id).disabled = true;
-            document.getElementById('account_expired_' + id).disabled = true;
-            document.getElementById('credentials_expired_' + id).disabled = true;
-            document.getElementById('groups_' + id).disabled = false;
-            document.getElementById('save_btn_' + id).disabled = true;
-            document.getElementById('user_' + id).removeAttribute("enabled");
+        function disableEdit(username) {
+            document.getElementById("encoded_password_" + username).style.display = "block";
+            document.getElementById("raw_password_" + username).style.display = "none";
+            document.getElementById('enabled_' + username).disabled = true;
+            document.getElementById('account_locked_' + username).disabled = true;
+            document.getElementById('account_expired_' + username).disabled = true;
+            document.getElementById('credentials_expired_' + username).disabled = true;
+            document.getElementById('groups_' + username).disabled = false;
+            document.getElementById('save_btn_' + username).disabled = true;
+            document.getElementById('user_' + username).removeAttribute("enabled");
         }
-        function updateUser(id) {
+        function updateUser(username) {
             const agree = confirm('Do you want to save?');
             if (agree) {
-                document.forms['updateForm_' + id]['password'].value
-                    = document.getElementById('password_' + id).value;
-                document.forms['updateForm_' + id]['enabled'].value
-                    = document.getElementById('enabled_' + id).checked;
-                document.forms['updateForm_' + id]['account_locked'].value
-                    = document.getElementById('account_locked_' + id).checked;
-                document.forms['updateForm_' + id]['account_expired'].value
-                    = document.getElementById('account_expired_' + id).checked;
-                document.forms['updateForm_' + id]['credentials_expired'].value
-                    = document.getElementById('credentials_expired_' + id).checked;
+                document.forms['updateForm_' + username]['password'].value
+                    = document.getElementById('password_' + username).value;
+                document.forms['updateForm_' + username]['enabled'].value
+                    = document.getElementById('enabled_' + username).checked;
+                document.forms['updateForm_' + username]['account_locked'].value
+                    = document.getElementById('account_locked_' + username).checked;
+                document.forms['updateForm_' + username]['account_expired'].value
+                    = document.getElementById('account_expired_' + username).checked;
+                document.forms['updateForm_' + username]['credentials_expired'].value
+                    = document.getElementById('credentials_expired_' + username).checked;
                 const selectedValues = Array
-                    .from(document.getElementById('groups_' + id).selectedOptions)
+                    .from(document.getElementById('groups_' + username).selectedOptions)
                     .map(el=>el.value);
-                document.forms['updateForm_' + id]['groups'].value
+                document.forms['updateForm_' + username]['groups'].value
                     = selectedValues.join(",");
-                document.forms['updateForm_' + id].submit();
-                disableEdit(id);
+                document.forms['updateForm_' + username].submit();
+                disableEdit(username);
             }
         }
     </script>
@@ -97,14 +97,14 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="user, iter: ${userPage}" th:id="user_ + ${user.id}">
+        <tr th:each="user, iter: ${userPage}" th:id="user_ + ${user.username}">
             <td><span th:text="${iter.index + 1}"></span></td>
             <td><span th:text="${user.username}"></span></td>
             <td style="max-width: 20rem; word-wrap: break-word;" class="form-group">
-                <p th:id="encoded_password_ + ${user.id}" th:text="${user.password}"></p>
-                <div th:id="raw_password_ + ${user.id}" style="display: none;">
-                    <input th:id="password_ + ${user.id}" type="password">
-                    <button th:data-thing="${user.id}" class="btn btn-sm btn-link"
+                <p th:id="encoded_password_ + ${user.username}" th:text="${user.password}"></p>
+                <div th:id="raw_password_ + ${user.username}" style="display: none;">
+                    <input th:id="password_ + ${user.username}" type="password">
+                    <button th:data-thing="${user.username}" class="btn btn-sm btn-link"
                             onclick="togglePasswordVisibility(this.getAttribute('data-thing'))">
                         <i class="bi bi-eye-slash"></i>
                     </button>
@@ -112,53 +112,53 @@
             </td>
             <td>
                 <div class="form-check d-flex justify-content-center">
-                    <label class="form-check-label" th:for="enabled_ + ${user.id}">
+                    <label class="form-check-label" th:for="enabled_ + ${user.username}">
                         <input class="form-check-input" type="checkbox" th:checked="${user.enabled}"
-                               th:id="enabled_ + ${user.id}" disabled>
+                               th:id="enabled_ + ${user.username}" disabled>
                     </label>
                 </div>
             </td>
             <td>
                 <div class="form-check d-flex justify-content-center">
-                    <label class="form-check-label" th:for="account_locked_ + ${user.id}">
+                    <label class="form-check-label" th:for="account_locked_ + ${user.username}">
                         <input class="form-check-input" type="checkbox" th:checked="${!user.accountNonLocked}"
-                               th:id="account_locked_ + ${user.id}" disabled>
+                               th:id="account_locked_ + ${user.username}" disabled>
                     </label>
                 </div>
             </td>
             <td>
                 <div class="form-check d-flex justify-content-center">
-                    <label class="form-check-label" th:for="account_expired_ + ${user.id}">
+                    <label class="form-check-label" th:for="account_expired_ + ${user.username}">
                         <input class="form-check-input" type="checkbox" th:checked="${!user.accountNonLocked}"
-                               th:id="account_expired_ + ${user.id}" disabled>
+                               th:id="account_expired_ + ${user.username}" disabled>
                     </label>
                 </div>
             </td>
             <td>
                 <div class="form-check d-flex justify-content-center">
-                    <label class="form-check-label" th:for="credentials_expired_ + ${user.id}">
+                    <label class="form-check-label" th:for="credentials_expired_ + ${user.username}">
                         <input class="form-check-input" type="checkbox" th:checked="${!user.credentialsNonExpired}"
-                               th:id="credentials_expired_ + ${user.id}" disabled>
+                               th:id="credentials_expired_ + ${user.username}" disabled>
                     </label>
                 </div>
             </td>
             <td style="min-width: 8rem">
                 <div>
                     <select class="form-select" size="2" multiple aria-label="multiple select"
-                            th:id="groups_ + ${user.id}" disabled>
+                            th:id="groups_ + ${user.username}" disabled>
                         <option th:each="group: ${groupList}" th:selected="${user.groupList.contains(group)}"
                                 th:value="${group.id}" th:text="${group.name}"></option>
                     </select>
                 </div>
             </td>
             <td style="min-width: 7rem">
-                <form th:id="updateForm_ + ${user.id}" class="d-inline-block"
+                <form th:id="updateForm_ + ${user.username}" class="d-inline-block"
                       th:action="@{/user/update}" th:method="POST">
                     <button type="button" class="btn btn-sm btn-warning d-inline-block mx-1"
-                            th:data-thing="${user.id}" onclick="enableEdit(this.getAttribute('data-thing'))">
+                            th:data-thing="${user.username}" onclick="enableEdit(this.getAttribute('data-thing'))">
                         <i class="bi bi-pencil-fill"></i>
                     </button>
-                    <button type="button" th:data-thing="${user.id}" disabled th:id="save_btn_ + ${user.id}"
+                    <button type="button" th:data-thing="${user.username}" disabled th:id="save_btn_ + ${user.username}"
                             onclick="updateUser(this.getAttribute('data-thing'));"
                             class="btn btn-sm btn-primary d-inline-block mx-1">
                         <i class="bi bi-save"></i>

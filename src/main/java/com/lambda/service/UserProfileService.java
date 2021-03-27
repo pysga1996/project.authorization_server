@@ -4,9 +4,7 @@ import com.lambda.model.dto.UserProfileDTO;
 
 public interface UserProfileService {
 
-    UserProfileDTO getProfileById(Long id);
-
-    UserProfileDTO getCurrentProfile();
+    UserProfileDTO getProfileByUsername(String username);
 
     void createProfile(UserProfileDTO userProfileDTO);
 

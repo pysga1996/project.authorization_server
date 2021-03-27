@@ -3,9 +3,9 @@ package com.lambda.dao.extractor.impl;
 import com.lambda.dao.extractor.SqlResultExtractor;
 import com.lambda.model.dto.AuthenticationTokenDTO;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -17,7 +17,7 @@ public class AuthenticationTokenExtractor implements SqlResultExtractor<Authenti
     }
 
     @Override
-    public ResultSetExtractor<List<AuthenticationTokenDTO>> listExtractor() {
+    public RowMapper<AuthenticationTokenDTO> listExtractor() {
         return null;
     }
 }

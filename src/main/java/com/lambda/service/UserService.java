@@ -1,26 +1,29 @@
 package com.lambda.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lambda.model.dto.AuthenticationTokenDTO;
 import com.lambda.model.dto.SearchResponseDTO;
 import com.lambda.model.dto.UserDTO;
+import com.lambda.model.dto.UserProfileDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 
 import java.net.UnknownHostException;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @SuppressWarnings("deprecation")
 public interface UserService {
 
-    Map<String, Boolean> getUserStatusMap();
+    Map<String, UserProfileDTO> getUserStatusMap();
 
     Page<UserDTO> getUserList(Pageable pageable);
 
     UserDTO getCurrentUser();
+
+    Map<String, Object> getUserShortInfo(String username);
 
     Optional<UserDTO> findByUsername(String username);
 
@@ -39,6 +42,8 @@ public interface UserService {
     String showChangePasswordPage(String token) throws UnknownHostException;
 
     UserDTO checkResetPassToken(String token);
+
+    void updateOtherInfo(Map<String, Object> otherInfo) throws JsonProcessingException;
 
     default void validateToken(AuthenticationTokenDTO authenticationTokenDTO) {
         if (authenticationTokenDTO == null) {

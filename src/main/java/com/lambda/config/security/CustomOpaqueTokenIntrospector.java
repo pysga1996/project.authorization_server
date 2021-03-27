@@ -36,7 +36,7 @@ public class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
         OAuth2Authentication oAuth2Authentication = this.tokenStore.readAuthentication(token);
         String username = oAuth2Authentication.getName();
         Collection<GrantedAuthority> authorities = oAuth2Authentication.getAuthorities();
-        Map<String, Object> map = this.objectMapper.convertValue(oAuth2Authentication.getPrincipal(), Map.class);
+        Map<String, Object> map = this.objectMapper.convertValue(oAuth2Authentication.getUserAuthentication().getPrincipal(), Map.class);
         return new DefaultOAuth2AuthenticatedPrincipal(username, map, authorities);
     }
 

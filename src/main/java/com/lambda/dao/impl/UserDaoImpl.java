@@ -1,5 +1,7 @@
 package com.lambda.dao.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lambda.constant.CommonConstant;
 import com.lambda.constant.ErrorCode;
 import com.lambda.constant.JdbcConstant;
@@ -39,13 +41,21 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
 
     private final JdbcOperations jdbcOperations;
 
-    private final SqlResultExtractor<UserDTO> extractor;
+    private final SqlResultExtractor<UserDTO> userExtractor;
+
+    private final SqlResultExtractor<UserProfileDTO> userProfileExtractor;
+
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public UserDaoImpl(JdbcOperations jdbcOperations, DataSource dataSource,
-                       SqlResultExtractor<UserDTO> extractor) {
-        this.extractor = extractor;
+                       SqlResultExtractor<UserDTO> userExtractor,
+                       SqlResultExtractor<UserProfileDTO> userProfileExtractor,
+                       ObjectMapper objectMapper) {
+        this.userExtractor = userExtractor;
         this.jdbcOperations = jdbcOperations;
+        this.userProfileExtractor = userProfileExtractor;
+        this.objectMapper = objectMapper;
         this.setDataSource(dataSource);
         this.setFindAllGroupsSql(DEF_CUSTOM_FIND_GROUPS_SQL);
         this.setFindGroupIdSql(DEF_CUSTOM_FIND_GROUP_ID_SQL);
@@ -78,7 +88,23 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     public Optional<UserDTO> findByUsername(String username) {
         return this.jdbcOperations.query(
                 JdbcConstant.DEF_USERS_BY_USERNAME_FULL_WITH_SETTING_QUERY,
-                extractor.singleExtractor(), username);
+                userExtractor.singleExtractor(), username);
+    }
+
+    @Override
+    public Map<String, Object> getCurrentUserShortInfo(String username) {
+        String sql = "SELECT first_name, last_name, gender, date_of_birth, avatar_url FROM user_profile WHERE username = ?";
+        return this.jdbcOperations.query(sql, rs -> {
+            Map<String, Object> map = new HashMap<>();
+            while (rs.next()) {
+                map.put("first_name", rs.getString("first_name"));
+                map.put("last_name", rs.getString("last_name"));
+                map.put("gender", rs.getInt("gender"));
+                map.put("date_of_birth", rs.getDate("date_of_birth"));
+                map.put("avatar_url", rs.getString("avatar_url"));
+            }
+            return map;
+        }, username);
     }
 
     @Override
@@ -89,13 +115,6 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     @Override
     public Page<UserDTO> findByAuthorities_Authority(String authority, Pageable pageable) {
         return null;
-    }
-
-    @Override
-    public Optional<UserDTO> findById(Long id) {
-        return this.jdbcOperations.query(
-                JdbcConstant.DEF_USERS_BY_ID_FULL_WITH_SETTING_QUERY,
-                extractor.singleExtractor(), id);
     }
 
     @Override
@@ -271,14 +290,18 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     }
 
     @Override
-    public List<String> userList() {
-        String sql = "SELECT user.username FROM user";
-        return this.jdbcOperations.query(sql, (rs, rowNum) -> rs.getString("username"));
+    public Map<String, UserProfileDTO> userList() {
+        String sql = "SELECT user.username, up.first_name, up.last_name, up.date_of_birth, " +
+                "up.gender, up.phone_number, up.email, up.avatar_url, up.other_info " +
+                "FROM user LEFT JOIN user_profile up " +
+                "ON user.username = up.username";
+        return Objects.requireNonNull(this.jdbcOperations.query(sql, this.userProfileExtractor.customListExtractor()))
+                .stream().collect(Collectors.toMap(UserProfileDTO::getUsername, e -> e));
     }
 
     @Override
     public Page<UserDTO> userList(Pageable pageable) {
-        String sql = "SELECT user.id, user.username, password, enabled, account_locked,\n" +
+        String sql = "SELECT user.username, password, enabled, account_locked,\n" +
                 "       account_expired, credentials_expired, `groups`.id AS group_id, `groups`.group_name\n" +
                 "FROM user\n" +
                 "LEFT JOIN group_members ON group_members.username = user.username\n" +
@@ -286,15 +309,14 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
                 "LIMIT ?, ?";
         List<UserDTO> userList = this.jdbcOperations.query(sql, rs -> {
             UserDTO user;
-            long id;
-            Map<Long, UserDTO> userMap = new HashMap<>();
+            String username;
+            Map<String, UserDTO> userMap = new HashMap<>();
             while (rs.next()) {
-                id = rs.getLong("id");
-                if (userMap.containsKey(id)) {
-                    user = userMap.get(id);
+                username = rs.getString("username");
+                if (userMap.containsKey(username)) {
+                    user = userMap.get(username);
                 } else {
                     user = new UserDTO();
-                    user.setId(id);
                     user.setUsername(rs.getString("username"));
                     user.setPassword(rs.getString("password"));
                     user.setEnabled(rs.getBoolean("enabled"));
@@ -302,7 +324,7 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
                     user.setAccountNonExpired(!rs.getBoolean("account_expired"));
                     user.setCredentialsNonExpired(!rs.getBoolean("credentials_expired"));
                     user.setGroupList(new HashSet<>());
-                    userMap.put(id, user);
+                    userMap.put(username, user);
                 }
                 if (rs.getString("group_name") != null) {
                     Group group = new Group();
@@ -373,5 +395,17 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
                 ps.setLong(2, argument);
             });
         }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void updateOtherInfo(String username, Map<String, Object> infoJson) throws JsonProcessingException {
+        String sql1 = "SELECT other_info FROM user_profile WHERE username = ?";
+        String otherInfo = this.jdbcOperations.queryForObject(sql1, String.class, username);
+        Map<String, Object> otherInfoMap = this.objectMapper.readValue(otherInfo, Map.class);
+        otherInfoMap.putAll(infoJson);
+        String newInfoJson = this.objectMapper.writeValueAsString(otherInfoMap);
+        String sql2 = "UPDATE user_profile SET other_info = ? WHERE username = ?";
+        this.jdbcOperations.update(sql2, newInfoJson, username);
     }
 }
