@@ -74,7 +74,7 @@ spring:
 #    resources:
 #      static-locations: classpath:/static/
 storage:
-  storage-type: firebase
+  storage-type: cloudinary
   temp: ${TEMP_DIR:}
   cloudinary:
     url: ${CLOUDINARY_URL:}

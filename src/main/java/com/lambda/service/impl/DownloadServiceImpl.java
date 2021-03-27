@@ -1,5 +1,6 @@
 package com.lambda.service.impl;
 
+import com.lambda.service.DownloadService;
 import com.lambda.service.StorageService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,17 +12,15 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Log4j2
 @Service
-public class DownloadService {
+public class DownloadServiceImpl implements DownloadService {
 
     private final StorageService storageService;
 
     @Autowired
-    public DownloadService(StorageService storageService) {
+    public DownloadServiceImpl(StorageService storageService) {
         this.storageService = storageService;
     }
 

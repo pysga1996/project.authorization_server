@@ -1,6 +1,6 @@
 package com.lambda.controller.api;
 
-import com.lambda.service.impl.DownloadService;
+import com.lambda.service.DownloadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;

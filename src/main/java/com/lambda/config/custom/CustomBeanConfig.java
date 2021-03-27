@@ -223,7 +223,7 @@ public class CustomBeanConfig {
 
     @Bean
     @Primary
-    @Profile({"heroku"})
+    @ConditionalOnCloudPlatform(CloudPlatform.HEROKU)
     public ConfigureRedisAction configureRedisAction() {
         return ConfigureRedisAction.NO_OP;
     }
@@ -246,7 +246,6 @@ public class CustomBeanConfig {
 
     @Bean
     @ConditionalOnCloudPlatform(CloudPlatform.NONE)
-//    @Profile({"default","poweredge"})
     public ServletWebServerFactory servletContainer() {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
             @Override
