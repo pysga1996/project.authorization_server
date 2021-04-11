@@ -1,6 +1,7 @@
 package com.lambda.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -26,6 +27,7 @@ import javax.sql.DataSource;
 import static com.lambda.constant.JdbcConstant.DEF_CUSTOM_GROUP_AUTHORITIES_BY_USERNAME_QUERY;
 import static com.lambda.constant.JdbcConstant.DEF_USERS_BY_USERNAME_FULL_QUERY;
 
+@RefreshScope
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, order = Ordered.HIGHEST_PRECEDENCE)

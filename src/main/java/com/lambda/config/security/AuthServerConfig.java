@@ -2,6 +2,7 @@ package com.lambda.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +19,7 @@ import org.springframework.web.filter.CorsFilter;
 
 import javax.sql.DataSource;
 
+@RefreshScope
 @Configuration
 @EnableAuthorizationServer
 @SuppressWarnings("deprecation")

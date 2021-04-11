@@ -3,6 +3,7 @@ package com.lambda.config.custom;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 @Log4j2
+@RefreshScope
 @Component
 @Profile({"heroku", "poweredge"})
 public class RemoteHostResolver implements HostResolver {

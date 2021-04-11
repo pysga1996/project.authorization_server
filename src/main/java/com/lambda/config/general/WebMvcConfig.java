@@ -1,6 +1,7 @@
 package com.lambda.config.general;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 
+@RefreshScope
 @Configuration
 @EnableWebMvc
 public class WebMvcConfig implements WebMvcConfigurer {

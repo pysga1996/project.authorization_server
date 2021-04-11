@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: lambda-auth-service
+  profiles:
+    active: default
+  cloud:
+    config:
+      uri: ${CONFIG_URI:}
+      username: ${CONFIG_USERNAME:}
+      password: ${CONFIG_PASSWORD:}
+      label: ${CONFIG_GIT_BRANCH:}

@@ -41,6 +41,8 @@ server:
     key-store-type: JKS
     protocol: TLS
 spring:
+  application:
+    name: lambda-auth-service
   session:
     store-type: redis
     redis:
@@ -94,7 +96,7 @@ spring:
 #      static-locations: classpath:/static/
 #      add-mappings: false
 storage:
-  storage-type: firebase
+  storage-type: local
   temp: ${TEMP_DIR:}
   cloudinary:
     url: ${CLOUDINARY_URL:}
@@ -106,7 +108,7 @@ storage:
     upload-dir: ${UPLOAD_DIR:}
 webservices:
   url:
-    notification: http://localhost:8095/delta-notification/webservice/notification.wsdl
+    notification: ${NOTIFICATION_WEBSERVICE_ENDPOINT:}
 security:
   oath2:
     resource-id: user
@@ -117,5 +119,14 @@ custom:
   connector-scheme: http
   trust-store-password: ${SSL_TRUSTSTORE_PASSWORD:}
   trust-store-type: JKS
+eureka:
+  instance:
+    hostname: localhost
+    secure-port-enabled: true
+    non-secure-port-enabled: false
+  #    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8010/eureka
 
 

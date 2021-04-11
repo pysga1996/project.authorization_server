@@ -21,6 +21,7 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -52,6 +53,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+@RefreshScope
 @Configuration
 @DependsOn({"dataSource"})
 @SuppressWarnings("deprecation")
@@ -104,6 +106,7 @@ public class CustomBeanConfig {
 //        return jdbcUserDetailsManager;
 //    }
 
+    @RefreshScope
     @Bean
     @Primary
     public PasswordEncoder passwordEncoder() {
@@ -125,11 +128,13 @@ public class CustomBeanConfig {
         return lci;
     }
 
+    @RefreshScope
     @Bean
     public TokenStore tokenStore() {
         return new JdbcTokenStore(dataSource);
     }
 
+    @RefreshScope
     @Bean
     @Primary
     public ConsumerTokenServices tokenServices() {
@@ -140,6 +145,7 @@ public class CustomBeanConfig {
         return defaultTokenServices;
     }
 
+    @RefreshScope
     @Bean
     public PersistentTokenRepository persistentTokenRepository() {
         JdbcTokenRepositoryImpl persistentTokenRepository = new JdbcTokenRepositoryImpl();
@@ -147,6 +153,7 @@ public class CustomBeanConfig {
         return persistentTokenRepository;
     }
 
+    @RefreshScope
     @Bean
     public PersistentTokenBasedRememberMeServices tokenBasedRememberMeServices() {
         return new PersistentTokenBasedRememberMeServices("lambda", userDetailsService, persistentTokenRepository());
@@ -162,23 +169,27 @@ public class CustomBeanConfig {
 //        return new RememberMeAuthenticationProvider("lambda");
 //    }
 
+    @RefreshScope
     @Bean
     @Primary
     public JdbcOperations jdbcTemplate() {
         return new JdbcTemplate(dataSource);
     }
 
+    @RefreshScope
     @Bean
     public TransactionOperations transactionOperations(PlatformTransactionManager transactionManager) {
         return new TransactionTemplate(transactionManager);
     }
 
+    @RefreshScope
     @Bean
     @ConditionalOnProperty(prefix = "storage", name = "storage-type", havingValue = "cloudinary")
     public Cloudinary cloudinary() {
         return new Cloudinary(cloudinaryUrl);
     }
 
+    @RefreshScope
     @Bean
     @ConditionalOnProperty(prefix = "storage", name = "storage-type", havingValue = "firebase")
     public StorageClient firebaseStorage() {
@@ -205,6 +216,7 @@ public class CustomBeanConfig {
         }
     }
 
+    @RefreshScope
     @Bean
     public WebServerFactoryCustomizer<TomcatServletWebServerFactory> sessionManagerCustomizer() {
         return server -> {
@@ -221,6 +233,7 @@ public class CustomBeanConfig {
         };
     }
 
+    @RefreshScope
     @Bean
     @Primary
     @ConditionalOnCloudPlatform(CloudPlatform.HEROKU)
@@ -228,6 +241,7 @@ public class CustomBeanConfig {
         return ConfigureRedisAction.NO_OP;
     }
 
+    @RefreshScope
     @Bean
     @Primary
     public CookieSerializer cookieSerializer() {
@@ -244,6 +258,7 @@ public class CustomBeanConfig {
         return serializer;
     }
 
+    @RefreshScope
     @Bean
     @ConditionalOnCloudPlatform(CloudPlatform.NONE)
     public ServletWebServerFactory servletContainer() {

@@ -9,11 +9,12 @@
       <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
       <ENTRIES>
         <ENTRY IS_ENABLED="true" PARSER="runconfig" />
-        <ENTRY IS_ENABLED="true" PARSER="env" PATH="environment/storage.env" />
-        <ENTRY IS_ENABLED="true" PARSER="env" PATH="environment/redis.env" />
-        <ENTRY IS_ENABLED="true" PARSER="env" PATH="environment/ssl_certification.env" />
-        <ENTRY IS_ENABLED="true" PARSER="env" PATH="environment/mysql.env" />
-        <ENTRY IS_ENABLED="true" PARSER="env" PATH="environment/oauth2.env" />
+        <ENTRY IS_ENABLED="true" PARSER="env" PATH="$PROJECT_DIR$/../../../../CodeGym/Module 4/Project Climax Sound/lambda-auth-service/environment/mysql.env" />
+        <ENTRY IS_ENABLED="true" PARSER="env" PATH="$PROJECT_DIR$/../../../../CodeGym/Module 4/Project Climax Sound/lambda-auth-service/environment/oauth2.env" />
+        <ENTRY IS_ENABLED="true" PARSER="env" PATH="$PROJECT_DIR$/../../../../CodeGym/Module 4/Project Climax Sound/lambda-auth-service/environment/redis.env" />
+        <ENTRY IS_ENABLED="true" PARSER="env" PATH="$PROJECT_DIR$/../../../../CodeGym/Module 4/Project Climax Sound/lambda-auth-service/environment/ssl_certification.env" />
+        <ENTRY IS_ENABLED="true" PARSER="env" PATH="$PROJECT_DIR$/../../../../CodeGym/Module 4/Project Climax Sound/lambda-auth-service/environment/storage.env" />
+        <ENTRY IS_ENABLED="true" PARSER="env" PATH="$PROJECT_DIR$/../../../../CodeGym/Module 4/Project Climax Sound/lambda-auth-service/environment/cloud_config.env" />
       </ENTRIES>
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.lambda.LambdaAuthServiceApplication" />

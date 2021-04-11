@@ -53,7 +53,7 @@ spring:
       cleanup-cron: "0 * * * * *"
     timeout: 1h
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER-CLASS-NAME:}
     hikari:
       connectionTimeout: 30000
       idleTimeout: 100000
@@ -61,9 +61,9 @@ spring:
       maximum-pool-size: 20
       minimum-idle: 10
     initialization-mode: never
-    password: v3ng34nc3
-    url: jdbc:mysql://192.168.0.101:3306/user_management?useUnicode=true&characterEncoding=UTF-8
-    username: root
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    url: ${SPRING_DATASOURCE_URL:}
+    username: ${SPRING_DATASOURCE_USERNAME:}
   main:
     allow-bean-definition-overriding: true
   messages:
@@ -94,7 +94,7 @@ spring:
 #      static-locations: classpath:/static/**
 #      add-mappings: false
 storage:
-  storage-type: local
+  storage-type: firebase
   temp: ${TEMP_DIR:}
   cloudinary:
     url: ${CLOUDINARY_URL:}
@@ -106,7 +106,7 @@ storage:
     upload-dir: ${UPLOAD_DIR:}
 webservices:
   url:
-    notification: http://192.168.0.100:8095/delta-notification/webservice/notification.wsdl
+    notification: ${NOTIFICATION_WEBSERVICE_ENDPOINT:}
 security:
   oath2:
     resource-id: user

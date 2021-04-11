@@ -3,6 +3,7 @@ package com.lambda.config.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
@@ -16,6 +17,7 @@ import java.util.Collection;
 import java.util.Map;
 
 @Log4j2
+@RefreshScope
 @Component
 @Primary
 @SuppressWarnings("deprecation")

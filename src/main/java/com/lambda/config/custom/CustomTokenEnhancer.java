@@ -2,6 +2,7 @@ package com.lambda.config.custom;
 
 import com.lambda.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -14,6 +15,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+@RefreshScope
 @Component
 @SuppressWarnings("deprecation")
 public class CustomTokenEnhancer implements TokenEnhancer {

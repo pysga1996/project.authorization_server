@@ -49,4 +49,5 @@ public class ApiErrorHandler {
         log.error("Exception: {}, user: {}", ex, request.getRemoteUser());
         return new ApiError(1500, ex.getLocalizedMessage());
     }
+
 }
