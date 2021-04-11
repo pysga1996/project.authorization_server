@@ -26,6 +26,8 @@ server:
       enabled: false
     path: /error
 spring:
+  application:
+    name: lambda-auth-service
   redis:
     url: ${REDIS_TLS_URL:}
   session:
@@ -95,3 +97,12 @@ custom:
   https-port: 8082
   security-policy: CONFIDENTAL
   connector-scheme: http
+eureka:
+  instance:
+    hostname: lambda-auth-service.herokuapp.com
+    secure-port-enabled: true
+    non-secure-port-enabled: false
+  #    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: https://chi-discovery-service.herokuapp.com/eureka
