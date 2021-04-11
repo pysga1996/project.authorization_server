@@ -29,7 +29,7 @@ spring:
   application:
     name: lambda-auth-service
   redis:
-    url: ${REDIS_TLS_URL:}
+    url: ${REDIS_URL:}
   session:
     store-type: redis
     redis:
