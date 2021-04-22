@@ -14,7 +14,6 @@ eureka:
   instance:
     hostname: lambda-auth-service.herokuapp.com
     secure-port-enabled: true
-    secure-port: 443
     non-secure-port-enabled: false
   #    non-secure-port: 80
   #    prefer-ip-address: true
