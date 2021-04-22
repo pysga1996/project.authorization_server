@@ -119,12 +119,4 @@ custom:
   connector-scheme: http
   trust-store-password: ${SSL_TRUSTSTORE_PASSWORD:}
   trust-store-type: JKS
-eureka:
-  instance:
-    hostname: lambda-auth-serivce
-    secure-port-enabled: true
-    non-secure-port-enabled: false
-  #    prefer-ip-address: true
-  client:
-    serviceUrl:
-      defaultZone: http://chi-discovery-service:8010/eureka
+

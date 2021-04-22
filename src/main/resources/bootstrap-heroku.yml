@@ -3,7 +3,21 @@ spring:
     name: lambda-auth-service
   cloud:
     config:
-      uri: ${CONFIG_URI:}
+      discovery:
+        enabled: true
+        service-id: phi-config-service
+#      uri: ${CONFIG_URI:}
       username: ${CONFIG_USERNAME:}
       password: ${CONFIG_PASSWORD:}
       label: ${CONFIG_GIT_BRANCH:}
+eureka:
+  instance:
+    hostname: lambda-auth-service.herokuapp.com
+    secure-port-enabled: true
+    secure-port: 443
+    non-secure-port-enabled: false
+  #    non-secure-port: 80
+  #    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVICE_URL:}

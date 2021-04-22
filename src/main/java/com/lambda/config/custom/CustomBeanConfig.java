@@ -6,6 +6,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.StorageClient;
 import com.lambda.error.FileStorageException;
+import javax.annotation.PostConstruct;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http2.Http2Protocol;
@@ -26,6 +27,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -44,6 +46,7 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
@@ -288,4 +291,5 @@ public class CustomBeanConfig {
         connector.addUpgradeProtocol(new Http2Protocol());
         return connector;
     }
+
 }

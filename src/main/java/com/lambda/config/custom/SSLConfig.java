@@ -1,16 +1,5 @@
 package com.lambda.config.custom;
 
-import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.Resource;
-
-import javax.annotation.PostConstruct;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyManagementException;
@@ -18,10 +7,26 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import lombok.extern.log4j.Log4j2;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
+import org.springframework.boot.cloud.CloudPlatform;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
 
 @Log4j2
 @Configuration
-@Profile({"default","poweredge"})
+@ConditionalOnCloudPlatform(CloudPlatform.NONE)
 public class SSLConfig {
 
     @Value("classpath:vengeance.jks")
@@ -42,8 +47,7 @@ public class SSLConfig {
 //        System.setProperty("javax.net.ssl.trustStoreType", Objects.requireNonNull(trustStoreType));
 //    }
 
-    @PostConstruct
-    public void configureSSL() {
+    public SSLContext configureSSL() {
         try {
             HttpsURLConnection.setDefaultHostnameVerifier((hostname, sslSession) -> hostname.equals("localhost"));
             //Gets the inputstream of a a trust store file under ssl/rpgrenadesClient.jks
@@ -67,10 +71,24 @@ public class SSLConfig {
             context.init(null, managers, null);
             //Sets our new SSLContext to be used.
             SSLContext.setDefault(context);
+            return context;
         } catch (KeyStoreException | IOException | NoSuchAlgorithmException
                 | CertificateException | KeyManagementException ex) {
             //Handle error
             log.error(ex);
+            return null;
         }
+    }
+
+
+    @Bean
+    public RestTemplate setUp() {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpClient httpClient = HttpClients.custom().setSSLContext(this.configureSSL()).build();
+        ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        restTemplate.setRequestFactory(requestFactory);
+//        restTemplate.getInterceptors()
+//            .add(new BasicAuthenticationInterceptor(clientId, clientSecret));
+        return restTemplate;
     }
 }

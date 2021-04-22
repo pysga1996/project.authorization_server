@@ -45,9 +45,6 @@ dependencyManagement {
 }
 
 dependencies {
-//    compile ('org.springframework.boot:spring-boot-starter') {
-//        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-//    }
     compile 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.0.1'
     compile 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:2.2.7.RELEASE'
     compile 'org.springframework.cloud:spring-cloud-starter-config:2.2.7.RELEASE'

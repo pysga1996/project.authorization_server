@@ -40,6 +40,7 @@ server:
     key-store-password: ${SSL_KEYSTORE_PASSWORD:}
     key-store-type: JKS
     protocol: TLS
+  forward-headers-strategy: framework
 spring:
   application:
     name: lambda-auth-service
@@ -119,14 +120,5 @@ custom:
   connector-scheme: http
   trust-store-password: ${SSL_TRUSTSTORE_PASSWORD:}
   trust-store-type: JKS
-eureka:
-  instance:
-    hostname: localhost
-    secure-port-enabled: true
-    non-secure-port-enabled: false
-  #    prefer-ip-address: true
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8010/eureka
 
 
