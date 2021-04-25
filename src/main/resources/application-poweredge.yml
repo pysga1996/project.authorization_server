@@ -90,6 +90,15 @@ spring:
     add-properties: false
   banner:
     location: classpath:banner.txt
+  security:
+    oauth2:
+      resourceserver:
+        opaquetoken:
+          introspection-uri: ${AUTH_SERVICE:}
+          client-id: ${CLIENT_ID:}
+          client-secret: ${CLIENT_SECRET:}
+        jwt:
+          jwk-set-uri: ${JWKS_ENDPOINT:}
 # Override by WebMvcConfig.class
 #  web:
 #    resources:

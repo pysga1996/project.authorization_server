@@ -5,10 +5,13 @@ import static com.lambda.constant.JdbcConstant.DEF_USERS_BY_USERNAME_FULL_QUERY;
 
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -31,6 +34,9 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 @EnableGlobalMethodSecurity(prePostEnabled = true, order = Ordered.HIGHEST_PRECEDENCE)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
+    private String jwkSetUri;
+
     private final DataSource dataSource;
 
     private final PasswordEncoder passwordEncoder;
@@ -45,12 +51,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final OpaqueTokenIntrospector opaqueTokenIntrospector;
 
+    private final Environment env;
+
     @Autowired
     public SecurityConfig(DataSource dataSource, PasswordEncoder passwordEncoder,
-                          AuthenticationEntryPoint authenticationEntryPoint,
-                          AccessDeniedHandler accessDeniedHandler,
-                          AuthenticationFailureHandler authenticationFailureHandler,
-                          LogoutSuccessHandler logoutSuccessHandler, OpaqueTokenIntrospector opaqueTokenIntrospector) {
+        AuthenticationEntryPoint authenticationEntryPoint,
+        AccessDeniedHandler accessDeniedHandler,
+        AuthenticationFailureHandler authenticationFailureHandler,
+        LogoutSuccessHandler logoutSuccessHandler, OpaqueTokenIntrospector opaqueTokenIntrospector,
+        Environment env) {
         this.dataSource = dataSource;
         this.passwordEncoder = passwordEncoder;
         this.authenticationEntryPoint = authenticationEntryPoint;
@@ -58,6 +67,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.authenticationFailureHandler = authenticationFailureHandler;
         this.logoutSuccessHandler = logoutSuccessHandler;
         this.opaqueTokenIntrospector = opaqueTokenIntrospector;
+        this.env = env;
     }
 
     @Autowired
@@ -86,10 +96,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http.requiresChannel()
-                // Heroku https config
-                .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
-                .requiresSecure().and()
-                .anonymous().and()
+            // Heroku https config
+            .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
+            .requiresSecure().and()
+            .anonymous().and()
 //                .anonymous().disable() // don't enable this
                 .authorizeRequests()
                 .anyRequest().permitAll().and()

@@ -6,7 +6,11 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.StorageClient;
 import com.lambda.error.FileStorageException;
-import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import javax.sql.DataSource;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http2.Http2Protocol;
@@ -24,19 +28,26 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
+import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
@@ -46,15 +57,8 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-
-import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
 
 @RefreshScope
 @Configuration
@@ -93,11 +97,23 @@ public class CustomBeanConfig {
     @Value("${custom.connector-scheme}")
     private String connectorScheme;
 
+    private final TokenEnhancer tokenEnhancer;
+
+    private final JwtAccessTokenConverter jwtTokenConverter;
+
+    private final Environment env;
+
     @Autowired
     public CustomBeanConfig(DataSource dataSource,
-                            @Lazy @Qualifier("userDaoImpl") UserDetailsService userDetailsService) {
+        @Lazy @Qualifier("userDaoImpl") UserDetailsService userDetailsService,
+        @Qualifier("customTokenEnhancer") TokenEnhancer tokenEnhancer,
+        @Qualifier("customJwtTokenConverter") JwtAccessTokenConverter jwtTokenConverter,
+        Environment env) {
         this.dataSource = dataSource;
         this.userDetailsService = userDetailsService;
+        this.tokenEnhancer = tokenEnhancer;
+        this.jwtTokenConverter = jwtTokenConverter;
+        this.env = env;
     }
 
 //    @Bean
@@ -133,18 +149,28 @@ public class CustomBeanConfig {
 
     @RefreshScope
     @Bean
+    @Primary
     public TokenStore tokenStore() {
-        return new JdbcTokenStore(dataSource);
+        if (CloudPlatform.HEROKU.isActive(this.env)) {
+            return new JwtTokenStore(this.jwtTokenConverter);
+        } else {
+            return new JdbcTokenStore(dataSource);
+        }
     }
 
     @RefreshScope
     @Bean
     @Primary
-    public ConsumerTokenServices tokenServices() {
+    public DefaultTokenServices tokenServices() {
         DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
-        defaultTokenServices.setTokenStore(tokenStore());
         defaultTokenServices.setSupportRefreshToken(true);
         defaultTokenServices.setReuseRefreshToken(false);
+        defaultTokenServices.setTokenStore(tokenStore());
+        if (CloudPlatform.HEROKU.isActive(this.env)) {
+            defaultTokenServices.setTokenEnhancer(this.jwtTokenConverter);
+        } else {
+            defaultTokenServices.setTokenEnhancer(this.tokenEnhancer);
+        }
         return defaultTokenServices;
     }
 

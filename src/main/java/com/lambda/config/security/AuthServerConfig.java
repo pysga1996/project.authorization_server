@@ -1,5 +1,6 @@
 package com.lambda.config.security;
 
+import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -11,13 +12,10 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.token.TokenEnhancer;
-import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-
-import javax.sql.DataSource;
 
 @RefreshScope
 @Configuration
@@ -29,20 +27,19 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
     private final DataSource dataSource;
 
-    private final TokenStore tokenStore;
-
-    private final TokenEnhancer tokenEnhancer;
+    private final DefaultTokenServices tokenService;
 
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AuthServerConfig(@Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager,
-                            DataSource dataSource, TokenStore tokenStore,
-                            @Qualifier("customTokenEnhancer") TokenEnhancer tokenEnhancer, PasswordEncoder passwordEncoder) {
+    public AuthServerConfig(
+        @Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager,
+        DataSource dataSource,
+        DefaultTokenServices tokenService,
+        PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.dataSource = dataSource;
-        this.tokenStore = tokenStore;
-        this.tokenEnhancer = tokenEnhancer;
+        this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -57,21 +54,22 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
         source.registerCorsConfiguration("/**", config);
         CorsFilter filter = new CorsFilter(source);
         oauthServer.tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()")
-                .addTokenEndpointAuthenticationFilter(filter);
+            .checkTokenAccess("isAuthenticated()")
+            .allowFormAuthenticationForClients()
+            .addTokenEndpointAuthenticationFilter(filter);
     }
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients)
-            throws Exception {
+        throws Exception {
         clients.jdbc(dataSource).passwordEncoder(passwordEncoder);
     }
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
-        endpoints.tokenStore(tokenStore)
-                .authenticationManager(authenticationManager)
-                .tokenEnhancer(tokenEnhancer)
+        endpoints
+            .authenticationManager(this.authenticationManager)
+            .tokenServices(this.tokenService)
         ;
     }
 }

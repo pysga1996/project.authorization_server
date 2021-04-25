@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RefreshScope
-@Component
+@Component("customTokenEnhancer")
 @SuppressWarnings("deprecation")
 public class CustomTokenEnhancer implements TokenEnhancer {
 
