@@ -6,9 +6,11 @@ import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 import java.security.KeyPair;
 import java.security.interfaces.RSAPublicKey;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
 /**
@@ -21,13 +23,26 @@ import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFacto
 @SuppressWarnings("deprecation")
 public class JwtConfig {
 
+    @Value("custom.jwk.keystore")
+    private Resource jwkKeyStore;
+
+    @Value("custom.jwk.keystore-password")
+    private String jwkKeyStorePassword;
+
+    @Value("custom.jwk.key")
+    private String jwkKey;
+
+    @Value("custom.jwk.key-pass")
+    private String jwkKeyPass;
+
+    @Value("custom.jwk.key-id")
+    private String jwkKeyId;
+
     @Bean
     public KeyPair jwtKeyPair() {
-        ClassPathResource ksFile =
-            new ClassPathResource("vengeance.jks");
         KeyStoreKeyFactory ksFactory =
-            new KeyStoreKeyFactory(ksFile, "1381996".toCharArray());
-        return ksFactory.getKeyPair("zeronos", "259138".toCharArray());
+            new KeyStoreKeyFactory(jwkKeyStore, jwkKeyStorePassword.toCharArray());
+        return ksFactory.getKeyPair(jwkKey, jwkKeyPass.toCharArray());
     }
 
     @Bean
@@ -35,7 +50,7 @@ public class JwtConfig {
         RSAKey.Builder builder = new RSAKey.Builder((RSAPublicKey) jwtKeyPair().getPublic())
             .keyUse(KeyUse.SIGNATURE)
             .algorithm(JWSAlgorithm.RS256)
-            .keyID("zeronos-key-id");
+            .keyID(jwkKeyId);
         return new JWKSet(builder.build());
     }
 }

@@ -3,6 +3,7 @@ package com.lambda.config.security;
 import static com.lambda.constant.JdbcConstant.DEF_CUSTOM_GROUP_AUTHORITIES_BY_USERNAME_QUERY;
 import static com.lambda.constant.JdbcConstant.DEF_USERS_BY_USERNAME_FULL_QUERY;
 
+import java.util.Arrays;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,12 +74,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public void globalUserDetails(final AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication()
-                .dataSource(dataSource)
-                .usersByUsernameQuery(DEF_USERS_BY_USERNAME_FULL_QUERY)
+            .dataSource(dataSource)
+            .usersByUsernameQuery(DEF_USERS_BY_USERNAME_FULL_QUERY)
 //                .authoritiesByUsernameQuery("SELECT user.username, role.authority FROM user INNER JOIN user_role ON user.id = user_role.user_id INNER JOIN role ON role.id = user_role.role_id where username =?")
-                .groupAuthoritiesByUsername(DEF_CUSTOM_GROUP_AUTHORITIES_BY_USERNAME_QUERY)
-                .passwordEncoder(passwordEncoder)
-                .getUserDetailsService().setEnableAuthorities(false)
+            .groupAuthoritiesByUsername(DEF_CUSTOM_GROUP_AUTHORITIES_BY_USERNAME_QUERY)
+            .passwordEncoder(passwordEncoder)
+            .getUserDetailsService().setEnableAuthorities(false)
         ;
     }
 
@@ -101,46 +102,52 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .requiresSecure().and()
             .anonymous().and()
 //                .anonymous().disable() // don't enable this
-                .authorizeRequests()
-                .anyRequest().permitAll().and()
-                .csrf().disable()
-                .formLogin()
-                .loginPage("/login.html")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .loginProcessingUrl("/perform_login")
-                .defaultSuccessUrl("/homepage.html", true)
-                .failureUrl("/login.html?error=true")
-                .failureHandler(authenticationFailureHandler)
-                .and()
-                .logout()
-                .logoutUrl("/perform_logout")
+            .authorizeRequests()
+            .anyRequest().permitAll().and()
+            .csrf().disable()
+            .formLogin()
+            .loginPage("/login.html")
+            .usernameParameter("username")
+            .passwordParameter("password")
+            .loginProcessingUrl("/perform_login")
+            .defaultSuccessUrl("/homepage.html", true)
+            .failureUrl("/login.html?error=true")
+            .failureHandler(authenticationFailureHandler)
+            .and()
+            .logout()
+            .logoutUrl("/perform_logout")
 //                .logoutSuccessUrl("/homepage.html")
-                .deleteCookies("SESSIONID")
-                .clearAuthentication(true)
-                .invalidateHttpSession(true)
-                .logoutSuccessHandler(logoutSuccessHandler)
-                .and()
-                .rememberMe()
-                .key("LambdaRememberMe").tokenValiditySeconds(86400)
-                .rememberMeParameter("remember")
-                .rememberMeCookieName("remember-cookie")
-                .and()
-                .cors()
-                .and()
-                .exceptionHandling()
-                .accessDeniedHandler(accessDeniedHandler)
-                .authenticationEntryPoint(authenticationEntryPoint)
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-                .and()
-                .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer -> {
-                    DefaultBearerTokenResolver bearerTokenResolver = new DefaultBearerTokenResolver();
-                    bearerTokenResolver.setAllowUriQueryParameter(true);
+            .deleteCookies("SESSIONID")
+            .clearAuthentication(true)
+            .invalidateHttpSession(true)
+            .logoutSuccessHandler(logoutSuccessHandler)
+            .and()
+            .rememberMe()
+            .key("LambdaRememberMe").tokenValiditySeconds(86400)
+            .rememberMeParameter("remember")
+            .rememberMeCookieName("remember-cookie")
+            .and()
+            .cors()
+            .and()
+            .exceptionHandling()
+            .accessDeniedHandler(accessDeniedHandler)
+            .authenticationEntryPoint(authenticationEntryPoint)
+            .and()
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+            .and()
+            .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer -> {
+                DefaultBearerTokenResolver bearerTokenResolver = new DefaultBearerTokenResolver();
+                bearerTokenResolver.setAllowUriQueryParameter(true);
+                if (CloudPlatform.HEROKU.isActive(this.env) || Arrays.asList(this.env.getActiveProfiles()).contains("poweredge")) {
+                    httpSecurityOAuth2ResourceServerConfigurer.jwt(jwtConfigurer ->
+                        jwtConfigurer.jwkSetUri(this.jwkSetUri));
+                } else {
                     httpSecurityOAuth2ResourceServerConfigurer.opaqueToken(opaqueTokenConfigurer ->
-                            opaqueTokenConfigurer.introspector(opaqueTokenIntrospector)).bearerTokenResolver(bearerTokenResolver);
-                })
+                        opaqueTokenConfigurer.introspector(opaqueTokenIntrospector));
+                }
+                httpSecurityOAuth2ResourceServerConfigurer.bearerTokenResolver(bearerTokenResolver);
+            })
         ;
     }
 }

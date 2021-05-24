@@ -105,4 +105,10 @@ custom:
   https-port: 8082
   security-policy: CONFIDENTAL
   connector-scheme: http
+  jwk:
+    keystore: classpath:vengeance.jks
+    keystore-password: ${JWK_KEYSTORE_PASSWORD:}
+    key: ${JWK_KEY:}
+    key-pass: ${JWK_KEYPASS:}
+    key-id: ${JWK_KEY_ID:}
 

@@ -49,5 +49,30 @@
       "name": "custom.trust-store-type",
       "type": "java.lang.String",
       "description": "Description for custom.trust-store-type."
+    },
+    {
+      "name": "custom.jwk.key",
+      "type": "java.lang.String",
+      "description": "Description for custom.jwk.key."
+    },
+    {
+      "name": "custom.jwk.key-id",
+      "type": "java.lang.String",
+      "description": "Description for custom.jwk.key-id."
+    },
+    {
+      "name": "custom.jwk.keystore",
+      "type": "java.lang.String",
+      "description": "Description for custom.jwk.keystore."
+    },
+    {
+      "name": "custom.jwk.keystore-password",
+      "type": "java.lang.String",
+      "description": "Description for custom.jwk.keystore-password."
+    },
+    {
+      "name": "custom.jwk.key-pass",
+      "type": "java.lang.String",
+      "description": "Description for custom.jwk.key-pass."
     }
   ] }

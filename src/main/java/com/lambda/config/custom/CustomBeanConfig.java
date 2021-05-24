@@ -8,6 +8,7 @@ import com.google.firebase.cloud.StorageClient;
 import com.lambda.error.FileStorageException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import javax.sql.DataSource;
@@ -41,7 +42,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -151,7 +151,7 @@ public class CustomBeanConfig {
     @Bean
     @Primary
     public TokenStore tokenStore() {
-        if (CloudPlatform.HEROKU.isActive(this.env)) {
+        if (CloudPlatform.HEROKU.isActive(this.env) || Arrays.asList(this.env.getActiveProfiles()).contains("poweredge")) {
             return new JwtTokenStore(this.jwtTokenConverter);
         } else {
             return new JdbcTokenStore(dataSource);
@@ -166,7 +166,7 @@ public class CustomBeanConfig {
         defaultTokenServices.setSupportRefreshToken(true);
         defaultTokenServices.setReuseRefreshToken(false);
         defaultTokenServices.setTokenStore(tokenStore());
-        if (CloudPlatform.HEROKU.isActive(this.env)) {
+        if (CloudPlatform.HEROKU.isActive(this.env) || Arrays.asList(this.env.getActiveProfiles()).contains("poweredge")) {
             defaultTokenServices.setTokenEnhancer(this.jwtTokenConverter);
         } else {
             defaultTokenServices.setTokenEnhancer(this.tokenEnhancer);
