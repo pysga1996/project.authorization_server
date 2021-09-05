@@ -1,4 +1,4 @@
-package com.lambda.config.custom;
+package com.lambda.config.general;
 
 import java.net.UnknownHostException;
 

@@ -3,11 +3,10 @@ package com.lambda.dao.impl;
 import com.lambda.dao.SettingDao;
 import com.lambda.dao.extractor.SqlResultExtractor;
 import com.lambda.model.dto.SettingDTO;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository
 public class SettingDaoImpl implements SettingDao {
@@ -18,7 +17,7 @@ public class SettingDaoImpl implements SettingDao {
 
     @Autowired
     public SettingDaoImpl(JdbcOperations jdbcOperations,
-                          SqlResultExtractor<SettingDTO> settingExtractor) {
+        SqlResultExtractor<SettingDTO> settingExtractor) {
         this.jdbcOperations = jdbcOperations;
         this.settingExtractor = settingExtractor;
     }

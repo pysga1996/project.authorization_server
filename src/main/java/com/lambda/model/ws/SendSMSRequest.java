@@ -1,15 +1,18 @@
-
 package com.lambda.model.ws;
 
-import javax.xml.bind.annotation.*;
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -22,8 +25,6 @@ import java.io.Serializable;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -32,8 +33,7 @@ import java.io.Serializable;
 })
 @XmlRootElement(name = "sendSMSRequest")
 public class SendSMSRequest
-    implements Serializable
-{
+    implements Serializable {
 
     @XmlElement(required = true)
     protected String phoneNumber;
@@ -42,11 +42,8 @@ public class SendSMSRequest
 
     /**
      * Gets the value of the phoneNumber property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is {@link String }
      */
     public String getPhoneNumber() {
         return phoneNumber;
@@ -54,27 +51,21 @@ public class SendSMSRequest
 
     /**
      * Sets the value of the phoneNumber property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is {@link String }
      */
     public void setPhoneNumber(String value) {
         this.phoneNumber = value;
     }
 
     public boolean isSetPhoneNumber() {
-        return (this.phoneNumber!= null);
+        return (this.phoneNumber != null);
     }
 
     /**
      * Gets the value of the content property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is {@link String }
      */
     public String getContent() {
         return content;
@@ -82,18 +73,15 @@ public class SendSMSRequest
 
     /**
      * Sets the value of the content property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is {@link String }
      */
     public void setContent(String value) {
         this.content = value;
     }
 
     public boolean isSetContent() {
-        return (this.content!= null);
+        return (this.content != null);
     }
 
 }

@@ -1,105 +1,105 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:th="http://www.thymeleaf.org"
 >
 <head>
-    <meta charset="UTF-8">
-    <title>User Registration</title>
-    <th:block th:replace="~{fragment/general :: headerfiles}"/>
+  <meta charset="UTF-8">
+  <title>User Registration</title>
+  <th:block th:replace="~{fragment/general :: headerfiles}"/>
 </head>
 <body>
 <div class="container" sec:authorize="isAnonymous()">
-    <header th:insert="~{fragment/general :: header}"></header>
-    <div class="d-flex justify-content-center">
-        <form class="col-4" th:action="@{/user/register}" th:method="POST">
-            <h4>Register</h4>
-            <div class="m-0 p-0" th:object="${newUser}">
-                <div class="form-group my-1">
-                    <label for="username">Username</label>
-                    <input class="form-control" id="username"
-                           placeholder="Enter group name" th:field="*{username}">
-                    <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('username')}">
-                        <li th:each="err: ${#fields.errors('username')}"  th:text="${err}"></li>
-                    </ul>
-                </div>
-                <div class="form-group my-1">
-                    <label for="password">Password</label>
-                    <input class="form-control" id="password" type="password"
-                           placeholder="Enter password" th:field="*{password}">
-                    <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('password')}">
-                        <li th:each="err: ${#fields.errors('password')}"  th:text="${err}"></li>
-                    </ul>
-                </div>
-                <div class="form-group my-1">
-                    <label for="reTypedPassword">Password</label>
-                    <input class="form-control" id="reTypedPassword" type="password"
-                           placeholder="Re-enter password">
-                </div>
-            </div>
-            <div class="m-0 p-0" th:object="${newUserProfile}">
-                <div class="form-group my-1">
-                    <label for="firstName">First Name</label>
-                    <input class="form-control" id="firstName" type="text"
-                           placeholder="Enter first name" th:field="*{firstName}">
-                    <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('firstName')}">
-                        <li th:each="err: ${#fields.errors('firstName')}"  th:text="${err}"></li>
-                    </ul>
-                </div>
-                <div class="form-group my-1">
-                    <label for="lastName">Last Name</label>
-                    <input class="form-control" id="lastName" type="text"
-                           placeholder="Enter last name" th:field="*{lastName}" />
-                    <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('lastName')}">
-                        <li th:each="err: ${#fields.errors('lastName')}"  th:text="${err}"></li>
-                    </ul>
-                </div>
-                <div class="form-group my-1">
-                    <label for="dateOfBirth">Date of birth</label>
-                    <input class="form-control" id="dateOfBirth" type="date"
-                           placeholder="Pick date of birth" th:field="*{dateOfBirth}">
-                    <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('dateOfBirth')}">
-                        <li th:each="err: ${#fields.errors('dateOfBirth')}"  th:text="${err}"></li>
-                    </ul>
-                </div>
-                <div class="form-group my-1">
-                    <label>Gender</label>
-                    <div class="form-check">
-                        <input class="form-check-input" th:value="${T(com.lambda.constant.Gender).MALE}"
-                               th:field="*{gender}" id="male" type="radio" checked>
-                        <label class="form-check-label" for="male">Male</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" th:value="${T(com.lambda.constant.Gender).FEMALE}"
-                               th:field="*{gender}" id="female" type="radio">
-                        <label class="form-check-label" for="female">Female</label>
-                    </div>
-                    <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('gender')}">
-                        <li th:each="err: ${#fields.errors('gender')}"  th:text="${err}"></li>
-                    </ul>
-                </div>
-                <div class="form-group my-1">
-                    <label for="phoneNumber">Phone Number</label>
-                    <input class="form-control" id="phoneNumber" type="text"
-                           placeholder="Enter phone number" th:field="*{phoneNumber}">
-                    <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('phoneNumber')}">
-                        <li th:each="err: ${#fields.errors('phoneNumber')}"  th:text="${err}"></li>
-                    </ul>
-                </div>
-                <div class="form-group my-1">
-                    <label for="email">Email</label>
-                    <input class="form-control" id="email" type="email"
-                           placeholder="Enter email" th:field="*{email}">
-                    <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('email')}">
-                        <li th:each="err: ${#fields.errors('email')}"  th:text="${err}"></li>
-                    </ul>
-                </div>
-            </div>
-            <div th:replace="~{fragment/general :: message}"></div>
-            <button type="submit" class="btn btn-primary">Register</button>
-        </form>
-    </div>
-    <div th:replace="~{fragment/general :: footer}"></div>
+  <header th:insert="~{fragment/general :: header}"></header>
+  <div class="d-flex justify-content-center">
+    <form class="col-4" th:action="@{/user/register}" th:method="POST">
+      <h4>Register</h4>
+      <div class="m-0 p-0" th:object="${newUser}">
+        <div class="form-group my-1">
+          <label for="username">Username</label>
+          <input class="form-control" id="username"
+                 placeholder="Enter group name" th:field="*{username}">
+          <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('username')}">
+            <li th:each="err: ${#fields.errors('username')}" th:text="${err}"></li>
+          </ul>
+        </div>
+        <div class="form-group my-1">
+          <label for="password">Password</label>
+          <input class="form-control" id="password" placeholder="Enter password"
+                 th:field="*{password}" type="password">
+          <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('password')}">
+            <li th:each="err: ${#fields.errors('password')}" th:text="${err}"></li>
+          </ul>
+        </div>
+        <div class="form-group my-1">
+          <label for="reTypedPassword">Password</label>
+          <input class="form-control" id="reTypedPassword" placeholder="Re-enter password"
+                 type="password">
+        </div>
+      </div>
+      <div class="m-0 p-0" th:object="${newUserProfile}">
+        <div class="form-group my-1">
+          <label for="firstName">First Name</label>
+          <input class="form-control" id="firstName" placeholder="Enter first name"
+                 th:field="*{firstName}" type="text">
+          <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('firstName')}">
+            <li th:each="err: ${#fields.errors('firstName')}" th:text="${err}"></li>
+          </ul>
+        </div>
+        <div class="form-group my-1">
+          <label for="lastName">Last Name</label>
+          <input class="form-control" id="lastName" placeholder="Enter last name"
+                 th:field="*{lastName}" type="text"/>
+          <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('lastName')}">
+            <li th:each="err: ${#fields.errors('lastName')}" th:text="${err}"></li>
+          </ul>
+        </div>
+        <div class="form-group my-1">
+          <label for="dateOfBirth">Date of birth</label>
+          <input class="form-control" id="dateOfBirth" placeholder="Pick date of birth"
+                 th:field="*{dateOfBirth}" type="date">
+          <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('dateOfBirth')}">
+            <li th:each="err: ${#fields.errors('dateOfBirth')}" th:text="${err}"></li>
+          </ul>
+        </div>
+        <div class="form-group my-1">
+          <label>Gender</label>
+          <div class="form-check">
+            <input checked class="form-check-input"
+                   id="male" th:field="*{gender}" th:value="${T(com.lambda.constant.Gender).MALE}" type="radio">
+            <label class="form-check-label" for="male">Male</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" id="female"
+                   th:field="*{gender}" th:value="${T(com.lambda.constant.Gender).FEMALE}" type="radio">
+            <label class="form-check-label" for="female">Female</label>
+          </div>
+          <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('gender')}">
+            <li th:each="err: ${#fields.errors('gender')}" th:text="${err}"></li>
+          </ul>
+        </div>
+        <div class="form-group my-1">
+          <label for="phoneNumber">Phone Number</label>
+          <input class="form-control" id="phoneNumber" placeholder="Enter phone number"
+                 th:field="*{phoneNumber}" type="text">
+          <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('phoneNumber')}">
+            <li th:each="err: ${#fields.errors('phoneNumber')}" th:text="${err}"></li>
+          </ul>
+        </div>
+        <div class="form-group my-1">
+          <label for="email">Email</label>
+          <input class="form-control" id="email" placeholder="Enter email"
+                 th:field="*{email}" type="email">
+          <ul class="alert alert-danger error_block" th:if="${#fields.hasErrors('email')}">
+            <li th:each="err: ${#fields.errors('email')}" th:text="${err}"></li>
+          </ul>
+        </div>
+      </div>
+      <div th:replace="~{fragment/general :: message}"></div>
+      <button class="btn btn-primary" type="submit">Register</button>
+    </form>
+  </div>
+  <div th:replace="~{fragment/general :: footer}"></div>
 </div>
 </body>
 </html>

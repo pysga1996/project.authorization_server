@@ -10,13 +10,15 @@ public class JdbcConstant {
     public static final String CUSTOM_SQL_STATE = "45000";
 
     public static final String DEF_USERS_BY_USERNAME_FULL_QUERY = "SELECT username, " +
-            "password, enabled, account_locked, account_expired, " +
-            "credentials_expired FROM user WHERE username =?";
+        "password, enabled, account_locked, account_expired, " +
+        "credentials_expired FROM user WHERE username =?";
 
     public static final String DEF_USERS_BY_USERNAME_FULL_WITH_SETTING_QUERY =
-            " SELECT u.username as username, password, enabled, account_locked, account_expired, credentials_expired,\n" +
+        " SELECT u.username as username, password, enabled, account_locked, account_expired, credentials_expired,\n"
+            +
             " ga.authority as authority, s.alert as setting_alert, s.theme as setting_theme,\n" +
-            " up.first_name, up.last_name, up.date_of_birth, up.gender, up.phone_number, up.email, up.avatar_url" +
+            " up.first_name, up.last_name, up.date_of_birth, up.gender, up.phone_number, up.email, up.avatar_url"
+            +
             " FROM user u\n" +
             " INNER JOIN group_members gm ON gm.username = u.username\n" +
             " INNER JOIN `groups` g ON g.id = gm.group_id\n" +
@@ -26,7 +28,7 @@ public class JdbcConstant {
             " WHERE u.username = ?";
 
     public static final String DEF_CUSTOM_GROUP_AUTHORITIES_BY_USERNAME_QUERY =
-            "select g.id, g.group_name, ga.authority "
+        "select g.id, g.group_name, ga.authority "
             + "from `groups` g, group_members gm, group_authorities ga "
             + "where gm.username = ? " + "and g.id = ga.group_id " + "and g.id = gm.group_id";
 

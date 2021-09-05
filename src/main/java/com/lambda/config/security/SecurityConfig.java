@@ -35,24 +35,16 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 @EnableGlobalMethodSecurity(prePostEnabled = true, order = Ordered.HIGHEST_PRECEDENCE)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final DataSource dataSource;
+    private final PasswordEncoder passwordEncoder;
+    private final AccessDeniedHandler accessDeniedHandler;
+    private final AuthenticationEntryPoint authenticationEntryPoint;
+    private final AuthenticationFailureHandler authenticationFailureHandler;
+    private final LogoutSuccessHandler logoutSuccessHandler;
+    private final OpaqueTokenIntrospector opaqueTokenIntrospector;
+    private final Environment env;
     @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
     private String jwkSetUri;
-
-    private final DataSource dataSource;
-
-    private final PasswordEncoder passwordEncoder;
-
-    private final AccessDeniedHandler accessDeniedHandler;
-
-    private final AuthenticationEntryPoint authenticationEntryPoint;
-
-    private final AuthenticationFailureHandler authenticationFailureHandler;
-
-    private final LogoutSuccessHandler logoutSuccessHandler;
-
-    private final OpaqueTokenIntrospector opaqueTokenIntrospector;
-
-    private final Environment env;
 
     @Autowired
     public SecurityConfig(DataSource dataSource, PasswordEncoder passwordEncoder,
@@ -139,7 +131,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer -> {
                 DefaultBearerTokenResolver bearerTokenResolver = new DefaultBearerTokenResolver();
                 bearerTokenResolver.setAllowUriQueryParameter(true);
-                if (CloudPlatform.HEROKU.isActive(this.env) || Arrays.asList(this.env.getActiveProfiles()).contains("poweredge")) {
+                if (CloudPlatform.HEROKU.isActive(this.env) || Arrays
+                    .asList(this.env.getActiveProfiles()).contains("poweredge")) {
                     httpSecurityOAuth2ResourceServerConfigurer.jwt(jwtConfigurer ->
                         jwtConfigurer.jwkSetUri(this.jwkSetUri));
                 } else {
@@ -148,6 +141,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 }
                 httpSecurityOAuth2ResourceServerConfigurer.bearerTokenResolver(bearerTokenResolver);
             })
+            .headers()
+            .frameOptions().sameOrigin()
+            .httpStrictTransportSecurity().disable()
+            .and()
         ;
     }
 }

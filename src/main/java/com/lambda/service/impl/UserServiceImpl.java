@@ -6,11 +6,22 @@ import com.lambda.constant.TokenType;
 import com.lambda.dao.TokenDao;
 import com.lambda.dao.UserDao;
 import com.lambda.error.BusinessException;
+import com.lambda.model.domain.Group;
 import com.lambda.model.dto.AuthenticationTokenDTO;
+import com.lambda.model.dto.RegistrationDTO.RegistrationConfirmDTO;
+import com.lambda.model.dto.ResetPasswordDTO.ChangePasswordConfirmDTO;
 import com.lambda.model.dto.SearchResponseDTO;
 import com.lambda.model.dto.UserDTO;
 import com.lambda.model.dto.UserProfileDTO;
 import com.lambda.service.UserService;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.bouncycastle.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +33,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -108,24 +115,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public String confirmRegistration(String token) {
+    public void confirmRegistration(
+        RegistrationConfirmDTO registrationConfirmDTO) {
         AuthenticationTokenDTO authenticationTokenDTO =
-                this.tokenDao.findToken(token, TokenType.REGISTRATION, TokenStatus.ACTIVE);
+            this.tokenDao.findToken(registrationConfirmDTO.getToken(),
+                registrationConfirmDTO.getEmail(),
+                TokenType.REGISTRATION, TokenStatus.ACTIVE);
         this.validateToken(authenticationTokenDTO);
-        String url = authenticationTokenDTO.getRedirectUrl();
+        UserDTO userDTO =
+            this.userDao.findByUsername(authenticationTokenDTO.getUsername())
+                .orElseThrow(() -> new BusinessException(1001,
+                    "User was not found or might be removed from our system"));
+        userDTO.setEnabled(true);
+        this.userDao.updateUser(userDTO);
         this.tokenDao.updateToken(authenticationTokenDTO.getId(), TokenStatus.USED);
-        return url;
-    }
-
-    @Override
-    @Transactional
-    public String showChangePasswordPage(String token) {
-        AuthenticationTokenDTO authenticationTokenDTO =
-                this.tokenDao.findToken(token, TokenType.RESET_PASSWORD, TokenStatus.INACTIVE);
-        this.validateToken(authenticationTokenDTO);
-        String url = authenticationTokenDTO.getRedirectUrl();
-        this.tokenDao.updateToken(authenticationTokenDTO.getId(), TokenStatus.ACTIVE);
-        return url;
     }
 
 
@@ -136,13 +139,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDTO checkResetPassToken(String token) {
-        AuthenticationTokenDTO authenticationTokenDTO = this.tokenDao.findToken(token, TokenType.RESET_PASSWORD, TokenStatus.ACTIVE);
+    public void resetPassword(ChangePasswordConfirmDTO changePasswordConfirmDTO) {
+        AuthenticationTokenDTO authenticationTokenDTO = this.tokenDao
+            .findToken(changePasswordConfirmDTO.getToken(), changePasswordConfirmDTO.getEmail(),
+                TokenType.RESET_PASSWORD, TokenStatus.ACTIVE);
         this.validateToken(authenticationTokenDTO);
         this.tokenDao.updateToken(authenticationTokenDTO.getId(), TokenStatus.USED);
-        Optional<UserDTO> optionalUserDTO =
-                this.userDao.findByUsername(authenticationTokenDTO.getUsername());
-        return optionalUserDTO.orElseThrow(() -> new BusinessException(1001, "User was not found or might be removed from our system"));
+        UserDTO userDTO =
+            this.userDao.findByUsername(authenticationTokenDTO.getUsername())
+                .orElseThrow(() -> new BusinessException(1001,
+                    "User was not found or might be removed from our system"));
+        String password = this.passwordEncoder.encode(changePasswordConfirmDTO.getNewPassword());
+        boolean isSuccess = this.userDao
+            .resetPassword(changePasswordConfirmDTO.getEmail(), password);
+        log.info("Update password for user {}: {}", userDTO.getUsername(),
+            isSuccess ? "Success" : "Failed");
     }
 
     @Override
@@ -151,7 +162,8 @@ public class UserServiceImpl implements UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.getPrincipal() instanceof OAuth2AuthenticatedPrincipal) {
 //            String infoJson = this.objectMapper.writeValueAsString(otherInfo);
-            OAuth2AuthenticatedPrincipal principal = (OAuth2AuthenticatedPrincipal) authentication.getPrincipal();
+            OAuth2AuthenticatedPrincipal principal = (OAuth2AuthenticatedPrincipal) authentication
+                .getPrincipal();
             String username = principal.getAttribute("username");
             if (username != null) {
                 this.userDao.updateOtherInfo(username, otherInfo);
@@ -167,24 +179,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateUser(String username, String password, boolean enabled, boolean accountLocked, boolean accountExpired,
-                           boolean credentialsExpired, String groups) {
+    public void updateUser(String username, String password, boolean enabled, boolean accountLocked,
+        boolean accountExpired,
+        boolean credentialsExpired, String groups) {
 
         String newPassword = null;
-        if (password !=null && !password.trim().isEmpty()) {
-            newPassword  = this.passwordEncoder.encode(password);
+        if (password != null && !password.trim().isEmpty()) {
+            newPassword = this.passwordEncoder.encode(password);
         }
         String[] insertArr = Strings.split(groups, ',');
         Set<Long> insertSet = new HashSet<>(Arrays.asList(insertArr)).stream()
-                .filter(e -> (e != null && Pattern.compile("^\\d+$").matcher(e).matches()))
-                .map(Long::valueOf)
-                .collect(Collectors.toSet());
+            .filter(e -> (e != null && Pattern.compile("^\\d+$").matcher(e).matches()))
+            .map(Long::valueOf)
+            .collect(Collectors.toSet());
         Set<Long> tmpSet = new HashSet<>(insertSet);
         Set<Long> existSet = this.userDao.findGroupIdSetByUsername(username);
         tmpSet.retainAll(existSet);
         insertSet.removeAll(tmpSet);
         existSet.removeAll(tmpSet);
         this.userDao.updateUserAndGroup(username, newPassword, enabled, accountLocked,
-                accountExpired, credentialsExpired, insertSet, existSet);
+            accountExpired, credentialsExpired, insertSet, existSet);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getRoles(String username) {
+        return this.userDao.findGroupListByUsername(username)
+            .stream()
+            .map(Group::getName)
+            .collect(Collectors.toList());
     }
 }

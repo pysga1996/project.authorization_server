@@ -1,7 +1,6 @@
 package com.lambda.dao;
 
 import com.lambda.model.dto.SettingDTO;
-
 import java.util.Optional;
 
 public interface SettingDao {

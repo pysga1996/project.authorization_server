@@ -1,5 +1,12 @@
 package com.lambda.dao.impl;
 
+import static com.lambda.constant.JdbcConstant.CUSTOM_SQL_STATE;
+import static com.lambda.constant.JdbcConstant.DEF_CUSTOM_DELETE_GROUP_SQL;
+import static com.lambda.constant.JdbcConstant.DEF_CUSTOM_FIND_GROUPS_SQL;
+import static com.lambda.constant.JdbcConstant.DEF_CUSTOM_FIND_GROUP_ID_SQL;
+import static com.lambda.constant.JdbcConstant.DEF_CUSTOM_INSERT_GROUP_SQL;
+import static com.lambda.constant.JdbcConstant.DEF_CUSTOM_RENAME_GROUP_SQL;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lambda.constant.CommonConstant;
@@ -12,6 +19,19 @@ import com.lambda.model.domain.Group;
 import com.lambda.model.domain.GroupInfo;
 import com.lambda.model.dto.UserDTO;
 import com.lambda.model.dto.UserProfileDTO;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.sql.DataSource;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,14 +47,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.lambda.constant.JdbcConstant.*;
-
 @Log4j2
 @Component
 public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
@@ -49,9 +61,9 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
 
     @Autowired
     public UserDaoImpl(JdbcOperations jdbcOperations, DataSource dataSource,
-                       SqlResultExtractor<UserDTO> userExtractor,
-                       SqlResultExtractor<UserProfileDTO> userProfileExtractor,
-                       ObjectMapper objectMapper) {
+        SqlResultExtractor<UserDTO> userExtractor,
+        SqlResultExtractor<UserProfileDTO> userProfileExtractor,
+        ObjectMapper objectMapper) {
         this.userExtractor = userExtractor;
         this.jdbcOperations = jdbcOperations;
         this.userProfileExtractor = userProfileExtractor;
@@ -87,8 +99,8 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     @Override
     public Optional<UserDTO> findByUsername(String username) {
         return this.jdbcOperations.query(
-                JdbcConstant.DEF_USERS_BY_USERNAME_FULL_WITH_SETTING_QUERY,
-                userExtractor.singleExtractor(), username);
+            JdbcConstant.DEF_USERS_BY_USERNAME_FULL_WITH_SETTING_QUERY,
+            userExtractor.singleExtractor(), username);
     }
 
     @Override
@@ -140,15 +152,17 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     @Override
     public List<GroupInfo> groupListWithCountInfo() {
         String sql = "SELECT `groups`.id AS id, group_name as name,\n" +
-                "       IFNULL(members.user_count, 0) AS usersCount,\n" +
-                "       IFNULL(authorities.authority_count, 0) AS authoritiesCount\n" +
-                "FROM `groups`\n" +
-                "LEFT JOIN (\n" +
-                "    SELECT group_id, COUNT(DISTINCT username) AS user_count FROM group_members GROUP BY group_id\n" +
-                ") AS members ON members.group_id = `groups`.id\n" +
-                "LEFT JOIN (\n" +
-                "    select group_id, COUNT(DISTINCT authority) AS authority_count FROM group_authorities GROUP BY group_id\n" +
-                ") AS authorities ON authorities.group_id = `groups`.id";
+            "       IFNULL(members.user_count, 0) AS usersCount,\n" +
+            "       IFNULL(authorities.authority_count, 0) AS authoritiesCount\n" +
+            "FROM `groups`\n" +
+            "LEFT JOIN (\n" +
+            "    SELECT group_id, COUNT(DISTINCT username) AS user_count FROM group_members GROUP BY group_id\n"
+            +
+            ") AS members ON members.group_id = `groups`.id\n" +
+            "LEFT JOIN (\n" +
+            "    select group_id, COUNT(DISTINCT authority) AS authority_count FROM group_authorities GROUP BY group_id\n"
+            +
+            ") AS authorities ON authorities.group_id = `groups`.id";
         return this.jdbcOperations.query(sql, new BeanPropertyRowMapper<>(GroupInfo.class));
     }
 
@@ -156,7 +170,7 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     @Override
     public Group findGroupById(Long id) {
         String sql = "SELECT `groups`.id, group_name FROM `groups`\n" +
-                " WHERE `groups`.id = ?";
+            " WHERE `groups`.id = ?";
         return this.jdbcOperations.queryForObject(sql, (rs, rowNum) -> {
             Group group = new Group();
             group.setId(rs.getLong("id"));
@@ -170,17 +184,17 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
         long offset = pageable.getOffset();
         int pageSize = pageable.getPageSize();
         String sql = "SELECT ga.authority FROM `groups`\n" +
-                "INNER JOIN group_authorities ga on `groups`.id = ga.group_id\n" +
-                "WHERE id = ?\n" +
-                "ORDER BY ga.authority LIMIT ?, ?";
+            "INNER JOIN group_authorities ga on `groups`.id = ga.group_id\n" +
+            "WHERE id = ?\n" +
+            "ORDER BY ga.authority LIMIT ?, ?";
         List<GrantedAuthority> authorities = this.jdbcOperations
-                .queryForList(sql, String.class, id, offset, pageSize)
-                .stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+            .queryForList(sql, String.class, id, offset, pageSize)
+            .stream()
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toList());
         String countSql = "SELECT COUNT(ga.authority) FROM `groups`\n" +
-                "INNER JOIN group_authorities ga on `groups`.id = ga.group_id\n" +
-                "WHERE id = ?";
+            "INNER JOIN group_authorities ga on `groups`.id = ga.group_id\n" +
+            "WHERE id = ?";
         Long count = this.jdbcOperations.queryForObject(countSql, Long.class, id);
         if (count == null) {
             count = 0L;
@@ -193,14 +207,14 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
         long offset = pageable.getOffset();
         int pageSize = pageable.getPageSize();
         String sql = "SELECT gm.username FROM `groups`\n" +
-                "INNER JOIN group_members gm on `groups`.id = gm.group_id\n" +
-                "WHERE id = ?\n" +
-                "ORDER BY gm.username LIMIT ?, ?";
+            "INNER JOIN group_members gm on `groups`.id = gm.group_id\n" +
+            "WHERE id = ?\n" +
+            "ORDER BY gm.username LIMIT ?, ?";
         List<String> authorities = this.jdbcOperations
-                .queryForList(sql, String.class, id, offset, pageSize);
+            .queryForList(sql, String.class, id, offset, pageSize);
         String countSql = "SELECT COUNT(gm.username) FROM `groups`\n" +
-                "INNER JOIN group_members gm on `groups`.id = gm.group_id\n" +
-                "WHERE id = ?";
+            "INNER JOIN group_members gm on `groups`.id = gm.group_id\n" +
+            "WHERE id = ?";
         Long count = this.jdbcOperations.queryForObject(countSql, Long.class, id);
         if (count == null) {
             count = 0L;
@@ -223,8 +237,8 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     @Override
     public boolean checkAuthorityExistInGroup(String groupName, String authorities) {
         String sql = "SELECT COUNT(DISTINCT authority) FROM `groups` " +
-                " INNER JOIN group_authorities ON group_authorities.group_id = `groups`.id " +
-                " WHERE group_name = ? AND authority = ?";
+            " INNER JOIN group_authorities ON group_authorities.group_id = `groups`.id " +
+            " WHERE group_name = ? AND authority = ?";
         Long count = this.jdbcOperations.queryForObject(sql, Long.class, groupName, authorities);
         return count != null && count > 0;
     }
@@ -232,8 +246,8 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     @Override
     public boolean checkUserExistInGroup(String groupName, String usernames) {
         String sql = "SELECT COUNT(DISTINCT username) FROM `groups` " +
-                " INNER JOIN group_members ON group_members.group_id = `groups`.id" +
-                " WHERE group_name = ? AND username IN ?";
+            " INNER JOIN group_members ON group_members.group_id = `groups`.id" +
+            " WHERE group_name = ? AND username IN ?";
         Long count = this.jdbcOperations.queryForObject(sql, Long.class, groupName, usernames);
         return count != null && count > 0;
     }
@@ -241,29 +255,33 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     @Override
     public void register(UserDTO userDTO) {
         try {
-            SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(Objects.requireNonNull(this.getDataSource()))
-                    .withProcedureName("REGISTER");
+            SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(
+                Objects.requireNonNull(this.getDataSource()))
+                .withProcedureName("REGISTER");
             MapSqlParameterSource in = new MapSqlParameterSource()
-                    .addValue("username", userDTO.getUsername())
-                    .addValue("password", userDTO.getPassword())
-                    .addValue("first_name", userDTO.getUserProfile().getFirstName())
-                    .addValue("last_name", userDTO.getUserProfile().getLastName())
-                    .addValue("gender", userDTO.getUserProfile().getGender().getValue())
-                    .addValue("date_of_birth", userDTO.getUserProfile().getDateOfBirth())
-                    .addValue("email", userDTO.getUserProfile().getEmail())
-                    .addValue("phone_number", userDTO.getUserProfile().getPhoneNumber())
-                    .addValue("group_name", CommonConstant.DEFAULT_GROUP);
+                .addValue("p_username", userDTO.getUsername())
+                .addValue("p_password", userDTO.getPassword())
+                .addValue("p_first_name", userDTO.getUserProfile().getFirstName())
+                .addValue("p_last_name", userDTO.getUserProfile().getLastName())
+                .addValue("p_gender", userDTO.getUserProfile().getGender().getValue())
+                .addValue("p_date_of_birth", userDTO.getUserProfile().getDateOfBirth())
+                .addValue("p_email", userDTO.getUserProfile().getEmail())
+                .addValue("p_phone_number", userDTO.getUserProfile().getPhoneNumber())
+                .addValue("p_group_name", CommonConstant.DEFAULT_GROUP);
             simpleJdbcCall.execute(in);
         } catch (UncategorizedSQLException ex) {
             SQLException sqlException = ex.getSQLException();
             if (CUSTOM_SQL_STATE.equals(sqlException.getSQLState())) {
                 switch (ErrorCode.get(sqlException.getMessage())) {
                     case USERNAME_EXISTED:
-                        throw new BusinessException(sqlException.getErrorCode(), "validation.username.existed");
+                        throw new BusinessException(sqlException.getErrorCode(),
+                            "validation.username.existed");
                     case USER_PROFILE_EXISTED:
-                        throw new BusinessException(sqlException.getErrorCode(), "validation.userProfile.existed");
+                        throw new BusinessException(sqlException.getErrorCode(),
+                            "validation.userProfile.existed");
                     case GROUP_NOT_FOUND:
-                        throw new BusinessException(sqlException.getErrorCode(), "validation.group.notFound");
+                        throw new BusinessException(sqlException.getErrorCode(),
+                            "validation.group.notFound");
                 }
             }
             throw ex;
@@ -273,16 +291,18 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     @Override
     public void unRegister(String username) {
         try {
-            SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(Objects.requireNonNull(this.getDataSource()))
-                    .withProcedureName("UNREGISTER");
+            SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(
+                Objects.requireNonNull(this.getDataSource()))
+                .withProcedureName("UNREGISTER");
             MapSqlParameterSource in = new MapSqlParameterSource()
-                    .addValue("username", username);
+                .addValue("p_username", username);
             simpleJdbcCall.execute(in);
         } catch (UncategorizedSQLException ex) {
             SQLException sqlException = ex.getSQLException();
             if (CUSTOM_SQL_STATE.equals(sqlException.getSQLState())) {
                 if (ErrorCode.get(sqlException.getMessage()) == ErrorCode.USERNAME_NOT_FOUND) {
-                    throw new BusinessException(sqlException.getErrorCode(), "validation.username.notFound");
+                    throw new BusinessException(sqlException.getErrorCode(),
+                        "validation.username.notFound");
                 }
             }
             throw ex;
@@ -292,21 +312,23 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     @Override
     public Map<String, UserProfileDTO> userList() {
         String sql = "SELECT user.username, up.first_name, up.last_name, up.date_of_birth, " +
-                "up.gender, up.phone_number, up.email, up.avatar_url, up.other_info " +
-                "FROM user LEFT JOIN user_profile up " +
-                "ON user.username = up.username";
-        return Objects.requireNonNull(this.jdbcOperations.query(sql, this.userProfileExtractor.customListExtractor()))
-                .stream().collect(Collectors.toMap(UserProfileDTO::getUsername, e -> e));
+            "up.gender, up.phone_number, up.email, up.avatar_url, up.other_info " +
+            "FROM user LEFT JOIN user_profile up " +
+            "ON user.username = up.username";
+        return Objects.requireNonNull(
+            this.jdbcOperations.query(sql, this.userProfileExtractor.customListExtractor()))
+            .stream().collect(Collectors.toMap(UserProfileDTO::getUsername, e -> e));
     }
 
     @Override
     public Page<UserDTO> userList(Pageable pageable) {
         String sql = "SELECT user.username, password, enabled, account_locked,\n" +
-                "       account_expired, credentials_expired, `groups`.id AS group_id, `groups`.group_name\n" +
-                "FROM user\n" +
-                "LEFT JOIN group_members ON group_members.username = user.username\n" +
-                "LEFT JOIN `groups` ON `groups`.id = group_members.group_id\n" +
-                "LIMIT ?, ?";
+            "       account_expired, credentials_expired, `groups`.id AS group_id, `groups`.group_name\n"
+            +
+            "FROM user\n" +
+            "LEFT JOIN group_members ON group_members.username = user.username\n" +
+            "LEFT JOIN `groups` ON `groups`.id = group_members.group_id\n" +
+            "LIMIT ?, ?";
         List<UserDTO> userList = this.jdbcOperations.query(sql, rs -> {
             UserDTO user;
             String username;
@@ -334,17 +356,36 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
                 }
             }
             return userMap.values()
-                    .stream()
-                    .sorted(Comparator.comparing(UserDTO::getUsername))
-                    .collect(Collectors.toList());
+                .stream()
+                .sorted(Comparator.comparing(UserDTO::getUsername))
+                .collect(Collectors.toList());
         }, pageable.getOffset(), pageable.getPageSize());
-        if (userList == null) userList = new ArrayList<>();
+        if (userList == null) {
+            userList = new ArrayList<>();
+        }
         String countSql = "SELECT COUNT(user.username) \n" +
-                "FROM user\n" +
-                "LEFT JOIN group_members ON group_members.username = user.username\n" +
-                "LEFT JOIN `groups` ON `groups`.id = group_members.group_id ";
+            "FROM user\n" +
+            "LEFT JOIN group_members ON group_members.username = user.username\n" +
+            "LEFT JOIN `groups` ON `groups`.id = group_members.group_id ";
         Long count = this.jdbcOperations.queryForObject(countSql, Long.class);
         return new PageImpl<>(userList, pageable, count == null ? 0 : count);
+    }
+
+    @Override
+    public List<Group> findGroupListByUsername(String username) {
+        String sql = "SELECT group_id, group_name FROM group_members INNER JOIN `groups` ON group_members.group_id = `groups`.id WHERE username = ?";
+        return this.jdbcOperations.query(sql, rs -> {
+            List<Group> groupList = new ArrayList<>();
+            Group group;
+            while (rs.next()) {
+                group = Group.builder()
+                    .id(rs.getLong("group_id"))
+                    .name(rs.getString("group_name"))
+                    .build();
+                groupList.add(group);
+            }
+            return groupList;
+        }, username);
     }
 
     @Override
@@ -360,32 +401,36 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     }
 
     @Override
-    public void updateUserAndGroup(String username, String newPassword, boolean enabled, boolean accountLocked, boolean accountExpired,
-                                   boolean credentialsExpired, Set<Long> insertGroups, Set<Long> deleteGroups) {
+    public void updateUserAndGroup(String username, String newPassword, boolean enabled,
+        boolean accountLocked, boolean accountExpired,
+        boolean credentialsExpired, Set<Long> insertGroups, Set<Long> deleteGroups) {
         String updateSql;
         if (newPassword != null) {
             updateSql = "UPDATE user SET password = ?, enabled = ?, account_locked = ?, \n" +
-                    "account_expired = ?, credentials_expired = ? WHERE username = ?";
+                "account_expired = ?, credentials_expired = ? WHERE username = ?";
         } else {
             updateSql = "UPDATE user SET enabled = ?, account_locked = ?, \n" +
-                    "account_expired = ?, credentials_expired = ? WHERE username = ?";
+                "account_expired = ?, credentials_expired = ? WHERE username = ?";
         }
 
         Object[] params;
         int[] argTypes;
         if (newPassword != null) {
-            params = new Object[]{newPassword, enabled, accountLocked, accountExpired, credentialsExpired, username};
-            argTypes = new int[]{Types.VARCHAR, Types.BIT, Types.BIT, Types.BIT, Types.BIT, Types.VARCHAR};
+            params = new Object[]{newPassword, enabled, accountLocked, accountExpired,
+                credentialsExpired, username};
+            argTypes = new int[]{Types.VARCHAR, Types.BIT, Types.BIT, Types.BIT, Types.BIT,
+                Types.VARCHAR};
         } else {
-            params = new Object[]{enabled, accountLocked, accountExpired, credentialsExpired, username};
+            params = new Object[]{enabled, accountLocked, accountExpired, credentialsExpired,
+                username};
             argTypes = new int[]{Types.BIT, Types.BIT, Types.BIT, Types.BIT, Types.VARCHAR};
         }
         this.jdbcOperations.update(updateSql, params, argTypes);
         if (!deleteGroups.isEmpty()) {
             String deleteSql = "DELETE FROM group_members WHERE group_id IN (%s) AND username = ?";
             String ids = String.join(",", deleteGroups.stream()
-                    .map(String::valueOf)
-                    .collect(Collectors.toSet()));
+                .map(String::valueOf)
+                .collect(Collectors.toSet()));
             this.jdbcOperations.update(String.format(deleteSql, ids), username);
         }
         if (!insertGroups.isEmpty()) {
@@ -399,7 +444,8 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void updateOtherInfo(String username, Map<String, Object> infoJson) throws JsonProcessingException {
+    public void updateOtherInfo(String username, Map<String, Object> infoJson)
+        throws JsonProcessingException {
         String sql1 = "SELECT other_info FROM user_profile WHERE username = ?";
         String otherInfo = this.jdbcOperations.queryForObject(sql1, String.class, username);
         Map<String, Object> otherInfoMap = this.objectMapper.readValue(otherInfo, Map.class);
@@ -411,10 +457,17 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
 
     @Override
     public void deleteGroup(String groupName) {
-        SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(Objects.requireNonNull(this.getDataSource()))
-                .withProcedureName("DELETE_GROUP");
+        SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(
+            Objects.requireNonNull(this.getDataSource()))
+            .withProcedureName("DELETE_GROUP");
         MapSqlParameterSource in = new MapSqlParameterSource()
-                .addValue("groupName", groupName);
+            .addValue("p_group_name", groupName);
         simpleJdbcCall.execute(in);
+    }
+
+    public boolean resetPassword(String username, String newPassword) {
+        String sql = "UPDATE user SET password = ? WHERE username = ?";
+        int rowAffected = this.jdbcOperations.update(sql, newPassword, username);
+        return rowAffected > 0;
     }
 }

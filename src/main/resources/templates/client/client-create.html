@@ -1,126 +1,135 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:th="http://www.thymeleaf.org"
 >
 <head>
-    <meta charset="UTF-8">
-    <title th:text="#{title.management.client}"></title>
-    <th:block th:replace="~{fragment/general :: headerfiles}"/>
-    <style>
-        .form-check-label {
-            margin-right: 2rem !important;
-        }
-    </style>
-    <script>
-        function showSecret() {
-            const secret = document.getElementById("clientSecret");
-            if (secret.type === "password") {
-                secret.type = "text";
-            } else {
-                secret.type = "password";
-            }
-        }
-        function showScopeField() {
-            const scoped = document.getElementById("scoped");
-            const scope = document.getElementById("scope");
-            const autoApproveScopes = document.getElementById("autoApproveScopes")
-            const scopeArea = document.getElementById("scopeArea");
-            const autoApproveScopesArea = document.getElementById("autoApproveScopesArea");
-            if (scoped.checked){
-                scopeArea.style.display = "block";
-                autoApproveScopesArea.style.display = "block";
-            } else {
-                scopeArea.style.display = "none";
-                autoApproveScopesArea.style.display = "none";
-                scope.value = "";
-                autoApproveScopes.value = "";
-            }
-        }
-        document.addEventListener('DOMContentLoaded', function() {
-            showScopeField();
-        }, false);
-    </script>
+  <meta charset="UTF-8">
+  <title th:text="#{title.management.client}"></title>
+  <th:block th:replace="~{fragment/general :: headerfiles}"/>
+  <style>
+    .form-check-label {
+      margin-right: 2rem !important;
+    }
+  </style>
+  <script>
+    function showSecret() {
+      const secret = document.getElementById("clientSecret");
+      if (secret.type === "password") {
+        secret.type = "text";
+      } else {
+        secret.type = "password";
+      }
+    }
+
+    function showScopeField() {
+      const scoped = document.getElementById("scoped");
+      const scope = document.getElementById("scope");
+      const autoApproveScopes = document.getElementById("autoApproveScopes")
+      const scopeArea = document.getElementById("scopeArea");
+      const autoApproveScopesArea = document.getElementById("autoApproveScopesArea");
+      if (scoped.checked) {
+        scopeArea.style.display = "block";
+        autoApproveScopesArea.style.display = "block";
+      } else {
+        scopeArea.style.display = "none";
+        autoApproveScopesArea.style.display = "none";
+        scope.value = "";
+        autoApproveScopes.value = "";
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      showScopeField();
+    }, false);
+  </script>
 </head>
 <body>
 <div class="container" sec:authorize="isAuthenticated()">
-    <header th:insert="~{fragment/general :: header}"></header>
-    <div class="d-flex justify-content-center">
-        <form class="col-4" th:action="@{/client/create}" th:object="${newClient}" th:method="POST">
-            <h4 th:text="#{title.client.create}"></h4>
-            <div class="form-group my-1">
-                <label for="clientId">Client ID</label>
-                <input class="form-control" id="clientId" placeholder="Enter client ID" th:field="*{clientId}">
-            </div>
-            <div class="form-group my-1">
-                <label for="clientSecret">Secret</label>
-                <input type="password" class="form-control" id="clientSecret" placeholder="Enter client secret"
-                       th:field="*{clientSecret}">
-                <label class="form-check-label">
-                    <input class="form-check-input form-check-inline" id="showSecretCheckbox"
-                           type="checkbox" onclick="showSecret()">
-                    Show secret</label>
-                <label class="form-check-label">
-                    <input class="form-check-input form-check-inline" id="secretRequiredCheckbox"
-                           type="checkbox" th:field="*{secretRequired}">
-                    Require secret?</label>
-            </div>
-            <div class="form-group form-check my-1">
-                <input type="checkbox" class="form-check-input form-check-inline" id="scoped" th:field="*{scoped}"
-                onclick="showScopeField()">
-                <label class="form-check-label" for="scoped">Enable scope?</label>
-            </div>
-            <div class="form-group my-1" id="scopeArea">
-                <label class="d-block">Scopes
-                    <input class="form-control" id="scope" placeholder="Enter scope" th:field="*{scope}">
-                </label>
-                <small class="text-info">Multiple scopes should be separated by comma</small>
-            </div>
-            <div class="form-group my-1" id="autoApproveScopesArea">
-                <label class="d-block">Auto Approve Scopes
-                    <input class="form-control" id="autoApproveScopes" placeholder="Enter auto approve scopes"
-                           th:field="*{autoApproveScopes}">
-                </label>
-                <small class="text-info">Multiple auto approve scopes should be separated by comma</small>
-            </div>
-            <div class="form-group my-1">
-                <label class="d-block">Authorized Gran Types</label>
-                <th:block th:each="grantype: ${grantTypes}">
-                    <label class="form-check-label">
-                        <input class="form-check-input form-check-inline" th:value="${grantype}"
-                               type="checkbox" th:field="*{authorizedGrantTypes}">
-                        <span th:text="${grantype}"></span></label>
-                </th:block>
-            </div>
-            <div class="form-group my-1">
-                <label class="d-block">Authorities
-                    <input class="form-control" id="authorities" placeholder="Enter authorities"
-                           th:field="*{authorities}">
-                </label>
-                <small class="text-info">Multiple authorities should be separated by comma</small>
-            </div>
-            <div class="form-group my-1">
-                <label class="d-block">Redirect URIs
-                    <input class="form-control" id="registeredRedirectUri" placeholder="Enter redirect URIs"
-                           th:field="*{registeredRedirectUri}">
-                </label>
-                <small class="text-info">Multiple redirect URIs should be separated by comma</small>
-            </div>
-            <div class="form-group my-1">
-                <label for="accessTokenValiditySeconds">Access Token Validity (Second)</label>
-                <input class="form-control" id="accessTokenValiditySeconds" placeholder="Enter access token validity"
-                       th:field="*{accessTokenValiditySeconds}" type="number" th:min="${60}" th:max="${24*60*60}">
-            </div>
-            <div class="form-group my-1">
-                <label for="refreshTokenValiditySeconds">Refresh Token Validity (Second)</label>
-                <input class="form-control" id="refreshTokenValiditySeconds" placeholder="Enter refresh token validity"
-                       th:field="*{refreshTokenValiditySeconds}" type="number" th:min="${60*60}" th:max="${31*24*60*60}">
-            </div>
-            <div th:replace="~{fragment/general :: message}"></div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-    </div>
-    <div th:replace="~{fragment/general :: footer}"></div>
+  <header th:insert="~{fragment/general :: header}"></header>
+  <div class="d-flex justify-content-center">
+    <form class="col-4" th:action="@{/client/create}" th:method="POST" th:object="${newClient}">
+      <h4 th:text="#{title.client.create}"></h4>
+      <div class="form-group my-1">
+        <label for="clientId">Client ID</label>
+        <input class="form-control" id="clientId" placeholder="Enter client ID"
+               th:field="*{clientId}">
+      </div>
+      <div class="form-group my-1">
+        <label for="clientSecret">Secret</label>
+        <input class="form-control" id="clientSecret" placeholder="Enter client secret"
+               th:field="*{clientSecret}"
+               type="password">
+        <label class="form-check-label">
+          <input class="form-check-input form-check-inline" id="showSecretCheckbox"
+                 onclick="showSecret()" type="checkbox">
+          Show secret</label>
+        <label class="form-check-label">
+          <input class="form-check-input form-check-inline" id="secretRequiredCheckbox"
+                 th:field="*{secretRequired}" type="checkbox">
+          Require secret?</label>
+      </div>
+      <div class="form-group form-check my-1">
+        <input class="form-check-input form-check-inline" id="scoped" onclick="showScopeField()"
+               th:field="*{scoped}"
+               type="checkbox">
+        <label class="form-check-label" for="scoped">Enable scope?</label>
+      </div>
+      <div class="form-group my-1" id="scopeArea">
+        <label class="d-block">Scopes
+          <input class="form-control" id="scope" placeholder="Enter scope" th:field="*{scope}">
+        </label>
+        <small class="text-info">Multiple scopes should be separated by comma</small>
+      </div>
+      <div class="form-group my-1" id="autoApproveScopesArea">
+        <label class="d-block">Auto Approve Scopes
+          <input class="form-control" id="autoApproveScopes" placeholder="Enter auto approve scopes"
+                 th:field="*{autoApproveScopes}">
+        </label>
+        <small class="text-info">Multiple auto approve scopes should be separated by comma</small>
+      </div>
+      <div class="form-group my-1">
+        <label class="d-block">Authorized Gran Types</label>
+        <th:block th:each="grantype: ${grantTypes}">
+          <label class="form-check-label">
+            <input class="form-check-input form-check-inline" th:field="*{authorizedGrantTypes}"
+                   th:value="${grantype}" type="checkbox">
+            <span th:text="${grantype}"></span></label>
+        </th:block>
+      </div>
+      <div class="form-group my-1">
+        <label class="d-block">Authorities
+          <input class="form-control" id="authorities" placeholder="Enter authorities"
+                 th:field="*{authorities}">
+        </label>
+        <small class="text-info">Multiple authorities should be separated by comma</small>
+      </div>
+      <div class="form-group my-1">
+        <label class="d-block">Redirect URIs
+          <input class="form-control" id="registeredRedirectUri" placeholder="Enter redirect URIs"
+                 th:field="*{registeredRedirectUri}">
+        </label>
+        <small class="text-info">Multiple redirect URIs should be separated by comma</small>
+      </div>
+      <div class="form-group my-1">
+        <label for="accessTokenValiditySeconds">Access Token Validity (Second)</label>
+        <input class="form-control" id="accessTokenValiditySeconds"
+               placeholder="Enter access token validity"
+               th:field="*{accessTokenValiditySeconds}" th:max="${24*60*60}" th:min="${60}"
+               type="number">
+      </div>
+      <div class="form-group my-1">
+        <label for="refreshTokenValiditySeconds">Refresh Token Validity (Second)</label>
+        <input class="form-control" id="refreshTokenValiditySeconds"
+               placeholder="Enter refresh token validity"
+               th:field="*{refreshTokenValiditySeconds}" th:max="${31*24*60*60}" th:min="${60*60}"
+               type="number">
+      </div>
+      <div th:replace="~{fragment/general :: message}"></div>
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+  </div>
+  <div th:replace="~{fragment/general :: footer}"></div>
 </div>
 </body>
 </html>

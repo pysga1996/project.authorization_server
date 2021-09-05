@@ -75,4 +75,5 @@
       "type": "java.lang.String",
       "description": "Description for custom.jwk.key-pass."
     }
-  ] }
+  ]
+}

@@ -5,6 +5,8 @@ import com.lambda.error.BusinessException;
 import com.lambda.model.domain.Group;
 import com.lambda.model.domain.GroupInfo;
 import com.lambda.service.GroupService;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,9 +15,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class GroupServiceImpl implements GroupService {
@@ -42,20 +41,20 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional(readOnly = true)
     public Group findGroupById(Long id, int authorityPageNumber, int authorityPageSize,
-                               int userPageNumber, int userPageSize) {
+        int userPageNumber, int userPageSize) {
         Group group = this.userDao.findGroupById(id);
         if (group == null) {
             throw new BusinessException(404, "Group not found");
         }
         Pageable authorityPageable = PageRequest
-                .of(authorityPageNumber - 1, authorityPageSize);
+            .of(authorityPageNumber - 1, authorityPageSize);
         Page<GrantedAuthority> authorityPage = this.userDao
-                .findGroupAuthorityPageById(id, authorityPageable);
+            .findGroupAuthorityPageById(id, authorityPageable);
         group.setAuthorityPage(authorityPage);
         Pageable userPageable = PageRequest
-                .of(authorityPageNumber - 1, userPageSize);
+            .of(authorityPageNumber - 1, userPageSize);
         Page<String> userPage = this.userDao
-                .findGroupUserPageById(id, userPageable);
+            .findGroupUserPageById(id, userPageable);
         group.setUserPage(userPage);
         return group;
     }
@@ -68,7 +67,7 @@ public class GroupServiceImpl implements GroupService {
             throw new BusinessException(409, "Group existed");
         }
         List<GrantedAuthority> authorities = group.getAuthorities() == null ?
-                new ArrayList<>() : group.getAuthorities();
+            new ArrayList<>() : group.getAuthorities();
         this.userDao.createGroup(group.getName(), authorities);
     }
 
@@ -82,10 +81,11 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional
     public void addAuthorityToGroup(String groupName, String authority) {
-        boolean authorityExistInGroup = this.userDao.checkAuthorityExistInGroup(groupName, authority);
+        boolean authorityExistInGroup = this.userDao
+            .checkAuthorityExistInGroup(groupName, authority);
         if (authorityExistInGroup) {
             throw new BusinessException(409,
-                    String.format("Authority %s existed in group %s", authority, groupName));
+                String.format("Authority %s existed in group %s", authority, groupName));
         }
         this.userDao.addGroupAuthority(groupName, new SimpleGrantedAuthority(authority));
     }
@@ -96,7 +96,7 @@ public class GroupServiceImpl implements GroupService {
         boolean userExistInGroup = this.userDao.checkUserExistInGroup(groupName, username);
         if (userExistInGroup) {
             throw new BusinessException(409,
-                    String.format("Users %s existed in group %s", username, groupName));
+                String.format("Users %s existed in group %s", username, groupName));
         }
         this.userDao.addUserToGroup(username, groupName);
     }
@@ -104,10 +104,11 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional
     public void removeAuthority(String groupName, String authority) {
-        boolean authorityExistInGroup = this.userDao.checkAuthorityExistInGroup(groupName, authority);
+        boolean authorityExistInGroup = this.userDao
+            .checkAuthorityExistInGroup(groupName, authority);
         if (!authorityExistInGroup) {
             throw new BusinessException(409,
-                    String.format("Authority %s does not exist in group %s", authority, groupName));
+                String.format("Authority %s does not exist in group %s", authority, groupName));
         }
         this.userDao.removeGroupAuthority(groupName, new SimpleGrantedAuthority(authority));
     }

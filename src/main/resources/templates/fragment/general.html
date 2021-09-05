@@ -1,152 +1,160 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:th="http://www.thymeleaf.org"
 >
 <head th:fragment="headerfiles">
-    <meta charset="UTF-8"/>
-    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
-    <link th:href="@{/icon/bootstrap-icons.css}" rel="stylesheet">
-    <link rel="icon" type="image/png" th:href="@{/image/favicon.png}">
-<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">-->
-    <title>Header Fragments</title>
-    <style >
-        /*@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css");*/
-        body {
-            padding-top: 5rem;
-            padding-bottom: 5rem;
+  <meta charset="UTF-8"/>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/icon/bootstrap-icons.css}">
+  <link rel="icon" th:href="@{/image/favicon.png}" type="image/png">
+  <!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">-->
+  <title>Header Fragments</title>
+  <style>
+    /*@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css");*/
+    body {
+      padding-top: 5rem;
+      padding-bottom: 5rem;
+    }
+
+    ul.error_block {
+      padding-top: 0.5rem !important;
+      margin-top: 0.5rem;
+      padding-bottom: 0.5rem !important;
+    }
+
+    ul.error_block > li {
+      list-style-type: none;
+      font-size: small;
+    }
+
+    a.nav-link.active {
+      border-radius: 0.5rem;
+      /*filter: brightness(80%);*/
+      background: lightblue;
+      /*color: beige !important;*/
+    }
+  </style>
+  <script th:src="@{/js/bootstrap.bundle.js}" type="text/javascript"></script>
+  <script>
+    function hideMessage() {
+      const timeout = setTimeout(() => {
+        const msgDiv = document.getElementById("msg");
+        if (msgDiv) {
+          msgDiv.remove();
         }
-        ul.error_block {
-            padding-top: 0.5rem !important;
-            margin-top: 0.5rem;
-            padding-bottom: 0.5rem !important;
-        }
-        ul.error_block > li {
-            list-style-type: none;
-            font-size: small;
-        }
-        a.nav-link.active {
-            border-radius: 0.5rem;
-            /*filter: brightness(80%);*/
-            background: lightblue;
-            /*color: beige !important;*/
-        }
-    </style>
-    <script type="text/javascript" th:src="@{/js/bootstrap.bundle.js}"></script>
-    <script>
-        function hideMessage() {
-            const timeout = setTimeout(() => {
-                const msgDiv = document.getElementById("msg");
-                if (msgDiv) {
-                    msgDiv.remove();
-                }
-                clearTimeout(timeout);
-            }, 5000);
-        }
-        document.addEventListener('DOMContentLoaded', function() {
-        //     const btnContainer = document.getElementById("navBar");
-        //
-        //     // Get all buttons with class="btn" inside the container
-        //     const btns = btnContainer.getElementsByTagName("a");
-        //     const currentUrl = (window.location.href);
-        //     // Loop through the buttons and add the active class to the current/clicked button
-        //     for (let i = 0; i < btns.length; i++) {
-        //         const btnUrl = (window.location.protocol + "//" + window.location.host + btns[i].getAttribute("href"));
-        //         if (currentUrl.startsWith(btnUrl)) {
-        //             const currents = document.getElementsByClassName("active");
-        //             if (currents.length > 0) {
-        //                 for (let current of currents) {
-        //                     current.className = current.className.replace(" active", "");
-        //                 }
-        //             }
-        //             btns[i].className += " active";
-        //             break;
-        //         }
-        //     }
-            hideMessage();
-        }, false);
-    </script>
+        clearTimeout(timeout);
+      }, 5000);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      //     const btnContainer = document.getElementById("navBar");
+      //
+      //     // Get all buttons with class="btn" inside the container
+      //     const btns = btnContainer.getElementsByTagName("a");
+      //     const currentUrl = (window.location.href);
+      //     // Loop through the buttons and add the active class to the current/clicked button
+      //     for (let i = 0; i < btns.length; i++) {
+      //         const btnUrl = (window.location.protocol + "//" + window.location.host + btns[i].getAttribute("href"));
+      //         if (currentUrl.startsWith(btnUrl)) {
+      //             const currents = document.getElementsByClassName("active");
+      //             if (currents.length > 0) {
+      //                 for (let current of currents) {
+      //                     current.className = current.className.replace(" active", "");
+      //                 }
+      //             }
+      //             btns[i].className += " active";
+      //             break;
+      //         }
+      //     }
+      hideMessage();
+    }, false);
+  </script>
 </head>
 <body>
 <div th:fragment="header">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light" id="navBar">
-        <div class="container-fluid">
-            <a class="navbar-brand mx-2" href="#">
-                <img th:src="@{/image/logo.png}" width="120" height="44" alt="lambda-auth-logo"/>
+  <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light" id="navBar">
+    <div class="container-fluid">
+      <a class="navbar-brand mx-2" href="#">
+        <img alt="lambda-auth-logo" height="44" th:src="@{/image/logo.png}" width="120"/>
+      </a>
+      <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+              class="navbar-toggler" data-bs-target="#navbarSupportedContent"
+              data-bs-toggle="collapse" type="button">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a aria-current="page" class="nav-link" th:classappend="${#httpServletRequest.requestURI.contains('/homepage.html')} ? active : ''"
+               th:href="@{/homepage.html}">
+              <h4>Home</h4></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:classappend="${#httpServletRequest.requestURI.contains('/user') && !#httpServletRequest.requestURI.contains('/register')} ? active : ''"
+               th:href="@{/user/list}">
+              <h4 th:text="#{title.nav.user}"></h4>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" th:href="@{/homepage.html}"
-                           th:classappend="${#httpServletRequest.requestURI.contains('/homepage.html')} ? active : ''">
-                            <h4>Home</h4></a>
-                    </li>
-                    <li class="nav-item">
-                        <a th:href="@{/user/list}" class="nav-link"
-                           th:classappend="${#httpServletRequest.requestURI.contains('/user') && !#httpServletRequest.requestURI.contains('/register')} ? active : ''">
-                            <h4 th:text="#{title.nav.user}"></h4>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a th:href="@{/group/list}" class="nav-link"
-                           th:classappend="${#httpServletRequest.requestURI.contains('/group')} ? active : ''">
-                            <h4 th:text="#{title.nav.group}"></h4>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a th:href="@{/client/list}" class="nav-link"
-                           th:classappend="${#httpServletRequest.requestURI.contains('/client')} ? active : ''">
-                            <h4 th:text="#{title.nav.client}"></h4>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a th:href="@{/user/register}" class="nav-link"
-                           th:classappend="${#httpServletRequest.requestURI.contains('/user/register')} ? active : ''">
-                            <h4 th:text="#{title.nav.register}"></h4>
-                        </a>
-                    </li>
-                </ul>
-                <div class="nav-item mx-2" sec:authorize="isAnonymous()">
-                    <a th:href="@{/login.html}" class="btn btn-primary">Login</a>
-                </div>
-                <div class="nav-item dropdown" sec:authorize="isAuthenticated()">
-                    <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false" th:text="${#authentication.name}">
-
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" th:href="@{/perform_logout}">Logout</a></li>
-                    </ul>
-                </div>
-                <div>
-
-                </div>
-                <form class="navbar-nav mb-2 mb-lg-0 d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
-
-            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:classappend="${#httpServletRequest.requestURI.contains('/group')} ? active : ''"
+               th:href="@{/group/list}">
+              <h4 th:text="#{title.nav.group}"></h4>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:classappend="${#httpServletRequest.requestURI.contains('/client')} ? active : ''"
+               th:href="@{/client/list}">
+              <h4 th:text="#{title.nav.client}"></h4>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:classappend="${#httpServletRequest.requestURI.contains('/user/register')} ? active : ''"
+               th:href="@{/user/register}">
+              <h4 th:text="#{title.nav.register}"></h4>
+            </a>
+          </li>
+        </ul>
+        <div class="nav-item mx-2" sec:authorize="isAnonymous()">
+          <a class="btn btn-primary" th:href="@{/login.html}">Login</a>
         </div>
-    </nav>
+        <div class="nav-item dropdown" sec:authorize="isAuthenticated()">
+          <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+             id="navbarDropdown" role="button" th:text="${#authentication.name}">
+
+          </a>
+          <ul aria-labelledby="navbarDropdown" class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" th:href="@{/perform_logout}">Logout</a></li>
+          </ul>
+        </div>
+        <div>
+
+        </div>
+        <form class="navbar-nav mb-2 mb-lg-0 d-flex">
+          <input aria-label="Search" class="form-control me-2" placeholder="Search" type="search">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+
+      </div>
+    </div>
+  </nav>
 </div>
 <aside>
-    <div>This is a sidebar</div>
+  <div>This is a sidebar</div>
 </aside>
-<div th:fragment="message" th:if="${viewMessage}" role="alert" id="msg"
-     th:attr="class=${viewMessage.success ? 'alert alert-success' : 'alert alert-danger'}">
-    <span th:text="${viewMessage.message}"></span></div>
+<div id="msg" role="alert" th:attr="class=${viewMessage.success ? 'alert alert-success' : 'alert alert-danger'}" th:fragment="message"
+     th:if="${viewMessage}">
+  <span th:text="${viewMessage.message}"></span></div>
 <footer class="fixed-bottom" th:fragment="footer">
-    <a th:href="@{/fragments}">Fragments Index</a> |
-    <a th:href="@{/markup}">Markup inclussion</a> |
-    <a th:href="@{/params}">Fragment params</a> |
-    <a th:href="@{/other}">Other</a>
+  <a th:href="@{/fragments}">Fragments Index</a> |
+  <a th:href="@{/markup}">Markup inclussion</a> |
+  <a th:href="@{/params}">Fragment params</a> |
+  <a th:href="@{/other}">Other</a>
 </footer>
 </body>
 </html>

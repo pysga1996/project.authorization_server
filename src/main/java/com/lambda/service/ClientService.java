@@ -1,9 +1,8 @@
 package com.lambda.service;
 
 import com.lambda.model.dto.ClientDTO;
-
-import javax.servlet.http.Cookie;
 import java.util.List;
+import javax.servlet.http.Cookie;
 
 public interface ClientService {
 
@@ -22,7 +21,7 @@ public interface ClientService {
     Cookie[] createCookie(ClientDTO clientDTO);
 
     void patchCookiesToForm(String clientId, String scope, String autoApproveScopes,
-                            String authorities, String registeredRedirectUri,
-                            String accessTokenValiditySeconds, String refreshTokenValiditySeconds,
-                            ClientDTO clientDTO);
+        String authorities, String registeredRedirectUri,
+        String accessTokenValiditySeconds, String refreshTokenValiditySeconds,
+        ClientDTO clientDTO);
 }

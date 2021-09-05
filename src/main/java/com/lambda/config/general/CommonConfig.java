@@ -1,4 +1,4 @@
-package com.lambda.config.custom;
+package com.lambda.config.general;
 
 import com.cloudinary.Cloudinary;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -64,47 +64,35 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 @Configuration
 @DependsOn({"dataSource"})
 @SuppressWarnings("deprecation")
-public class CustomBeanConfig {
+public class CommonConfig {
 
     private final DataSource dataSource;
 
     private final UserDetailsService userDetailsService;
-
+    private final TokenEnhancer tokenEnhancer;
+    private final JwtAccessTokenConverter jwtTokenConverter;
+    private final Environment env;
     @Value("${storage.cloudinary.url}")
     private String cloudinaryUrl;
-
     @Value("${storage.firebase.database-url}")
     private String firebaseDatabaseUrl;
-
     @Value("${storage.firebase.storage-bucket}")
     private String firebaseStorageBucket;
-
     @Value("${storage.firebase.credentials}")
     private String firebaseCredentials;
-
     @Value("${spring.profiles.active:Default}")
     private String activeProfile;
-
     @Value("${custom.http-port}")
     private Integer httpPort;
-
     @Value("${custom.https-port}")
     private Integer httpsPort;
-
     @Value("${custom.security-policy}")
     private String securityPolicy;
-
     @Value("${custom.connector-scheme}")
     private String connectorScheme;
 
-    private final TokenEnhancer tokenEnhancer;
-
-    private final JwtAccessTokenConverter jwtTokenConverter;
-
-    private final Environment env;
-
     @Autowired
-    public CustomBeanConfig(DataSource dataSource,
+    public CommonConfig(DataSource dataSource,
         @Lazy @Qualifier("userDaoImpl") UserDetailsService userDetailsService,
         @Qualifier("customTokenEnhancer") TokenEnhancer tokenEnhancer,
         @Qualifier("customJwtTokenConverter") JwtAccessTokenConverter jwtTokenConverter,
@@ -151,7 +139,8 @@ public class CustomBeanConfig {
     @Bean
     @Primary
     public TokenStore tokenStore() {
-        if (CloudPlatform.HEROKU.isActive(this.env) || Arrays.asList(this.env.getActiveProfiles()).contains("poweredge")) {
+        if (CloudPlatform.HEROKU.isActive(this.env) || Arrays.asList(this.env.getActiveProfiles())
+            .contains("poweredge")) {
             return new JwtTokenStore(this.jwtTokenConverter);
         } else {
             return new JdbcTokenStore(dataSource);
@@ -166,8 +155,11 @@ public class CustomBeanConfig {
         defaultTokenServices.setSupportRefreshToken(true);
         defaultTokenServices.setReuseRefreshToken(false);
         defaultTokenServices.setTokenStore(tokenStore());
-        if (CloudPlatform.HEROKU.isActive(this.env) || Arrays.asList(this.env.getActiveProfiles()).contains("poweredge")) {
+        if (CloudPlatform.HEROKU.isActive(this.env) || Arrays.asList(this.env.getActiveProfiles())
+            .contains("poweredge")) {
             defaultTokenServices.setTokenEnhancer(this.jwtTokenConverter);
+            defaultTokenServices.setAccessTokenValiditySeconds(60 * 60);
+            defaultTokenServices.setRefreshTokenValiditySeconds(60 * 60 * 24);
         } else {
             defaultTokenServices.setTokenEnhancer(this.tokenEnhancer);
         }
@@ -185,7 +177,8 @@ public class CustomBeanConfig {
     @RefreshScope
     @Bean
     public PersistentTokenBasedRememberMeServices tokenBasedRememberMeServices() {
-        return new PersistentTokenBasedRememberMeServices("lambda", userDetailsService, persistentTokenRepository());
+        return new PersistentTokenBasedRememberMeServices("lambda", userDetailsService,
+            persistentTokenRepository());
     }
 
 //    @Bean
@@ -207,7 +200,8 @@ public class CustomBeanConfig {
 
     @RefreshScope
     @Bean
-    public TransactionOperations transactionOperations(PlatformTransactionManager transactionManager) {
+    public TransactionOperations transactionOperations(
+        PlatformTransactionManager transactionManager) {
         return new TransactionTemplate(transactionManager);
     }
 
@@ -223,25 +217,29 @@ public class CustomBeanConfig {
     @ConditionalOnProperty(prefix = "storage", name = "storage-type", havingValue = "firebase")
     public StorageClient firebaseStorage() {
         try {
-            GoogleCredentials credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(this.firebaseCredentials.getBytes()));
+            GoogleCredentials credentials = GoogleCredentials
+                .fromStream(new ByteArrayInputStream(this.firebaseCredentials.getBytes()));
             FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(credentials)
-                    .setDatabaseUrl(this.firebaseDatabaseUrl)
-                    .setStorageBucket(this.firebaseStorageBucket)
-                    .build();
+                .setCredentials(credentials)
+                .setDatabaseUrl(this.firebaseDatabaseUrl)
+                .setStorageBucket(this.firebaseStorageBucket)
+                .build();
 
             FirebaseApp fireApp = null;
             List<FirebaseApp> firebaseApps = FirebaseApp.getApps();
             if (firebaseApps != null && !firebaseApps.isEmpty()) {
                 for (FirebaseApp app : firebaseApps) {
-                    if (app.getName().equals(FirebaseApp.DEFAULT_APP_NAME))
+                    if (app.getName().equals(FirebaseApp.DEFAULT_APP_NAME)) {
                         fireApp = app;
+                    }
                 }
-            } else
+            } else {
                 fireApp = FirebaseApp.initializeApp(options);
+            }
             return StorageClient.getInstance(Objects.requireNonNull(fireApp));
         } catch (IOException ex) {
-            throw new FileStorageException("Could not get admin-sdk json file. Please try again!", ex);
+            throw new FileStorageException("Could not get admin-sdk json file. Please try again!",
+                ex);
         }
     }
 
@@ -256,7 +254,7 @@ public class CustomBeanConfig {
             ErrorPage error503 = new ErrorPage(HttpStatus.SERVICE_UNAVAILABLE, "/error/503");
             ErrorPage error401 = new ErrorPage(HttpStatus.UNAUTHORIZED, "/error/401");
             server.addErrorPages(error400, error500, error404, error403, error503
-                    , error401
+                , error401
             );
 
         };

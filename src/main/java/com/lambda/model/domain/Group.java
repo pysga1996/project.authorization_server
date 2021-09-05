@@ -1,18 +1,19 @@
 package com.lambda.model.domain;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Group implements Serializable {
 
     private Long id;
@@ -27,8 +28,12 @@ public class Group implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Group group = (Group) o;
         return Objects.equals(id, group.id);
     }

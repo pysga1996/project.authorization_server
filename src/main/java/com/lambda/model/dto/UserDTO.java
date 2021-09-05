@@ -3,16 +3,15 @@ package com.lambda.model.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.lambda.model.domain.Group;
 import com.lambda.util.CustomAuthoritySerializer;
+import java.io.Serializable;
+import java.util.Set;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import java.io.Serializable;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -43,8 +42,8 @@ public class UserDTO implements UserDetails, Serializable {
     private Set<GrantedAuthority> authorities;
 
     public UserDTO(String username, String password, boolean enabled,
-                   boolean accountNonExpired, boolean accountNonLocked,
-                   boolean credentialsNonExpired, Set<GrantedAuthority> authorities) {
+        boolean accountNonExpired, boolean accountNonLocked,
+        boolean credentialsNonExpired, Set<GrantedAuthority> authorities) {
         this.username = username;
         this.password = password;
         this.enabled = enabled;
@@ -55,9 +54,9 @@ public class UserDTO implements UserDetails, Serializable {
     }
 
     public UserDTO(UserProfileDTO userProfile, SettingDTO setting,
-                   String username, String password,
-                   boolean enabled, boolean accountNonExpired, boolean accountNonLocked,
-                   boolean credentialsNonExpired, Set<GrantedAuthority> authorities) {
+        String username, String password,
+        boolean enabled, boolean accountNonExpired, boolean accountNonLocked,
+        boolean credentialsNonExpired, Set<GrantedAuthority> authorities) {
         this.userProfile = userProfile;
         this.setting = setting;
         this.username = username;

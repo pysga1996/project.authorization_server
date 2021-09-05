@@ -3,16 +3,13 @@ package com.lambda.dao.extractor.impl;
 import com.lambda.constant.Gender;
 import com.lambda.dao.extractor.SqlResultExtractor;
 import com.lambda.model.dto.UserProfileDTO;
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.stereotype.Component;
 
 @Component
 public class UserProfileExtractor implements SqlResultExtractor<UserProfileDTO> {

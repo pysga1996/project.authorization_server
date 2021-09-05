@@ -24,11 +24,11 @@ public class MvcErrorHandler {
         }
         log.error(ex);
         StringBuilder sb = new StringBuilder(ex.getMessage()).append("\n");
-        for (StackTraceElement stackTraceElement: ex.getStackTrace()) {
+        for (StackTraceElement stackTraceElement : ex.getStackTrace()) {
             sb.append(stackTraceElement).append("\n");
         }
         return new ModelAndView("error/500", "viewMessage",
-                new ViewMessage(ex.getMessage(), false));
+            new ViewMessage(ex.getMessage(), false));
     }
 //
 //    @ExceptionHandler(Exception.class)

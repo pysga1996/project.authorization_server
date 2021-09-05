@@ -1,12 +1,11 @@
 package com.lambda.model.dto;
 
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.jackson.JsonComponent;
-
-import java.io.Serializable;
 
 @Data
 @Builder(toBuilder = true)

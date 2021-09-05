@@ -125,20 +125,20 @@ create unique index authentication_token_token_uindex
 drop table if exists user;
 create table user
 (
-    account_expired     bit                   not null,
-    account_locked      bit                   not null,
-    credentials_expired bit                   not null,
-    enabled             bit                   not null,
-    password            varchar(255)          null,
-    username            varchar(255)          not null primary key
+    account_expired     bit          not null,
+    account_locked      bit          not null,
+    credentials_expired bit          not null,
+    enabled             bit          not null,
+    password            varchar(255) null,
+    username            varchar(255) not null primary key
 );
 
 drop table if exists setting;
 create table setting
 (
-    username        varchar(50) not null primary key,
-    alert bit                   null,
-    theme varchar(10)           null,
+    username varchar(50) not null primary key,
+    alert    bit         null,
+    theme    varchar(10) null,
     constraint user_setting_username_fk
         foreign key (username) references user (username)
 );
@@ -146,55 +146,59 @@ create table setting
 drop table if exists user_profile;
 create table user_profile
 (
-    username       varchar(50)          not null primary key,
-    first_name    NVARCHAR(50)          null,
-    last_name     NVARCHAR(50)          null,
-    date_of_birth TIMESTAMP             null,
-    gender        BIT(10)               null,
-    phone_number  VARCHAR(20)           null,
-    email         VARCHAR(20)           null,
-    avatar_url    VARCHAR(100)          null,
+    username      varchar(50)  not null primary key,
+    first_name    NVARCHAR(50) null,
+    last_name     NVARCHAR(50) null,
+    date_of_birth TIMESTAMP    null,
+    gender        BIT(10)      null,
+    phone_number  VARCHAR(20)  null,
+    email         VARCHAR(20)  null,
+    avatar_url    VARCHAR(100) null,
     constraint user_profile_username_fk
         foreign key (username) references user (username)
 );
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS REGISTER $$
-CREATE PROCEDURE REGISTER(IN username VARCHAR(255), IN password VARCHAR(255),
-                          IN first_name VARCHAR(255), IN last_name VARCHAR(255), IN date_of_birth TIMESTAMP,
-                          IN gender BIT(1), IN phone_number VARCHAR(255), IN email VARCHAR(255),
-                          IN group_name VARCHAR(255))
-proc: BEGIN
+CREATE PROCEDURE REGISTER(IN p_username varchar(255), IN p_password varchar(255),
+                          IN p_first_name varchar(255), IN p_last_name varchar(255),
+                          IN p_date_of_birth timestamp, IN p_gender bit,
+                          IN p_phone_number varchar(255), IN p_email varchar(255),
+                          IN p_group_name varchar(255))
+proc:
+BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
         BEGIN
             SHOW ERRORS;
             ROLLBACK;
             RESIGNAL;
         END;
-    IF (EXISTS(SELECT 1 FROM user WHERE user.username = username)) THEN
+    IF (EXISTS(SELECT 1 FROM user WHERE user.username = p_username)) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'USERNAME_EXISTED';
     ELSE
         INSERT INTO user (account_expired, account_locked, credentials_expired,
                           enabled, password, username)
-        VALUES (false, false, false, false, password, username);
+        VALUES (false, false, false, false, p_password, p_username);
     END IF;
     #     SET @user_id = (SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'user'
-#         AND TABLE_SCHEMA = (SELECT DATABASE()));
-    IF (EXISTS(SELECT 1 FROM user_profile WHERE user_profile.username = username)) THEN
+    #         AND TABLE_SCHEMA = (SELECT DATABASE()));
+    IF (EXISTS(SELECT 1 FROM user_profile WHERE user_profile.username = p_username)) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'USER_PROFILE_EXISTED';
     ELSE
-        INSERT INTO user_profile (username, first_name, last_name, date_of_birth, gender, phone_number, email)
-        VALUES (username, first_name, last_name, date_of_birth, gender, phone_number, email);
+        INSERT INTO user_profile (username, first_name, last_name, date_of_birth, gender,
+                                  phone_number, email)
+        VALUES (p_username, p_first_name, p_last_name, p_date_of_birth, p_gender, p_phone_number,
+                p_email);
     END IF;
-    IF (EXISTS(SELECT 1 FROM setting WHERE setting.username = username)) THEN
+    IF (EXISTS(SELECT 1 FROM setting WHERE setting.username = p_username)) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'SETTING_EXISTED';
     ELSE
         INSERT INTO setting (username, alert, theme)
-        VALUES (username, 1, 'light');
+        VALUES (p_username, 1, 'light');
     END IF;
-    SET @check_group = (SELECT id FROM `groups` WHERE `groups`.group_name = group_name);
+    SET @check_group = (SELECT id FROM `groups` WHERE `groups`.group_name = p_group_name);
     IF (NOT ISNULL(@check_group)) THEN
-        INSERT INTO group_members(username, group_id) VALUES (username, @check_group);
+        INSERT INTO group_members(username, group_id) VALUES (p_username, @check_group);
     ELSE
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'GROUP_NOT_FOUND';
     END IF;
@@ -203,32 +207,34 @@ DELIMITER ;
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS UNREGISTER $$
-CREATE PROCEDURE UNREGISTER(IN username VARCHAR(255))
-proc: BEGIN
+CREATE PROCEDURE UNREGISTER(IN p_username VARCHAR(255))
+proc:
+BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
         BEGIN
             SHOW ERRORS;
             ROLLBACK;
             RESIGNAL;
         END;
-    DELETE FROM user_profile WHERE user_profile.username = username;
-    DELETE FROM setting WHERE setting.username = username;
-    DELETE FROM user WHERE user.username = username;
+    DELETE FROM user_profile WHERE user_profile.username = p_username;
+    DELETE FROM setting WHERE setting.username = p_username;
+    DELETE FROM user WHERE user.username = p_username;
 END $$
 DELIMITER ;
 
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS DELETE_GROUP $$
-CREATE PROCEDURE DELETE_GROUP(IN groupName VARCHAR(255))
-proc: BEGIN
+CREATE PROCEDURE DELETE_GROUP(IN p_group_name VARCHAR(255))
+proc:
+BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
         BEGIN
             SHOW ERRORS;
             ROLLBACK;
             RESIGNAL;
         END;
-    SET @id = (SELECT id FROM `groups` WHERE `groups`.group_name = groupName);
+    SET @id = (SELECT id FROM `groups` WHERE `groups`.group_name = p_group_name);
     IF (ISNULL(@id)) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'GROUP_NOT_FOUND';
     ELSE
@@ -236,7 +242,7 @@ proc: BEGIN
         DELETE FROM group_authorities WHERE group_authorities.group_id = @id;
         DELETE FROM `groups` WHERE `groups`.id = @id;
     END IF;
-END $$
+END; $$
 DELIMITER ;
 
 

@@ -1,109 +1,111 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:th="http://www.thymeleaf.org"
 >
 <head>
-    <meta charset="UTF-8">
-    <title th:text="#{title.management.group}"></title>
-    <th:block th:replace="~{fragment/general :: headerfiles}"/>
-    <script>
-        function removeAuthority(authority) {
-            document.getElementById('removeAuthority').value = authority;
-            let accept = confirm('Are you sure that you want to remove this authority from group?');
-            if (accept) {
-                document.getElementById('removeAuthorityForm').submit();
-            }
-        }
-    </script>
+  <meta charset="UTF-8">
+  <title th:text="#{title.management.group}"></title>
+  <th:block th:replace="~{fragment/general :: headerfiles}"/>
+  <script>
+    function removeAuthority(authority) {
+      document.getElementById('removeAuthority').value = authority;
+      let accept = confirm('Are you sure that you want to remove this authority from group?');
+      if (accept) {
+        document.getElementById('removeAuthorityForm').submit();
+      }
+    }
+  </script>
 </head>
 <body>
 <div class="container" sec:authorize="isAuthenticated()">
-    <header th:insert="~{fragment/general :: header}"></header>
-    <div class="d-flex row d-flex justify-content-center">
-        <div class="col-8">
-            <h4 th:text="#{title.group.list}"></h4>
-        </div>
+  <header th:insert="~{fragment/general :: header}"></header>
+  <div class="d-flex row d-flex justify-content-center">
+    <div class="col-8">
+      <h4 th:text="#{title.group.list}"></h4>
     </div>
-    <div class="d-flex row justify-content-center">
-        <div class="col-8" th:insert="~{fragment/general :: message}"></div>
-    </div>
-    <div class="d-flex row justify-content-center" th:with="aPage=${existedGroup.authorityPage}">
-        <form class="d-none" id="removeAuthorityForm"
-              th:action="@{/group/remove-authority}" th:method="POST" th:object="${existedGroup}">
-            <input id="removeAuthority" type="hidden" name="authority">
-            <input type="hidden" th:field="*{id}">
-            <input type="hidden" th:field="*{name}">
-        </form>
-        <form class="col-4" th:action="@{/group/rename}" th:object="${existedGroup}" th:method="POST">
-            <input type="hidden" th:field="*{id}">
-            <div class="form-group my-1">
-                <label for="groupName">Group Name</label>
-                <input class="form-control" id="groupName"
-                       placeholder="Enter group name" th:field="*{name}">
-            </div>
-            <button type="submit" class="btn btn-primary">Rename</button>
-        </form>
-        <form class="col-4" th:action="@{/group/add-authority}" th:object="${existedGroup}" th:method="POST">
-            <div class="form-group my-1">
-                <input type="hidden" th:field="*{id}">
-                <input type="hidden" th:field="*{name}">
-                <label class="d-block">Group Authorities</label>
-                <ul id="groupAuthorities" class="list-group">
-                    <li th:each="authority, itemStat : *{authorityPage.content}" class="list-group-item d-flex">
-                        <span class="d-inline-block" th:text="${authority}"></span>
-                        <button type="button" class="d-inline-block btn btn-sm btn-danger ms-auto"
-                                th:data-thing="${authority}"
-                                onclick="removeAuthority(this.getAttribute('data-thing'));">
-                            <i class="bi bi-trash-fill"></i>
-                        </button>
-                    </li>
-                </ul>
+  </div>
+  <div class="d-flex row justify-content-center">
+    <div class="col-8" th:insert="~{fragment/general :: message}"></div>
+  </div>
+  <div class="d-flex row justify-content-center" th:with="aPage=${existedGroup.authorityPage}">
+    <form class="d-none" id="removeAuthorityForm"
+          th:action="@{/group/remove-authority}" th:method="POST" th:object="${existedGroup}">
+      <input id="removeAuthority" name="authority" type="hidden">
+      <input th:field="*{id}" type="hidden">
+      <input th:field="*{name}" type="hidden">
+    </form>
+    <form class="col-4" th:action="@{/group/rename}" th:method="POST" th:object="${existedGroup}">
+      <input th:field="*{id}" type="hidden">
+      <div class="form-group my-1">
+        <label for="groupName">Group Name</label>
+        <input class="form-control" id="groupName"
+               placeholder="Enter group name" th:field="*{name}">
+      </div>
+      <button class="btn btn-primary" type="submit">Rename</button>
+    </form>
+    <form class="col-4" th:action="@{/group/add-authority}" th:method="POST"
+          th:object="${existedGroup}">
+      <div class="form-group my-1">
+        <input th:field="*{id}" type="hidden">
+        <input th:field="*{name}" type="hidden">
+        <label class="d-block">Group Authorities</label>
+        <ul class="list-group" id="groupAuthorities">
+          <li class="list-group-item d-flex"
+              th:each="authority, itemStat : *{authorityPage.content}">
+            <span class="d-inline-block" th:text="${authority}"></span>
+            <button class="d-inline-block btn btn-sm btn-danger ms-auto" onclick="removeAuthority(this.getAttribute('data-thing'));"
+                    th:data-thing="${authority}"
+                    type="button">
+              <i class="bi bi-trash-fill"></i>
+            </button>
+          </li>
+        </ul>
 
-            </div>
-            <div class="d-flex" th:with="firstPage=${aPage.number - 2 >= 0} ? ${aPage.number - 1} : 1,
+      </div>
+      <div class="d-flex" th:with="firstPage=${aPage.number - 2 >= 0} ? ${aPage.number - 1} : 1,
                  lastPage=${aPage.number + 2 <= aPage.totalPages - 1} ? ${aPage.number + 3} : ${aPage.totalPages}">
-                <ul class="pagination ms-auto" th:with="lastPageTmp=${aPage.number < 2 && aPage.totalPages > 5} ? ${6 - firstPage} : ${lastPage},
+        <ul class="pagination ms-auto" th:with="lastPageTmp=${aPage.number < 2 && aPage.totalPages > 5} ? ${6 - firstPage} : ${lastPage},
                            firstPageTmp=${aPage.number > aPage.totalPages - 3 && aPage.totalPages > 5} ? ${lastPage - 4} : ${firstPage}">
-                    <li class="page-item" >
-                        <a class="page-link" th:if="${!aPage.first}" th:href="@{/group/update/{id}
-                           (id=${existedGroup.id},authority-page-number=${1})}">&lt&lt</a>
-                    </li>
-                    <li class="page-item" >
-                        <a class="page-link" th:if="${!aPage.first}" th:href="@{/group/update/{id}
-                           (id=${existedGroup.id},authority-page-number=${aPage.number})}">&lt</a>
-                    </li>
-                    <li th:each="page: ${(aPage.totalPages > 5) ?
-                    (#numbers.sequence(firstPageTmp, lastPageTmp)) : (#numbers.sequence(1, aPage.totalPages))}"
-                        class="page-item" th:classappend="${page == aPage.number + 1} ? 'active' : ''">
-                        <a class="page-link" th:text="${page}"
-                           th:href="@{/group/update/{id}(id=${existedGroup.id},authority-page-number=${page})}">
-                        </a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" th:if="${!aPage.last}" th:href="@{/group/update/{id}
-                           (id=${existedGroup.id},authority-page-number=${aPage.number + 2})}">&gt</a>
-                    </li>
-                    <li class="page-item" >
-                        <a class="page-link" th:if="${!aPage.last}" th:href="@{/group/update/{id}
-                           (id=${existedGroup.id},authority-page-number=${aPage.totalPages})}">&gt&gt</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="row g-3 align-items-center mt-1">
-                <div class="col-10">
-                    <input class="form-control" id="authority" name="authority"
-                           placeholder="Enter authority to add">
-                </div>
-                <div class="col-2">
-                    <button class="btn btn-primary w-100" type="submit" name="addAuthority">
-                        <i class="bi bi-plus-square-fill"></i>
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div>
-    <div th:replace="~{fragment/general :: footer}"></div>
+          <li class="page-item">
+            <a class="page-link" th:href="@{/group/update/{id}
+                           (id=${existedGroup.id},authority-page-number=${1})}" th:if="${!aPage.first}">&lt&lt</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" th:href="@{/group/update/{id}
+                           (id=${existedGroup.id},authority-page-number=${aPage.number})}" th:if="${!aPage.first}">&lt</a>
+          </li>
+          <li class="page-item"
+              th:classappend="${page == aPage.number + 1} ? 'active' : ''" th:each="page: ${(aPage.totalPages > 5) ?
+                    (#numbers.sequence(firstPageTmp, lastPageTmp)) : (#numbers.sequence(1, aPage.totalPages))}">
+            <a class="page-link" th:href="@{/group/update/{id}(id=${existedGroup.id},authority-page-number=${page})}"
+               th:text="${page}">
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" th:href="@{/group/update/{id}
+                           (id=${existedGroup.id},authority-page-number=${aPage.number + 2})}" th:if="${!aPage.last}">&gt</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" th:href="@{/group/update/{id}
+                           (id=${existedGroup.id},authority-page-number=${aPage.totalPages})}" th:if="${!aPage.last}">&gt&gt</a>
+          </li>
+        </ul>
+      </div>
+      <div class="row g-3 align-items-center mt-1">
+        <div class="col-10">
+          <input class="form-control" id="authority" name="authority"
+                 placeholder="Enter authority to add">
+        </div>
+        <div class="col-2">
+          <button class="btn btn-primary w-100" name="addAuthority" type="submit">
+            <i class="bi bi-plus-square-fill"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div th:replace="~{fragment/general :: footer}"></div>
 </div>
 </body>
 </html>

@@ -1,21 +1,19 @@
 package com.lambda.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.lambda.constant.Gender;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Date;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
@@ -39,7 +37,7 @@ public class UserProfileDTO extends UploadDTO implements Serializable {
     private Gender gender;
 
     @Pattern(regexp = "^(\\s*|(\\+84|84|0)+([3|5|7|8|9])([0-9]{8}))$",
-            message = "{validation.phoneNumber.invalid}")
+        message = "{validation.phoneNumber.invalid}")
     private String phoneNumber;
 
     @Email(message = "{validation.email.invalid}")
@@ -55,8 +53,8 @@ public class UserProfileDTO extends UploadDTO implements Serializable {
     private String otherInfo;
 
     public UserProfileDTO(String username, String firstName, String lastName,
-                          Timestamp dateOfBirth, Gender gender, String phoneNumber,
-                          String email, String avatarUrl) {
+        Timestamp dateOfBirth, Gender gender, String phoneNumber,
+        String email, String avatarUrl) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;

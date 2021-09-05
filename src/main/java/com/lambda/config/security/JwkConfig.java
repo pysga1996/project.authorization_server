@@ -9,7 +9,6 @@ import java.security.interfaces.RSAPublicKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
@@ -21,21 +20,21 @@ import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFacto
  **/
 @Configuration
 @SuppressWarnings("deprecation")
-public class JwtConfig {
+public class JwkConfig {
 
-    @Value("custom.jwk.keystore")
+    @Value("${custom.jwk.keystore}")
     private Resource jwkKeyStore;
 
-    @Value("custom.jwk.keystore-password")
+    @Value("${custom.jwk.keystore-password}")
     private String jwkKeyStorePassword;
 
-    @Value("custom.jwk.key")
+    @Value("${custom.jwk.key}")
     private String jwkKey;
 
-    @Value("custom.jwk.key-pass")
+    @Value("${custom.jwk.key-pass}")
     private String jwkKeyPass;
 
-    @Value("custom.jwk.key-id")
+    @Value("${custom.jwk.key-id}")
     private String jwkKeyId;
 
     @Bean

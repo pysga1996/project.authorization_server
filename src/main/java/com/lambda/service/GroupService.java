@@ -2,7 +2,6 @@ package com.lambda.service;
 
 import com.lambda.model.domain.Group;
 import com.lambda.model.domain.GroupInfo;
-
 import java.util.List;
 
 public interface GroupService {
@@ -12,7 +11,7 @@ public interface GroupService {
     List<GroupInfo> groupListWithInfo();
 
     Group findGroupById(Long id, int authorityPageNumber, int authorityPageSize,
-                        int userPageNumber, int userPageSize);
+        int userPageNumber, int userPageSize);
 
     void createGroup(Group group);
 

@@ -6,6 +6,8 @@ import com.lambda.model.dto.UserProfileDTO;
 import com.lambda.model.dto.ViewMessage;
 import com.lambda.service.GroupService;
 import com.lambda.service.UserService;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -17,13 +19,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 @Log4j2
 @Controller
@@ -39,7 +42,7 @@ public class UserController {
 
     @Autowired
     public UserController(UserService userService, GroupService groupService,
-                          MessageSource messageSource) {
+        MessageSource messageSource) {
         this.userService = userService;
         this.groupService = groupService;
         this.messageSource = messageSource;
@@ -58,10 +61,10 @@ public class UserController {
     @PreAuthorize("isAnonymous()")
     @PostMapping("/register")
     public ModelAndView register(@Valid @ModelAttribute("newUser") UserDTO user,
-                                 BindingResult userBindingResult,
-                                 @Valid @ModelAttribute("newUserProfile") UserProfileDTO userProfile,
-                                 BindingResult userProfileBindingResult, ModelMap modelMap,
-                                 RedirectAttributes redirectAttributes, HttpServletRequest request) {
+        BindingResult userBindingResult,
+        @Valid @ModelAttribute("newUserProfile") UserProfileDTO userProfile,
+        BindingResult userProfileBindingResult, ModelMap modelMap,
+        RedirectAttributes redirectAttributes, HttpServletRequest request) {
         try {
             if (userBindingResult.hasErrors() || userProfileBindingResult.hasErrors()) {
                 return new ModelAndView("user/register", modelMap);
@@ -69,7 +72,7 @@ public class UserController {
             user.setUserProfile(userProfile);
             this.userService.register(user);
             redirectAttributes.addFlashAttribute("viewMessage",
-                    new ViewMessage("Register successfully!", true));
+                new ViewMessage("Register successfully!", true));
             return new ModelAndView("redirect:" + "/homepage.html");
         } catch (BusinessException ex) {
             String msg = this.messageSource.getMessage(ex.getMessage(), null, request.getLocale());
@@ -81,14 +84,14 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/unregister")
     public ModelAndView unregister(ModelMap modelMap, HttpServletRequest request,
-                                   RedirectAttributes redirectAttributes) {
+        RedirectAttributes redirectAttributes) {
         try {
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
             this.userService.unregister(username);
             SecurityContextHolder.getContext().setAuthentication(
-                    new AnonymousAuthenticationToken("anonymous", "anonymousUser", null));
+                new AnonymousAuthenticationToken("anonymous", "anonymousUser", null));
             redirectAttributes.addFlashAttribute("viewMessage",
-                    new ViewMessage("Unregister successfully!", true));
+                new ViewMessage("Unregister successfully!", true));
             return new ModelAndView("redirect:" + "/homepage.html");
         } catch (BusinessException ex) {
             String msg = this.messageSource.getMessage(ex.getMessage(), null, request.getLocale());
@@ -108,15 +111,16 @@ public class UserController {
     @PreAuthorize("hasAuthority('UPDATE_USER')")
     @PostMapping("/update")
     public RedirectView updateUser(@RequestParam("enabled") boolean enabled,
-                                   @RequestParam("account_locked") boolean accountLocked,
-                                   @RequestParam("account_expired") boolean accountExpired,
-                                   @RequestParam("credentials_expired") boolean credentialsExpired,
-                                   @RequestParam("groups") String groups,
-                                   @RequestParam("password") String password,
-                                   @RequestParam("username") String username) {
+        @RequestParam("account_locked") boolean accountLocked,
+        @RequestParam("account_expired") boolean accountExpired,
+        @RequestParam("credentials_expired") boolean credentialsExpired,
+        @RequestParam("groups") String groups,
+        @RequestParam("password") String password,
+        @RequestParam("username") String username) {
         log.info("Values: {} - {} | {} | {} | {} | {} | {}", username, password,
-                enabled, accountLocked, accountExpired, credentialsExpired, groups);
-        this.userService.updateUser(username, password, enabled, accountLocked, accountExpired, credentialsExpired, groups);
+            enabled, accountLocked, accountExpired, credentialsExpired, groups);
+        this.userService.updateUser(username, password, enabled, accountLocked, accountExpired,
+            credentialsExpired, groups);
         return new RedirectView("/user/list", true);
     }
 }

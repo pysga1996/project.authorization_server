@@ -8,14 +8,13 @@ import com.google.firebase.cloud.StorageClient;
 import com.lambda.error.FileStorageException;
 import com.lambda.model.dto.UploadDTO;
 import com.lambda.service.StorageService;
+import java.io.IOException;
+import java.io.InputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 @Service
 @DependsOn("firebaseStorage")
@@ -38,13 +37,16 @@ public class FirebaseStorageServiceImpl extends StorageService {
         try {
             InputStream fileInputStream = multipartFile.getInputStream();
             String blobString = uploadDTO.getFolder() + "/" + fileName;
-            Blob blob = bucket.create(blobString, fileInputStream, Bucket.BlobWriteOption.userProject("climax-sound"));
-            bucket.getStorage().updateAcl(blob.getBlobId(), Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
+            Blob blob = bucket.create(blobString, fileInputStream,
+                Bucket.BlobWriteOption.userProject("climax-sound"));
+            bucket.getStorage()
+                .updateAcl(blob.getBlobId(), Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
             String blobName = blob.getName();
             uploadDTO.setBlobString(blobName);
             return blob.getMediaLink();
         } catch (IOException ex) {
-            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+            throw new FileStorageException(
+                "Could not store file " + fileName + ". Please try again!", ex);
         }
     }
 

@@ -4,22 +4,20 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.lambda.model.dto.UploadDTO;
 import com.lambda.service.StorageService;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.ServletContext;
 import lombok.extern.log4j.Log4j2;
 import org.cloudinary.json.JSONArray;
 import org.cloudinary.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.ServletContext;
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Log4j2
 @Service
@@ -27,12 +25,10 @@ import java.util.Map;
 @ConditionalOnProperty(prefix = "storage", name = "storage-type", havingValue = "cloudinary")
 public class CloudinaryStorageServiceImpl extends StorageService {
 
+    private final Cloudinary cloudinary;
+    private final ServletContext servletContext;
     @Value("${storage.temp}")
     private String tempFolder;
-
-    private final Cloudinary cloudinary;
-
-    private final ServletContext servletContext;
 
     @Autowired
     public CloudinaryStorageServiceImpl(Cloudinary cloudinary, ServletContext servletContext) {
@@ -59,12 +55,12 @@ public class CloudinaryStorageServiceImpl extends StorageService {
         accessType.put("access_type", "anonymous");
         accessControl.put(accessType);
         Map<?, ?> params = ObjectUtils.asMap(
-                "use_filename", true,
-                "folder", uploadDTO.getFolder(),
-                "unique_filename", false,
-                "overwrite", true,
-                "resource_type", "image",
-                "access_control", accessControl
+            "use_filename", true,
+            "folder", uploadDTO.getFolder(),
+            "unique_filename", false,
+            "overwrite", true,
+            "resource_type", "image",
+            "access_control", accessControl
         );
         Map<?, ?> uploadResult = this.cloudinary.uploader().upload(tmpFile, params);
         log.info("Delete temp file? {}", tmpFile.delete());
@@ -80,7 +76,7 @@ public class CloudinaryStorageServiceImpl extends StorageService {
         Map<?, ?> deleteResult;
         try {
             deleteResult = this.cloudinary.uploader()
-                    .destroy(uploadDTO.getBlobString(), deleteOption);
+                .destroy(uploadDTO.getBlobString(), deleteOption);
             if (deleteResult.get("result").equals("ok")) {
                 log.info("Delete resource success {}", uploadDTO.getBlobString());
             } else {

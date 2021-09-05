@@ -1,8 +1,8 @@
 package com.lambda.model.dto;
 
 import com.lambda.constant.TokenStatus;
-import lombok.Data;
 import java.sql.Timestamp;
+import lombok.Data;
 
 @Data
 public class AuthenticationTokenDTO {

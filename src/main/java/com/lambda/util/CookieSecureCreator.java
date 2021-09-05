@@ -1,8 +1,7 @@
 package com.lambda.util;
 
-import lombok.Value;
-
 import javax.servlet.http.Cookie;
+import lombok.Value;
 
 @Value
 public class CookieSecureCreator {

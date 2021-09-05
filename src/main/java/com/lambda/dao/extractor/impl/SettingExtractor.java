@@ -2,12 +2,11 @@ package com.lambda.dao.extractor.impl;
 
 import com.lambda.dao.extractor.SqlResultExtractor;
 import com.lambda.model.dto.SettingDTO;
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.stereotype.Component;
 
 @Component
 public class SettingExtractor implements SqlResultExtractor<SettingDTO> {

@@ -1,15 +1,12 @@
-package com.lambda.config.custom;
+package com.lambda.config.general;
 
+import java.net.InetAddress;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import java.net.InetAddress;
 
 @Log4j2
 @RefreshScope
@@ -28,7 +25,8 @@ public class LocalHostResolver implements HostResolver {
     public String resolveHost(String path) {
         String ip = InetAddress.getLoopbackAddress().getHostAddress();
         int port = this.environment.getProperty("server.port", Integer.class, 8081);
-        String context = this.environment.getProperty("server.servlet.context-path", String.class, "/");
+        String context = this.environment
+            .getProperty("server.servlet.context-path", String.class, "/");
         String url = ip + ":" + port + context;
         log.info("Current url: {}", url);
         return url;

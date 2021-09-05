@@ -1,16 +1,19 @@
-
 package com.lambda.model.ws;
 
-import javax.activation.DataHandler;
-import javax.xml.bind.annotation.*;
 import java.io.Serializable;
+import javax.activation.DataHandler;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlMimeType;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
  * <p>Java class for EmailAttachment complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="EmailAttachment">
  *   &lt;complexContent>
@@ -23,8 +26,6 @@ import java.io.Serializable;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "EmailAttachment", propOrder = {
@@ -32,8 +33,7 @@ import java.io.Serializable;
     "fileName"
 })
 public class EmailAttachment
-    implements Serializable
-{
+    implements Serializable {
 
     @XmlElement(required = true)
     @XmlMimeType("application/octet-stream")
@@ -43,11 +43,8 @@ public class EmailAttachment
 
     /**
      * Gets the value of the file property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DataHandler }
-     *     
+     *
+     * @return possible object is {@link DataHandler }
      */
     public DataHandler getFile() {
         return file;
@@ -55,27 +52,21 @@ public class EmailAttachment
 
     /**
      * Sets the value of the file property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DataHandler }
-     *     
+     *
+     * @param value allowed object is {@link DataHandler }
      */
     public void setFile(DataHandler value) {
         this.file = value;
     }
 
     public boolean isSetFile() {
-        return (this.file!= null);
+        return (this.file != null);
     }
 
     /**
      * Gets the value of the fileName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is {@link String }
      */
     public String getFileName() {
         return fileName;
@@ -83,18 +74,15 @@ public class EmailAttachment
 
     /**
      * Sets the value of the fileName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is {@link String }
      */
     public void setFileName(String value) {
         this.fileName = value;
     }
 
     public boolean isSetFileName() {
-        return (this.fileName!= null);
+        return (this.fileName != null);
     }
 
 }

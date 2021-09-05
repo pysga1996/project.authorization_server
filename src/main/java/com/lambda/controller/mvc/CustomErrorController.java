@@ -1,5 +1,6 @@
 package com.lambda.controller.mvc;
 
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,11 +8,12 @@ import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
 
 @Log4j2
 @Controller
@@ -36,7 +38,7 @@ public class CustomErrorController implements ErrorController {
 
     private int getErrorCode(HttpServletRequest httpRequest) {
         return (Integer) httpRequest
-                .getAttribute("javax.servlet.error.status_code");
+            .getAttribute("javax.servlet.error.status_code");
     }
 
     @Override

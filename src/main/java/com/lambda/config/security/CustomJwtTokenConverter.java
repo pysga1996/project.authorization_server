@@ -1,4 +1,4 @@
-package com.lambda.config.custom;
+package com.lambda.config.security;
 
 import java.security.KeyPair;
 import java.security.interfaces.RSAPrivateKey;
@@ -28,12 +28,10 @@ import org.springframework.stereotype.Component;
 @SuppressWarnings("deprecation")
 public class CustomJwtTokenConverter extends JwtAccessTokenConverter implements TokenEnhancer {
 
-    private final TokenEnhancer tokenEnhancer;
-
-    private final Map<String, String> customHeaders;
-
-    private final JsonParser objectMapper = JsonParserFactory.create();
     final RsaSigner signer;
+    private final TokenEnhancer tokenEnhancer;
+    private final Map<String, String> customHeaders;
+    private final JsonParser objectMapper = JsonParserFactory.create();
 
     @Autowired
     public CustomJwtTokenConverter(

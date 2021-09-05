@@ -1,5 +1,8 @@
 package com.lambda.config.general;
 
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.MessageSource;
@@ -12,12 +15,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
-
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.Set;
 
 @RefreshScope
 @Configuration
@@ -36,9 +40,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Autowired
     public WebMvcConfig(Formatter<Set<String>> stringSetFormatter,
-                        Formatter<List<GrantedAuthority>> authoritiesFormatter,
-                        Formatter<Timestamp> timestampFormatter, HandlerInterceptor localeChangeInterceptor,
-                        MessageSource messageSource) {
+        Formatter<List<GrantedAuthority>> authoritiesFormatter,
+        Formatter<Timestamp> timestampFormatter, HandlerInterceptor localeChangeInterceptor,
+        MessageSource messageSource) {
         this.stringSetFormatter = stringSetFormatter;
         this.authoritiesFormatter = authoritiesFormatter;
         this.timestampFormatter = timestampFormatter;
@@ -66,6 +70,20 @@ public class WebMvcConfig implements WebMvcConfigurer {
         return bean;
     }
 
+//    @Bean
+//    @Primary
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowCredentials(true);
+////        configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+//        configuration.setAllowedOrigins(CrossOriginConfig.allowedOrigins);
+//        configuration.setAllowedMethods(Collections.singletonList("*"));
+//        configuration.setAllowedHeaders(Collections.singletonList("*"));
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
+
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/homepage.html");
@@ -75,10 +93,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/css/**", "/js/**", "/image/**", "/icon/**")
-                .addResourceLocations("classpath:/static/css/",
-                        "classpath:/static/js/",
-                        "classpath:/static/image/",
-                        "classpath:/static/icon/");
+            .addResourceLocations("classpath:/static/css/",
+                "classpath:/static/js/",
+                "classpath:/static/image/",
+                "classpath:/static/icon/");
     }
 
     @Override

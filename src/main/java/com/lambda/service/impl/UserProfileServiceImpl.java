@@ -7,12 +7,11 @@ import com.lambda.model.dto.UserDTO;
 import com.lambda.model.dto.UserProfileDTO;
 import com.lambda.service.UserProfileService;
 import com.lambda.service.UserService;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 public class UserProfileServiceImpl implements UserProfileService {
@@ -33,7 +32,9 @@ public class UserProfileServiceImpl implements UserProfileService {
         if (username == null) {
             username = SecurityContextHolder.getContext().getAuthentication().getName();
         }
-        Optional<UserProfileDTO> optionalUserProfile = this.userProfileDao.findProfileByUsername(username);;
+        Optional<UserProfileDTO> optionalUserProfile = this.userProfileDao
+            .findProfileByUsername(username);
+        ;
         if (!optionalUserProfile.isPresent()) {
             UserProfileDTO userProfile = new UserProfileDTO();
             userProfile.setUsername(username);
@@ -53,7 +54,9 @@ public class UserProfileServiceImpl implements UserProfileService {
             }
             userProfileDTO.setUsername(userDTO.getUsername());
             this.userProfileDao.createProfile(userProfileDTO);
-        } else throw new UserNotFoundException();
+        } else {
+            throw new UserNotFoundException();
+        }
     }
 
     @Override
@@ -66,6 +69,8 @@ public class UserProfileServiceImpl implements UserProfileService {
             }
             userProfileDTO.setUsername(userDTO.getUserProfile().getUsername());
             this.userProfileDao.updateProfile(userProfileDTO);
-        } else throw new UserNotFoundException();
+        } else {
+            throw new UserNotFoundException();
+        }
     }
 }

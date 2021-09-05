@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 >
 <head>
-    <title>Error</title>
-    <th:block th:replace="~{fragment/error-page :: headerfiles}"/>
+  <title>Error</title>
+  <th:block th:replace="~{fragment/error-page :: headerfiles}"/>
 </head>
 <body>
 <div id="notfound">
-    <div class="notfound">
-        <div class="notfound-404">
-            <h1>Oops!</h1>
-            <h2>404 - The Page can't be found</h2>
-        </div>
-        <a th:href="@{/homepage.html}">Go TO Homepage</a>
+  <div class="notfound">
+    <div class="notfound-404">
+      <h1>Oops!</h1>
+      <h2>404 - The Page can't be found</h2>
     </div>
+    <a th:href="@{/homepage.html}">Go TO Homepage</a>
+  </div>
 </div>
 </body>
 </html>

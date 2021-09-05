@@ -1,15 +1,14 @@
 package com.lambda.formatter;
 
-import org.springframework.format.Formatter;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
-
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Locale;
+import org.springframework.format.Formatter;
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 
 @Component
 public class TimestampFormatter implements Formatter<Timestamp> {

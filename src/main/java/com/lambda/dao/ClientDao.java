@@ -1,12 +1,11 @@
 package com.lambda.dao;
 
+import java.util.List;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.provider.ClientAlreadyExistsException;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.NoSuchClientException;
-
-import java.util.List;
 
 @SuppressWarnings("deprecation")
 public interface ClientDao extends ClientDetailsService {

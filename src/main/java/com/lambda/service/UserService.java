@@ -2,17 +2,18 @@ package com.lambda.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lambda.model.dto.AuthenticationTokenDTO;
+import com.lambda.model.dto.RegistrationDTO.RegistrationConfirmDTO;
+import com.lambda.model.dto.ResetPasswordDTO.ChangePasswordConfirmDTO;
 import com.lambda.model.dto.SearchResponseDTO;
 import com.lambda.model.dto.UserDTO;
 import com.lambda.model.dto.UserProfileDTO;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
-
-import java.net.UnknownHostException;
-import java.util.Calendar;
-import java.util.Map;
-import java.util.Optional;
 
 @SuppressWarnings("deprecation")
 public interface UserService {
@@ -37,11 +38,9 @@ public interface UserService {
 
     SearchResponseDTO search(String searchText);
 
-    String confirmRegistration(String token);
+    void confirmRegistration(RegistrationConfirmDTO registrationConfirmDTO);
 
-    String showChangePasswordPage(String token) throws UnknownHostException;
-
-    UserDTO checkResetPassToken(String token);
+    void resetPassword(ChangePasswordConfirmDTO changePasswordConfirmDTO);
 
     void updateOtherInfo(Map<String, Object> otherInfo) throws JsonProcessingException;
 
@@ -51,11 +50,13 @@ public interface UserService {
         }
         Calendar cal = Calendar.getInstance();
         if ((authenticationTokenDTO.getExpireDate().getTime() - cal.getTime().getTime()) <= 0) {
-            throw new InvalidTokenException("Expired token");
+            throw new InvalidTokenException("Token expired ");
         }
     }
 
     void updateUser(String username, String password, boolean enabled,
-                    boolean accountLocked, boolean accountExpired,
-                    boolean credentialsExpired, String groups);
+        boolean accountLocked, boolean accountExpired,
+        boolean credentialsExpired, String groups);
+
+    List<String> getRoles(String username);
 }

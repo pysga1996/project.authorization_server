@@ -7,7 +7,7 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 @EnableEurekaClient
 @SpringBootApplication(scanBasePackages = "com.lambda",
-        exclude = {ErrorMvcAutoConfiguration.class})
+    exclude = {ErrorMvcAutoConfiguration.class})
 public class LambdaAuthServiceApplication {
 
     public static void main(String[] args) {

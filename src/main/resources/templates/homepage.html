@@ -3,22 +3,22 @@
       xmlns:th="http://www.thymeleaf.org"
 >
 <head>
-    <meta charset="UTF-8">
-    <title>Homepage</title>
-    <th:block th:replace="~{fragment/general :: headerfiles}" />
+  <meta charset="UTF-8">
+  <title>Homepage</title>
+  <th:block th:replace="~{fragment/general :: headerfiles}"/>
 </head>
 <body>
 <div class="container">
-    <header th:insert="~{fragment/general :: header}"> </header>
-    <div class="container-fluid">
-        <h1>Homepage</h1>
-        <div class="d-flex">
-            <p>
-                Welcome to Lambda Authorization Service
-            </p>
-        </div>
+  <header th:insert="~{fragment/general :: header}"></header>
+  <div class="container-fluid">
+    <h1>Homepage</h1>
+    <div class="d-flex">
+      <p>
+        Welcome to Lambda Authorization Service
+      </p>
     </div>
-    <div th:replace="~{fragment/general :: message}"></div>
+  </div>
+  <div th:replace="~{fragment/general :: message}"></div>
 </div>
 </body>
 </html>

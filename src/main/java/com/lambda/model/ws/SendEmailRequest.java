@@ -1,15 +1,18 @@
-
 package com.lambda.model.ws;
 
-import javax.xml.bind.annotation.*;
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -27,8 +30,6 @@ import java.io.Serializable;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -42,8 +43,7 @@ import java.io.Serializable;
 })
 @XmlRootElement(name = "sendEmailRequest")
 public class SendEmailRequest
-    implements Serializable
-{
+    implements Serializable {
 
     @XmlElement(required = true)
     protected String email;
@@ -62,11 +62,8 @@ public class SendEmailRequest
 
     /**
      * Gets the value of the email property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is {@link String }
      */
     public String getEmail() {
         return email;
@@ -74,27 +71,21 @@ public class SendEmailRequest
 
     /**
      * Sets the value of the email property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is {@link String }
      */
     public void setEmail(String value) {
         this.email = value;
     }
 
     public boolean isSetEmail() {
-        return (this.email!= null);
+        return (this.email != null);
     }
 
     /**
      * Gets the value of the subject property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is {@link String }
      */
     public String getSubject() {
         return subject;
@@ -102,27 +93,21 @@ public class SendEmailRequest
 
     /**
      * Sets the value of the subject property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is {@link String }
      */
     public void setSubject(String value) {
         this.subject = value;
     }
 
     public boolean isSetSubject() {
-        return (this.subject!= null);
+        return (this.subject != null);
     }
 
     /**
      * Gets the value of the header property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is {@link String }
      */
     public String getHeader() {
         return header;
@@ -130,27 +115,21 @@ public class SendEmailRequest
 
     /**
      * Sets the value of the header property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is {@link String }
      */
     public void setHeader(String value) {
         this.header = value;
     }
 
     public boolean isSetHeader() {
-        return (this.header!= null);
+        return (this.header != null);
     }
 
     /**
      * Gets the value of the body property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is {@link String }
      */
     public String getBody() {
         return body;
@@ -158,27 +137,21 @@ public class SendEmailRequest
 
     /**
      * Sets the value of the body property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is {@link String }
      */
     public void setBody(String value) {
         this.body = value;
     }
 
     public boolean isSetBody() {
-        return (this.body!= null);
+        return (this.body != null);
     }
 
     /**
      * Gets the value of the footer property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is {@link String }
      */
     public String getFooter() {
         return footer;
@@ -186,27 +159,21 @@ public class SendEmailRequest
 
     /**
      * Sets the value of the footer property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is {@link String }
      */
     public void setFooter(String value) {
         this.footer = value;
     }
 
     public boolean isSetFooter() {
-        return (this.footer!= null);
+        return (this.footer != null);
     }
 
     /**
      * Gets the value of the signature property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is {@link String }
      */
     public String getSignature() {
         return signature;
@@ -214,27 +181,21 @@ public class SendEmailRequest
 
     /**
      * Sets the value of the signature property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is {@link String }
      */
     public void setSignature(String value) {
         this.signature = value;
     }
 
     public boolean isSetSignature() {
-        return (this.signature!= null);
+        return (this.signature != null);
     }
 
     /**
      * Gets the value of the attachment property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link EmailAttachment }
-     *     
+     *
+     * @return possible object is {@link EmailAttachment }
      */
     public EmailAttachment getAttachment() {
         return attachment;
@@ -242,18 +203,15 @@ public class SendEmailRequest
 
     /**
      * Sets the value of the attachment property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link EmailAttachment }
-     *     
+     *
+     * @param value allowed object is {@link EmailAttachment }
      */
     public void setAttachment(EmailAttachment value) {
         this.attachment = value;
     }
 
     public boolean isSetAttachment() {
-        return (this.attachment!= null);
+        return (this.attachment != null);
     }
 
 }

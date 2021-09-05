@@ -2,7 +2,6 @@ package com.lambda.constant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +15,7 @@ public enum Gender {
     private static final Map<Integer, Gender> genderMap = new HashMap<>();
 
     static {
-        for (Gender gender: Gender.values()) {
+        for (Gender gender : Gender.values()) {
             genderMap.put(gender.value, gender);
         }
     }
@@ -29,9 +28,13 @@ public enum Gender {
 
     @JsonCreator
     public static Gender fromValue(Integer integer) {
-        if (integer == null) return Gender.UNKNOWN;
+        if (integer == null) {
+            return Gender.UNKNOWN;
+        }
         Gender gender = genderMap.get(integer);
-        if (gender == null) return Gender.UNKNOWN;
+        if (gender == null) {
+            return Gender.UNKNOWN;
+        }
         return gender;
     }
 

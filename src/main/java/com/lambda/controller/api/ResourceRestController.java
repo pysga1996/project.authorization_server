@@ -1,6 +1,7 @@
 package com.lambda.controller.api;
 
 import com.lambda.service.DownloadService;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping(path = "/api/resource")
@@ -26,8 +25,8 @@ public class ResourceRestController {
     @PreAuthorize("permitAll()")
     @GetMapping("/download/{folder}/{fileName:.+}")
     public ResponseEntity<Resource> getAvatar(@PathVariable("fileName") String fileName,
-                                              @PathVariable("folder") String folder,
-                                              HttpServletRequest request) {
+        @PathVariable("folder") String folder,
+        HttpServletRequest request) {
         return this.downloadService.generateUrl(fileName, folder, request);
     }
 }

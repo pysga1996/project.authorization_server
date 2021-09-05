@@ -5,16 +5,15 @@ import com.lambda.model.domain.Group;
 import com.lambda.model.domain.GroupInfo;
 import com.lambda.model.dto.UserDTO;
 import com.lambda.model.dto.UserProfileDTO;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.provisioning.GroupManager;
 import org.springframework.security.provisioning.UserDetailsManager;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 public interface UserDao extends UserDetailsManager, GroupManager {
 
@@ -62,10 +61,16 @@ public interface UserDao extends UserDetailsManager, GroupManager {
 
     Page<UserDTO> userList(Pageable pageable);
 
+    List<Group> findGroupListByUsername(String username);
+
     Set<Long> findGroupIdSetByUsername(String username);
 
-    void updateUserAndGroup(String username, String newPassword, boolean enabled, boolean accountLocked, boolean accountExpired,
-                            boolean credentialsExpired, Set<Long> insertGroups, Set<Long> deleteGroups);
+    void updateUserAndGroup(String username, String newPassword, boolean enabled,
+        boolean accountLocked, boolean accountExpired,
+        boolean credentialsExpired, Set<Long> insertGroups, Set<Long> deleteGroups);
 
-    void updateOtherInfo(String username, Map<String, Object> infoJson) throws JsonProcessingException;
+    void updateOtherInfo(String username, Map<String, Object> infoJson)
+        throws JsonProcessingException;
+
+    boolean resetPassword(String username, String newPassword);
 }

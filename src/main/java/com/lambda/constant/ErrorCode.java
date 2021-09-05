@@ -10,7 +10,7 @@ public enum ErrorCode {
     private static final Map<String, ErrorCode> valueMap = new HashMap<>();
 
     static {
-        for (ErrorCode code: ErrorCode.values()) {
+        for (ErrorCode code : ErrorCode.values()) {
             valueMap.put(code.name(), code);
         }
     }

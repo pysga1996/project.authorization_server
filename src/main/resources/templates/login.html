@@ -1,40 +1,40 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:th="http://www.thymeleaf.org"
 >
 <head>
-    <meta charset="UTF-8">
-    <title>Login Page</title>
-    <th:block th:replace="~{fragment/general :: headerfiles}"/>
+  <meta charset="UTF-8">
+  <title>Login Page</title>
+  <th:block th:replace="~{fragment/general :: headerfiles}"/>
 </head>
 <body>
 <div class="container" sec:authorize="isAnonymous()">
-    <header th:insert="~{fragment/general :: header}"></header>
-    <div class="d-flex justify-content-center">
-        <form class="col-4" name='f'
-              th:action="@{/perform_login}" method='POST'>
-            <h5>Login Page</h5>
-            <div class="form-group">
-                <label for="exampleInputEmail1">Username</label>
-                <input type="text" class="form-control" id="exampleInputEmail1" name="username"
-                       aria-describedby="emailHelp" placeholder="Enter email">
-                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
-                    else.</small>
-            </div>
-            <div class="form-group">
-                <label for="exampleInputPassword1">Password</label>
-                <input type="password" class="form-control" id="exampleInputPassword1"
-                       name="password" placeholder="Password">
-            </div>
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="exampleCheck1"
-                       name="remember">
-                <label class="form-check-label" for="exampleCheck1">Remember Me</label>
-            </div>
-            <button type="submit" class="btn btn-primary my-2">Submit</button>
-            <div th:replace="~{fragment/general :: message}"></div>
-        </form>
-    </div>
+  <header th:insert="~{fragment/general :: header}"></header>
+  <div class="d-flex justify-content-center">
+    <form class="col-4" method='POST'
+          name='f' th:action="@{/perform_login}">
+      <h5>Login Page</h5>
+      <div class="form-group">
+        <label for="exampleInputEmail1">Username</label>
+        <input aria-describedby="emailHelp" class="form-control" id="exampleInputEmail1" name="username"
+               placeholder="Enter email" type="text">
+        <small class="form-text text-muted" id="emailHelp">We'll never share your email with anyone
+          else.</small>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">Password</label>
+        <input class="form-control" id="exampleInputPassword1" name="password"
+               placeholder="Password" type="password">
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" id="exampleCheck1" name="remember"
+               type="checkbox">
+        <label class="form-check-label" for="exampleCheck1">Remember Me</label>
+      </div>
+      <button class="btn btn-primary my-2" type="submit">Submit</button>
+      <div th:replace="~{fragment/general :: message}"></div>
+    </form>
+  </div>
 </div>
 </body>
 </html>

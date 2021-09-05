@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/oauth/token")
 @SuppressWarnings("deprecation")
 @CrossOrigin(originPatterns = "*", allowedHeaders = "*", allowCredentials = "true",
-        exposedHeaders = {HttpHeaders.SET_COOKIE})
+    exposedHeaders = {HttpHeaders.SET_COOKIE})
 public class TokenRestController {
 
     private final JWKSet jwkSet;
@@ -38,7 +38,9 @@ public class TokenRestController {
         boolean isTokenExisted = this.tokenServices.revokeToken(tokenId);
         if (isTokenExisted) {
             return new ResponseEntity<>(HttpStatus.OK);
-        } else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/.well-known/jwks.json")

@@ -1,24 +1,26 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="LAMBDA_AUTH_SERVICE" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <module name="lambda-auth-service.main" />
+  <configuration default="false" factoryName="Spring Boot"
+    name="LAMBDA_AUTH_SERVICE" type="SpringBootApplicationConfigurationType">
     <extension name="net.ashald.envfile">
-      <option name="IS_ENABLED" value="true" />
-      <option name="IS_SUBST" value="true" />
-      <option name="IS_PATH_MACRO_SUPPORTED" value="true" />
-      <option name="IS_IGNORE_MISSING_FILES" value="false" />
-      <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
       <ENTRIES>
-        <ENTRY IS_ENABLED="true" PARSER="runconfig" />
-        <ENTRY IS_ENABLED="true" PARSER="env" PATH="$PROJECT_DIR$/../../../../CodeGym/Module 4/Project Climax Sound/lambda-auth-service/environment/.env" />
+        <ENTRY IS_ENABLED="true" PARSER="runconfig"/>
+        <ENTRY IS_ENABLED="true" PARSER="env"
+          PATH="$PROJECT_DIR$/../../../../CodeGym/Module 4/Project Climax Sound/lambda-auth-service/environment/.env"/>
       </ENTRIES>
+      <option name="IS_SUBST" value="true"/>
+      <option name="IS_PATH_MACRO_SUPPORTED" value="true"/>
+      <option name="IS_IGNORE_MISSING_FILES" value="false"/>
+      <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false"/>
+      <option name="IS_ENABLED" value="true"/>
     </extension>
-    <option name="SPRING_BOOT_MAIN_CLASS" value="com.lambda.LambdaAuthServiceApplication" />
-    <option name="ACTIVE_PROFILES" value="default" />
-    <option name="ALTERNATIVE_JRE_PATH" />
-    <option name="SHORTEN_COMMAND_LINE" value="CLASSPATH_FILE" />
-    <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <method v="2">
-      <option name="Make" enabled="true" />
+      <option enabled="true" name="Make"/>
     </method>
+    <module name="lambda-auth-service.main"/>
+    <option name="ACTIVE_PROFILES" value="default"/>
+    <option name="ALTERNATIVE_JRE_PATH"/>
+    <option name="SHORTEN_COMMAND_LINE" value="CLASSPATH_FILE"/>
+    <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndResources"/>
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.lambda.LambdaAuthServiceApplication"/>
   </configuration>
 </component>

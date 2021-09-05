@@ -6,21 +6,28 @@ import com.lambda.model.dto.UserProfileDTO;
 import com.lambda.service.StorageService;
 import com.lambda.service.UserProfileService;
 import com.lambda.service.UserService;
+import java.io.IOException;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.validation.Valid;
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/profile")
 @CrossOrigin(originPatterns = "*", allowedHeaders = "*", allowCredentials = "true",
-        exposedHeaders = {HttpHeaders.SET_COOKIE})
+    exposedHeaders = {HttpHeaders.SET_COOKIE})
 public class UserProfileRestController {
 
     private final UserService userService;
@@ -33,8 +40,8 @@ public class UserProfileRestController {
 
     @Autowired
     public UserProfileRestController(UserProfileService userProfileService,
-                                     StorageService storageService,
-                                     UserService userService, ObjectMapper objectMapper) {
+        StorageService storageService,
+        UserService userService, ObjectMapper objectMapper) {
         this.userProfileService = userProfileService;
         this.storageService = storageService;
         this.userService = userService;
@@ -43,11 +50,14 @@ public class UserProfileRestController {
 
     @PreAuthorize("permitAll()")
     @GetMapping
-    public ResponseEntity<UserProfileDTO> getCurrentProfile(@RequestParam(name = "username", required = false) String username) {
+    public ResponseEntity<UserProfileDTO> getCurrentProfile(
+        @RequestParam(name = "username", required = false) String username) {
         UserProfileDTO userProfileDTO = this.userProfileService.getProfileByUsername(username);
         if (userProfileDTO != null) {
             return new ResponseEntity<>(userProfileDTO, HttpStatus.OK);
-        } else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PreAuthorize("#oauth2.user")
@@ -66,9 +76,11 @@ public class UserProfileRestController {
 
     @PreAuthorize("isAuthenticated()")
     @PatchMapping
-    public ResponseEntity<UserProfileDTO> uploadAvatar(@RequestParam(value = "avatar", required = false) MultipartFile multipartFile,
-                                                    @RequestParam("userProfile") String profileJsonStr) throws IOException {
-        UserProfileDTO userProfileDTO = this.objectMapper.readValue(profileJsonStr, UserProfileDTO.class);
+    public ResponseEntity<UserProfileDTO> uploadAvatar(
+        @RequestParam(value = "avatar", required = false) MultipartFile multipartFile,
+        @RequestParam("userProfile") String profileJsonStr) throws IOException {
+        UserProfileDTO userProfileDTO = this.objectMapper
+            .readValue(profileJsonStr, UserProfileDTO.class);
         UserDTO userDTO = this.userService.getCurrentUser();
         userProfileDTO.setUsername(userDTO.getUsername());
         if (multipartFile != null) {
