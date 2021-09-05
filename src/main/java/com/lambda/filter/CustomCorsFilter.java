@@ -32,7 +32,7 @@ public class CustomCorsFilter implements Filter {
 
         String[] methodsAllowed = {HttpMethod.POST.name(), HttpMethod.GET.name(),
             HttpMethod.OPTIONS.name(), HttpMethod.PUT.name(), HttpMethod.TRACE.name(),
-            HttpMethod.PATCH.name(), HttpMethod.DELETE.name()};
+            HttpMethod.PATCH.name(), HttpMethod.DELETE.name(), HttpMethod.HEAD.name()};
         String origin = request.getHeader("Origin");
         if (origin == null) {
             origin = request.getHeader("Referer");
@@ -44,7 +44,7 @@ public class CustomCorsFilter implements Filter {
         response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS,
             String.join(",", methodsAllowed));
         response.setHeader(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "3600");
-        response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Authorization");
+        response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "base-url,Authorization,Content-Type");
         response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
 
         if (HttpMethod.OPTIONS.name().equalsIgnoreCase(request.getMethod())) {
