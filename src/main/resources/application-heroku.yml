@@ -103,6 +103,8 @@ custom:
   https-port: 8082
   security-policy: CONFIDENTIAL
   connector-scheme: http
+  trust-store-password: ${SSL_TRUSTSTORE_PASSWORD:}
+  trust-store-type: JKS
   jwk:
     keystore: classpath:vengeance.jks
     keystore-password: ${JWK_KEYSTORE_PASSWORD:}
