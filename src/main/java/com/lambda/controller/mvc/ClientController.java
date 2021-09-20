@@ -77,12 +77,14 @@ public class ClientController {
         return new ModelAndView("client/client-list", "clientList", clientList);
     }
 
+    @PreAuthorize("hasAuthority(@roleConstants.CLIENT_MANAGEMENT)")
     @GetMapping("/create")
     public String createClient(@ModelAttribute("newClient") ClientDTO clientDTO,
         @ModelAttribute("grantTypes") GrantType[] grantTypes) {
         return "client/client-create";
     }
 
+    @PreAuthorize("hasAuthority(@roleConstants.CLIENT_MANAGEMENT)")
     @PostMapping("/create")
     public RedirectView createClient(@ModelAttribute("newClient") ClientDTO clientDTO,
         RedirectAttributes redirectAttributes, SessionStatus sessionStatus,
@@ -109,6 +111,7 @@ public class ClientController {
         }
     }
 
+    @PreAuthorize("hasAuthority(@roleConstants.CLIENT_MANAGEMENT)")
     @GetMapping("/update/{id}")
     public String updateClient(@PathVariable("id") String id,
         @ModelAttribute("grantTypes") GrantType[] grantTypes,
@@ -126,6 +129,7 @@ public class ClientController {
         }
     }
 
+    @PreAuthorize("hasAuthority(@roleConstants.CLIENT_MANAGEMENT)")
     @PostMapping("/update")
     public RedirectView updateClient(@ModelAttribute("existedClient") ClientDTO clientDTO,
         RedirectAttributes redirectAttributes, SessionStatus sessionStatus) {
@@ -147,6 +151,7 @@ public class ClientController {
         }
     }
 
+    @PreAuthorize("hasAuthority(@roleConstants.CLIENT_MANAGEMENT)")
     @PostMapping("/update-secret/{id}")
     public RedirectView updateClientSecret(@PathVariable("id") String id,
         @RequestParam("newSecret") String secret,
@@ -166,6 +171,7 @@ public class ClientController {
         return new RedirectView(redirectUrl);
     }
 
+    @PreAuthorize("hasAuthority(@roleConstants.CLIENT_MANAGEMENT)")
     @PostMapping("/delete")
     public RedirectView deleteClient(@RequestParam("id") String id,
         RedirectAttributes redirectAttributes,

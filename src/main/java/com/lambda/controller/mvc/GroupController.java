@@ -31,21 +31,20 @@ public class GroupController {
         this.groupService = groupService;
     }
 
-    @PreAuthorize("hasAuthority('VIEW_GROUP_LIST')")
     @GetMapping("/list")
     public String groupList(ModelMap modelMap) {
         modelMap.addAttribute("groupList", this.groupService.groupListWithInfo());
         return "user/group-list";
     }
 
-    @PreAuthorize("hasAuthority('CREATE_GROUP')")
+    @PreAuthorize("hasAuthority(@roleConstants.GROUP_MANAGEMENT)")
     @GetMapping("/create")
     public String showGroupCreateForm(ModelMap modelMap) {
         modelMap.addAttribute("newGroup", new Group());
         return "user/group-create";
     }
 
-    @PreAuthorize("hasAuthority('CREATE_GROUP')")
+    @PreAuthorize("hasAuthority(@roleConstants.GROUP_MANAGEMENT)")
     @PostMapping("/create")
     public ModelAndView createGroup(@ModelAttribute("newGroup") Group group,
         RedirectAttributes redirectAttributes) {
@@ -61,7 +60,7 @@ public class GroupController {
         }
     }
 
-    @PreAuthorize("hasAuthority('UPDATE_GROUP')")
+    @PreAuthorize("hasAuthority(@roleConstants.GROUP_MANAGEMENT)")
     @GetMapping("/update/{id}")
     public String showGroupUpdateForm(@PathVariable("id") Long id, ModelMap modelMap,
         @RequestParam(value = "authority-page-number", defaultValue = "1") int authorityPageNumber,
@@ -74,7 +73,7 @@ public class GroupController {
         return "user/group-update";
     }
 
-    @PreAuthorize("hasAuthority('UPDATE_GROUP')")
+    @PreAuthorize("hasAuthority(@roleConstants.GROUP_MANAGEMENT)")
     @PostMapping("/rename")
     public RedirectView renameGroup(@ModelAttribute("existedGroup") Group group,
         RedirectAttributes redirectAttributes) {
@@ -84,7 +83,7 @@ public class GroupController {
         return new RedirectView("/group/update/" + group.getId(), true);
     }
 
-    @PreAuthorize("hasAuthority('UPDATE_GROUP')")
+    @PreAuthorize("hasAuthority(@roleConstants.GROUP_MANAGEMENT)")
     @PostMapping(value = "/add-authority", params = {"authority", "addAuthority"})
     public RedirectView addAuthorityToGroup(@ModelAttribute("existedGroup") Group group,
         @RequestParam("authority") String authority,
@@ -102,7 +101,7 @@ public class GroupController {
         }
     }
 
-    @PreAuthorize("hasAuthority('UPDATE_GROUP')")
+    @PreAuthorize("hasAuthority(@roleConstants.GROUP_MANAGEMENT)")
     @PostMapping(value = "/remove-authority")
     public RedirectView removeAuthorityFromGroup(@ModelAttribute("existedGroup") Group group,
         @RequestParam("authority") String authority,
@@ -120,7 +119,7 @@ public class GroupController {
         }
     }
 
-    @PreAuthorize("hasAuthority('DELETE_GROUP')")
+    @PreAuthorize("hasAuthority(@roleConstants.GROUP_MANAGEMENT)")
     @PostMapping("/remove")
     public RedirectView deleteGroup(@RequestParam("group-name") String groupName,
         RedirectAttributes redirectAttributes) {

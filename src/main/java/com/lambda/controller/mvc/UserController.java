@@ -100,7 +100,7 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasAuthority('VIEW_USER_LIST')")
+    @PreAuthorize("hasAuthority(@roleConstants.USER_MANAGEMENT)")
     @GetMapping("/list")
     public String userList(ModelMap modelMap, @PageableDefault Pageable pageable) {
         modelMap.addAttribute("groupList", this.groupService.groupList());
@@ -108,7 +108,7 @@ public class UserController {
         return "user/user-list";
     }
 
-    @PreAuthorize("hasAuthority('UPDATE_USER')")
+    @PreAuthorize("hasAuthority(@roleConstants.USER_MANAGEMENT)")
     @PostMapping("/update")
     public RedirectView updateUser(@RequestParam("enabled") boolean enabled,
         @RequestParam("account_locked") boolean accountLocked,
