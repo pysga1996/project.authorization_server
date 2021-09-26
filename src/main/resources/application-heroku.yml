@@ -24,6 +24,7 @@ server:
     whitelabel:
       enabled: false
     path: /error
+  forward-headers-strategy: framework
 spring:
   redis:
     url: ${REDIS_URL:}

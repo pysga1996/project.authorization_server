@@ -39,6 +39,7 @@ server:
     key-store-password: ${SSL_KEYSTORE_PASSWORD:}
     key-store-type: JKS
     protocol: TLS
+  forward-headers-strategy: framework
 spring:
   redis:
     host: ${REDIS_HOST:}
