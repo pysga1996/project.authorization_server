@@ -1,7 +1,5 @@
 package com.lambda.controller.api;
 
-import javax.servlet.http.HttpServletRequest;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,13 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
  * @project vengeance
  * @since 1.0
  **/
-@Log4j2
 @RestController
 @RequestMapping("")
 public class PingController {
 
     @RequestMapping(method = RequestMethod.HEAD, value = "/ping")
-    public ResponseEntity<Void> ping(HttpServletRequest request) {
+    public ResponseEntity<Void> ping() {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
