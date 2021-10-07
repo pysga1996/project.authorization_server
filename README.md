@@ -7,6 +7,7 @@ OAuth 2 Authorization Server with Web UI Manager interface
 https://lambda-auth-service.herokuapp.com/
 
 ## Technology Stack:
+- Spring Cloud 2020.0.x
 - Spring Boot 2.4
 - Spring Security 5
 - Spring Security OAuth2
