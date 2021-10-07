@@ -10,7 +10,7 @@ https://lambda-auth-service.herokuapp.com/
 - Spring Cloud 2020.0.x
 - Spring Boot 2.4
 - Spring Security 5
-- Spring Security OAuth2 (Resource Server)
+- Spring Security OAuth2 (Authentication Server)
 - Spring Web (Mvc/REST endpoint)
 - Spring Web Service (SOAP client)
 - Thymeleaf 3
