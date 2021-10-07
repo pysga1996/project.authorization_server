@@ -1,6 +1,12 @@
-# lambda-auth-service
+# Lambda Auth Service
+
 OAuth 2 Authorization Server with Web UI Manager interface
-#### Technology Stack:
+
+## Deployment Url:
+
+https://lambda-auth-service.herokuapp.com/
+
+## Technology Stack:
 - Spring Boot 2.4
 - Spring Security 5
 - Spring Security OAuth2
@@ -14,6 +20,6 @@ OAuth 2 Authorization Server with Web UI Manager interface
 - Log4j2
 - Lombok
 - Bootstrap 5
-- Native Javascript
+- Vanilla Javascript
 
 
