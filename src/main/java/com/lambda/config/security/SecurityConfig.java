@@ -131,8 +131,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer -> {
                 DefaultBearerTokenResolver bearerTokenResolver = new DefaultBearerTokenResolver();
                 bearerTokenResolver.setAllowUriQueryParameter(true);
-                if (CloudPlatform.HEROKU.isActive(this.env) || Arrays
-                    .asList(this.env.getActiveProfiles()).contains("poweredge")) {
+                if (CloudPlatform.HEROKU.isActive(this.env) || !Arrays
+                    .asList(this.env.getActiveProfiles()).contains("default")) {
                     httpSecurityOAuth2ResourceServerConfigurer.jwt(jwtConfigurer ->
                         jwtConfigurer.jwkSetUri(this.jwkSetUri));
                 } else {

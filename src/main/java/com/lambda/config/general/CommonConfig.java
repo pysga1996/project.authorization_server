@@ -5,13 +5,8 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.StorageClient;
+import com.lambda.config.security.CustomTokenServices;
 import com.lambda.error.FileStorageException;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import javax.sql.DataSource;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http2.Http2Protocol;
@@ -29,11 +24,7 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.*;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -42,7 +33,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
@@ -59,6 +49,13 @@ import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+
+import javax.sql.DataSource;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 @RefreshScope
 @Configuration
@@ -139,8 +136,8 @@ public class CommonConfig {
     @Bean
     @Primary
     public TokenStore tokenStore() {
-        if (CloudPlatform.HEROKU.isActive(this.env) || Arrays.asList(this.env.getActiveProfiles())
-            .contains("poweredge")) {
+        if (CloudPlatform.HEROKU.isActive(this.env) || !Arrays.asList(this.env.getActiveProfiles())
+            .contains("default")) {
             return new JwtTokenStore(this.jwtTokenConverter);
         } else {
             return new JdbcTokenStore(dataSource);
@@ -150,20 +147,22 @@ public class CommonConfig {
     @RefreshScope
     @Bean
     @Primary
-    public DefaultTokenServices tokenServices() {
-        DefaultTokenServices defaultTokenServices = new DefaultTokenServices();
-        defaultTokenServices.setSupportRefreshToken(true);
-        defaultTokenServices.setReuseRefreshToken(false);
-        defaultTokenServices.setTokenStore(tokenStore());
-        if (CloudPlatform.HEROKU.isActive(this.env) || Arrays.asList(this.env.getActiveProfiles())
-            .contains("poweredge")) {
-            defaultTokenServices.setTokenEnhancer(this.jwtTokenConverter);
-            defaultTokenServices.setAccessTokenValiditySeconds(60 * 60);
-            defaultTokenServices.setRefreshTokenValiditySeconds(60 * 60 * 24);
+    @DependsOn("tokenStore")
+    public CustomTokenServices tokenServices() {
+        CustomTokenServices customTokenServices = new CustomTokenServices();
+        customTokenServices.setTokenStore(tokenStore());
+        customTokenServices.setSupportRefreshToken(true);
+        customTokenServices.setReuseRefreshToken(false);
+        customTokenServices.setTokenStore(tokenStore());
+        if (CloudPlatform.HEROKU.isActive(this.env) || !Arrays.asList(this.env.getActiveProfiles())
+            .contains("default")) {
+            customTokenServices.setTokenEnhancer(this.jwtTokenConverter);
+            customTokenServices.setAccessTokenValiditySeconds(60 * 60);
+            customTokenServices.setRefreshTokenValiditySeconds(60 * 60 * 24);
         } else {
-            defaultTokenServices.setTokenEnhancer(this.tokenEnhancer);
+            customTokenServices.setTokenEnhancer(this.tokenEnhancer);
         }
-        return defaultTokenServices;
+        return customTokenServices;
     }
 
     @RefreshScope

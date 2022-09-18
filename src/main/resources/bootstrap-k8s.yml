@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: lambda-auth-service
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: phi-config-service
+      #      uri: ${CONFIG_URI:}
+      username: ${CONFIG_USERNAME:}
+      password: ${CONFIG_PASSWORD:}
+      label: ${CONFIG_GIT_BRANCH:}
+    loadbalancer:
+      ribbon:
+        enabled: false
+eureka:
+  instance:
+    hostname: lambda-auth.vengeance.svc.cluster.local
+    secure-port-enabled: true
+    non-secure-port-enabled: false
+    non-secure-port: 80
+    secure-port: 443
+  #    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVICE_URL:}

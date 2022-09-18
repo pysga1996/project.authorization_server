@@ -1,6 +1,5 @@
 package com.lambda.config.security;
 
-import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -14,12 +13,13 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
-import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+
+import javax.sql.DataSource;
 
 @RefreshScope
 @Configuration
@@ -31,7 +31,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
     private final DataSource dataSource;
 
-    private final DefaultTokenServices tokenService;
+    private final CustomTokenServices tokenService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -45,7 +45,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     public AuthServerConfig(
         @Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager,
         DataSource dataSource, PasswordEncoder passwordEncoder,
-        DefaultTokenServices tokenService,
+        CustomTokenServices tokenService,
         AccessDeniedHandler accessDeniedHandler,
         AuthenticationEntryPoint authenticationEntryPoint,
         WebResponseExceptionTranslator<OAuth2Exception> webResponseExceptionTranslator) {

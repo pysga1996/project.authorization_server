@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 @RefreshScope
 @Component
-@Profile({"heroku", "poweredge"})
+@Profile({"heroku", "poweredge", "k8s"})
 public class RemoteHostResolver implements HostResolver {
 
     private final Environment environment;
