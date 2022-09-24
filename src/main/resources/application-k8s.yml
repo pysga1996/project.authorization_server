@@ -14,7 +14,7 @@ logging:
           core: TRACE
   config: classpath:log4j-spring.xml
 server:
-  port: 8082
+  port: 80
   servlet:
     context-path: /
     encoding:
@@ -105,8 +105,8 @@ security:
   oath2:
     resource-id: user
 custom:
-  http-port: 8081
-  https-port: 8082
+  http-port: 80
+  https-port: 443
   security-policy: NONE
   connector-scheme: http
   trust-store-password: ${SSL_TRUSTSTORE_PASSWORD:}
