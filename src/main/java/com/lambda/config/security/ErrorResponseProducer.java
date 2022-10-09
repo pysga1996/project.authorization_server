@@ -44,6 +44,11 @@ public abstract class ErrorResponseProducer {
         try {
             jsonObject.put("code", 9999);
             jsonObject.put("message", ex.getLocalizedMessage());
+            jsonObject.put("uri", httpServletRequest.getRequestURI());
+            jsonObject.put("servletPath", httpServletRequest.getServletPath());
+            jsonObject.put("contextPath", httpServletRequest.getServletPath());
+            jsonObject.put("pathInfo", httpServletRequest.getPathInfo());
+            jsonObject.put("translatedPath", httpServletRequest.getPathTranslated());
             StringBuilder sb = new StringBuilder();
             for (StackTraceElement stackTraceElement : ex.getStackTrace()) {
                 sb.append(stackTraceElement.toString()).append("\n");
