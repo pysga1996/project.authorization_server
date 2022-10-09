@@ -75,8 +75,8 @@ create table oauth_approvals
 
 # create unique index ix_auth_username on authorities (username,authority);
 
-drop table if exists `groups`;
-create table `groups`
+drop table if exists "groups";
+create table "groups"
 (
     id         bigint auto_increment
         primary key,
@@ -92,7 +92,7 @@ create table group_authorities
     authority varchar(50) not null,
     primary key (group_id, authority),
     constraint fk_group_authorities_group
-        foreign key (group_id) references `groups` (id)
+        foreign key (group_id) references "groups" (id)
 );
 
 drop table if exists group_members;
@@ -102,7 +102,7 @@ create table group_members
     group_id bigint      not null,
     primary key (group_id, username),
     constraint fk_group_members_group
-        foreign key (group_id) references `groups` (id)
+        foreign key (group_id) references "groups" (id)
 );
 
 drop table if exists authentication_token;
@@ -196,7 +196,7 @@ BEGIN
         INSERT INTO setting (username, alert, theme)
         VALUES (p_username, 1, 'light');
     END IF;
-    SET @check_group = (SELECT id FROM `groups` WHERE `groups`.group_name = p_group_name);
+    SET @check_group = (SELECT id FROM "groups" WHERE "groups".group_name = p_group_name);
     IF (NOT ISNULL(@check_group)) THEN
         INSERT INTO group_members(username, group_id) VALUES (p_username, @check_group);
     ELSE
@@ -234,13 +234,13 @@ BEGIN
             ROLLBACK;
             RESIGNAL;
         END;
-    SET @id = (SELECT id FROM `groups` WHERE `groups`.group_name = p_group_name);
+    SET @id = (SELECT id FROM "groups" WHERE "groups".group_name = p_group_name);
     IF (ISNULL(@id)) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'GROUP_NOT_FOUND';
     ELSE
         DELETE FROM group_members WHERE group_members.group_id = @id;
         DELETE FROM group_authorities WHERE group_authorities.group_id = @id;
-        DELETE FROM `groups` WHERE `groups`.id = @id;
+        DELETE FROM "groups" WHERE "groups".id = @id;
     END IF;
 END; $$
 DELIMITER ;

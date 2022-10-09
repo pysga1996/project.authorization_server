@@ -21,7 +21,7 @@ public class JdbcConstant {
             +
             " FROM \"user\" u\n" +
             " INNER JOIN group_members gm ON gm.username = u.username\n" +
-            " INNER JOIN `groups` g ON g.id = gm.group_id\n" +
+            " INNER JOIN \"groups\" g ON g.id = gm.group_id\n" +
             " INNER JOIN group_authorities ga on g.id = ga.group_id\n" +
             " LEFT JOIN user_profile up on u.username = up.username" +
             " LEFT JOIN setting s on u.username = s.username\n" +
@@ -29,17 +29,17 @@ public class JdbcConstant {
 
     public static final String DEF_CUSTOM_GROUP_AUTHORITIES_BY_USERNAME_QUERY =
         "select g.id, g.group_name, ga.authority "
-            + "from `groups` g, group_members gm, group_authorities ga "
+            + "from \"groups\" g, group_members gm, group_authorities ga "
             + "where gm.username = ? " + "and g.id = ga.group_id " + "and g.id = gm.group_id";
 
-    public static final String DEF_CUSTOM_FIND_GROUPS_SQL = "select group_name from `groups`";
+    public static final String DEF_CUSTOM_FIND_GROUPS_SQL = "select group_name from \"groups\"";
 
-    public static final String DEF_CUSTOM_FIND_GROUP_ID_SQL = "select id from `groups` where group_name = ?";
+    public static final String DEF_CUSTOM_FIND_GROUP_ID_SQL = "select id from \"groups\" where group_name = ?";
 
-    public static final String DEF_CUSTOM_INSERT_GROUP_SQL = "insert into `groups` (group_name) values (?)";
+    public static final String DEF_CUSTOM_INSERT_GROUP_SQL = "insert into \"groups\" (group_name) values (?)";
 
-    public static final String DEF_CUSTOM_RENAME_GROUP_SQL = "update `groups` set group_name = ? where group_name = ?";
+    public static final String DEF_CUSTOM_RENAME_GROUP_SQL = "update \"groups\" set group_name = ? where group_name = ?";
 
-    public static final String DEF_CUSTOM_DELETE_GROUP_SQL = "delete from `groups` where id = ?";
+    public static final String DEF_CUSTOM_DELETE_GROUP_SQL = "delete from \"groups\" where id = ?";
 
 }

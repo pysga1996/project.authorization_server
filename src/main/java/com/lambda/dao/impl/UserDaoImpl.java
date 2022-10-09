@@ -83,7 +83,7 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
 
     @Override
     public List<Group> findGroupList() {
-        String sql = "SELECT id, group_name FROM `groups`";
+        String sql = "SELECT id, group_name FROM \"groups\"";
         return this.jdbcOperations.query(sql, rs -> {
             List<Group> groupList = new ArrayList<>();
             while (rs.next()) {
@@ -151,26 +151,26 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
 
     @Override
     public List<GroupInfo> groupListWithCountInfo() {
-        String sql = "SELECT `groups`.id AS id, group_name as name,\n" +
+        String sql = "SELECT \"groups\".id AS id, group_name as name,\n" +
             "       IFNULL(members.user_count, 0) AS usersCount,\n" +
             "       IFNULL(authorities.authority_count, 0) AS authoritiesCount\n" +
-            "FROM `groups`\n" +
+            "FROM \"groups\"\n" +
             "LEFT JOIN (\n" +
             "    SELECT group_id, COUNT(DISTINCT username) AS user_count FROM group_members GROUP BY group_id\n"
             +
-            ") AS members ON members.group_id = `groups`.id\n" +
+            ") AS members ON members.group_id = \"groups\".id\n" +
             "LEFT JOIN (\n" +
             "    select group_id, COUNT(DISTINCT authority) AS authority_count FROM group_authorities GROUP BY group_id\n"
             +
-            ") AS authorities ON authorities.group_id = `groups`.id";
+            ") AS authorities ON authorities.group_id = \"groups\".id";
         return this.jdbcOperations.query(sql, new BeanPropertyRowMapper<>(GroupInfo.class));
     }
 
 
     @Override
     public Group findGroupById(Long id) {
-        String sql = "SELECT `groups`.id, group_name FROM `groups`\n" +
-            " WHERE `groups`.id = ?";
+        String sql = "SELECT \"groups\".id, group_name FROM \"groups\"\n" +
+            " WHERE \"groups\".id = ?";
         return this.jdbcOperations.queryForObject(sql, (rs, rowNum) -> {
             Group group = new Group();
             group.setId(rs.getLong("id"));
@@ -183,8 +183,8 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     public Page<GrantedAuthority> findGroupAuthorityPageById(Long id, Pageable pageable) {
         long offset = pageable.getOffset();
         int pageSize = pageable.getPageSize();
-        String sql = "SELECT ga.authority FROM `groups`\n" +
-            "INNER JOIN group_authorities ga on `groups`.id = ga.group_id\n" +
+        String sql = "SELECT ga.authority FROM \"groups\"\n" +
+            "INNER JOIN group_authorities ga on \"groups\".id = ga.group_id\n" +
             "WHERE id = ?\n" +
             "ORDER BY ga.authority LIMIT ?, ?";
         List<GrantedAuthority> authorities = this.jdbcOperations
@@ -192,8 +192,8 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
             .stream()
             .map(SimpleGrantedAuthority::new)
             .collect(Collectors.toList());
-        String countSql = "SELECT COUNT(ga.authority) FROM `groups`\n" +
-            "INNER JOIN group_authorities ga on `groups`.id = ga.group_id\n" +
+        String countSql = "SELECT COUNT(ga.authority) FROM \"groups\"\n" +
+            "INNER JOIN group_authorities ga on \"groups\".id = ga.group_id\n" +
             "WHERE id = ?";
         Long count = this.jdbcOperations.queryForObject(countSql, Long.class, id);
         if (count == null) {
@@ -206,14 +206,14 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     public Page<String> findGroupUserPageById(Long id, Pageable pageable) {
         long offset = pageable.getOffset();
         int pageSize = pageable.getPageSize();
-        String sql = "SELECT gm.username FROM `groups`\n" +
-            "INNER JOIN group_members gm on `groups`.id = gm.group_id\n" +
+        String sql = "SELECT gm.username FROM \"groups\"\n" +
+            "INNER JOIN group_members gm on \"groups\".id = gm.group_id\n" +
             "WHERE id = ?\n" +
             "ORDER BY gm.username LIMIT ?, ?";
         List<String> authorities = this.jdbcOperations
             .queryForList(sql, String.class, id, offset, pageSize);
-        String countSql = "SELECT COUNT(gm.username) FROM `groups`\n" +
-            "INNER JOIN group_members gm on `groups`.id = gm.group_id\n" +
+        String countSql = "SELECT COUNT(gm.username) FROM \"groups\"\n" +
+            "INNER JOIN group_members gm on \"groups\".id = gm.group_id\n" +
             "WHERE id = ?";
         Long count = this.jdbcOperations.queryForObject(countSql, Long.class, id);
         if (count == null) {
@@ -224,20 +224,20 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
 
     @Override
     public Boolean checkGroupExistForCreate(String groupName) {
-        String sql = "SELECT EXISTS(SELECT * FROM `groups` WHERE group_name = ?)";
+        String sql = "SELECT EXISTS(SELECT * FROM \"groups\" WHERE group_name = ?)";
         return this.jdbcOperations.queryForObject(sql, Boolean.class, groupName);
     }
 
     @Override
     public String checkGroupExistForUpdate(String groupName, Long groupId) {
-        String sql = "SELECT group_name FROM `groups` WHERE id = ?";
+        String sql = "SELECT group_name FROM \"groups\" WHERE id = ?";
         return this.jdbcOperations.queryForObject(sql, String.class, groupName);
     }
 
     @Override
     public boolean checkAuthorityExistInGroup(String groupName, String authorities) {
-        String sql = "SELECT COUNT(DISTINCT authority) FROM `groups` " +
-            " INNER JOIN group_authorities ON group_authorities.group_id = `groups`.id " +
+        String sql = "SELECT COUNT(DISTINCT authority) FROM \"groups\" " +
+            " INNER JOIN group_authorities ON group_authorities.group_id = \"groups\".id " +
             " WHERE group_name = ? AND authority = ?";
         Long count = this.jdbcOperations.queryForObject(sql, Long.class, groupName, authorities);
         return count != null && count > 0;
@@ -245,8 +245,8 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
 
     @Override
     public boolean checkUserExistInGroup(String groupName, String usernames) {
-        String sql = "SELECT COUNT(DISTINCT username) FROM `groups` " +
-            " INNER JOIN group_members ON group_members.group_id = `groups`.id" +
+        String sql = "SELECT COUNT(DISTINCT username) FROM \"groups\" " +
+            " INNER JOIN group_members ON group_members.group_id = \"groups\".id" +
             " WHERE group_name = ? AND username IN ?";
         Long count = this.jdbcOperations.queryForObject(sql, Long.class, groupName, usernames);
         return count != null && count > 0;
@@ -323,11 +323,11 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     @Override
     public Page<UserDTO> userList(Pageable pageable) {
         String sql = "SELECT user.username, password, enabled, account_locked,\n" +
-            "       account_expired, credentials_expired, `groups`.id AS group_id, `groups`.group_name\n"
+            "       account_expired, credentials_expired, \"groups\".id AS group_id, \"groups\".group_name\n"
             +
             "FROM user\n" +
             "LEFT JOIN group_members ON group_members.username = user.username\n" +
-            "LEFT JOIN `groups` ON `groups`.id = group_members.group_id\n" +
+            "LEFT JOIN \"groups\" ON \"groups\".id = group_members.group_id\n" +
             "LIMIT ?, ?";
         List<UserDTO> userList = this.jdbcOperations.query(sql, rs -> {
             UserDTO user;
@@ -366,14 +366,14 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
         String countSql = "SELECT COUNT(user.username) \n" +
             "FROM user\n" +
             "LEFT JOIN group_members ON group_members.username = user.username\n" +
-            "LEFT JOIN `groups` ON `groups`.id = group_members.group_id ";
+            "LEFT JOIN \"groups\" ON \"groups\".id = group_members.group_id ";
         Long count = this.jdbcOperations.queryForObject(countSql, Long.class);
         return new PageImpl<>(userList, pageable, count == null ? 0 : count);
     }
 
     @Override
     public List<Group> findGroupListByUsername(String username) {
-        String sql = "SELECT group_id, group_name FROM group_members INNER JOIN `groups` ON group_members.group_id = `groups`.id WHERE username = ?";
+        String sql = "SELECT group_id, group_name FROM group_members INNER JOIN \"groups\" ON group_members.group_id = \"groups\".id WHERE username = ?";
         return this.jdbcOperations.query(sql, rs -> {
             List<Group> groupList = new ArrayList<>();
             Group group;
