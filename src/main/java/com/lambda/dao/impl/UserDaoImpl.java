@@ -311,10 +311,10 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
 
     @Override
     public Map<String, UserProfileDTO> userList() {
-        String sql = "SELECT user.username, up.first_name, up.last_name, up.date_of_birth, " +
+        String sql = "SELECT u.username, up.first_name, up.last_name, up.date_of_birth, " +
             "up.gender, up.phone_number, up.email, up.avatar_url, up.other_info " +
-            "FROM \"user\" LEFT JOIN user_profile up " +
-            "ON user.username = up.username";
+            "FROM \"user\" u LEFT JOIN user_profile up " +
+            "ON u.username = up.username";
         return Objects.requireNonNull(
             this.jdbcOperations.query(sql, this.userProfileExtractor.customListExtractor()))
             .stream().collect(Collectors.toMap(UserProfileDTO::getUsername, e -> e));
@@ -322,12 +322,12 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
 
     @Override
     public Page<UserDTO> userList(Pageable pageable) {
-        String sql = "SELECT user.username, password, enabled, account_locked,\n" +
-            "       account_expired, credentials_expired, \"groups\".id AS group_id, \"groups\".group_name\n"
+        String sql = "SELECT u.username, password, enabled, account_locked,\n" +
+            "       account_expired, credentials_expired, g.id AS group_id, g.group_name\n"
             +
-            "FROM user\n" +
-            "LEFT JOIN group_members ON group_members.username = user.username\n" +
-            "LEFT JOIN \"groups\" ON \"groups\".id = group_members.group_id\n" +
+            "FROM user u\n" +
+            "LEFT JOIN group_members gm ON gm.username = u.username\n" +
+            "LEFT JOIN \"groups\" g ON g.id = gm.group_id\n" +
             "LIMIT ?, ?";
         List<UserDTO> userList = this.jdbcOperations.query(sql, rs -> {
             UserDTO user;

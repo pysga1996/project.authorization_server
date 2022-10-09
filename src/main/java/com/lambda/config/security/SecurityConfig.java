@@ -68,7 +68,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.jdbcAuthentication()
             .dataSource(dataSource)
             .usersByUsernameQuery(DEF_USERS_BY_USERNAME_FULL_QUERY)
-//                .authoritiesByUsernameQuery("SELECT user.username, role.authority FROM "user" INNER JOIN user_role ON user.id = user_role.user_id INNER JOIN role ON role.id = user_role.role_id where username =?")
+//                .authoritiesByUsernameQuery("SELECT u.username, r.authority FROM "user" u INNER JOIN user_role ur ON u.id = ur.user_id INNER JOIN role r ON r.id = ur.role_id where username =?")
             .groupAuthoritiesByUsername(DEF_CUSTOM_GROUP_AUTHORITIES_BY_USERNAME_QUERY)
             .passwordEncoder(passwordEncoder)
             .getUserDetailsService().setEnableAuthorities(false)
