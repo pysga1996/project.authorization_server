@@ -8,6 +8,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -136,10 +137,11 @@ public class SSLConfig {
     @LoadBalanced
     public RestOperations restTemplate(RestTemplateBuilder rtb) {
         RestTemplate restTemplate = rtb.build();
-        if (CloudPlatform.HEROKU.isActive(this.env)) {
-            log.info("Heroku detected, rest template does not setup SSL");
+        if (CloudPlatform.HEROKU.isActive(this.env) || !Arrays.asList(this.env.getActiveProfiles())
+                .contains("default")) {
+            log.info("Heroku/Docker/Kubernetes detected, rest template does not setup SSL");
         } else {
-            log.info("Not Heroku, rest template is setting up SSL");
+            log.info("Not Heroku/Docker/Kubernetes, rest template is setting up SSL");
             HttpClient httpClient = HttpClients.custom().setSSLContext(this.customSSL()).build();
             ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
                 httpClient);

@@ -152,8 +152,8 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     @Override
     public List<GroupInfo> groupListWithCountInfo() {
         String sql = "SELECT \"groups\".id AS id, group_name as name,\n" +
-            "       IFNULL(members.user_count, 0) AS usersCount,\n" +
-            "       IFNULL(authorities.authority_count, 0) AS authoritiesCount\n" +
+            "       COALESCE(members.user_count, 0) AS usersCount,\n" +
+            "       COALESCE(authorities.authority_count, 0) AS authoritiesCount\n" +
             "FROM \"groups\"\n" +
             "LEFT JOIN (\n" +
             "    SELECT group_id, COUNT(DISTINCT username) AS user_count FROM group_members GROUP BY group_id\n"
@@ -186,7 +186,7 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
         String sql = "SELECT ga.authority FROM \"groups\"\n" +
             "INNER JOIN group_authorities ga on \"groups\".id = ga.group_id\n" +
             "WHERE id = ?\n" +
-            "ORDER BY ga.authority LIMIT ?, ?";
+            "ORDER BY ga.authority OFFSET ? LIMIT ?";
         List<GrantedAuthority> authorities = this.jdbcOperations
             .queryForList(sql, String.class, id, offset, pageSize)
             .stream()
@@ -209,7 +209,7 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
         String sql = "SELECT gm.username FROM \"groups\"\n" +
             "INNER JOIN group_members gm on \"groups\".id = gm.group_id\n" +
             "WHERE id = ?\n" +
-            "ORDER BY gm.username LIMIT ?, ?";
+            "ORDER BY gm.username OFFSET ? LIMIT ?";
         List<String> authorities = this.jdbcOperations
             .queryForList(sql, String.class, id, offset, pageSize);
         String countSql = "SELECT COUNT(gm.username) FROM \"groups\"\n" +
@@ -325,10 +325,10 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
         String sql = "SELECT u.username, password, enabled, account_locked,\n" +
             "       account_expired, credentials_expired, g.id AS group_id, g.group_name\n"
             +
-            "FROM user u\n" +
+            "FROM \"user\" u\n" +
             "LEFT JOIN group_members gm ON gm.username = u.username\n" +
             "LEFT JOIN \"groups\" g ON g.id = gm.group_id\n" +
-            "LIMIT ?, ?";
+            "OFFSET ? LIMIT ?";
         List<UserDTO> userList = this.jdbcOperations.query(sql, rs -> {
             UserDTO user;
             String username;
