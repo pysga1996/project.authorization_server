@@ -363,9 +363,9 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
         if (userList == null) {
             userList = new ArrayList<>();
         }
-        String countSql = "SELECT COUNT(user.username) \n" +
-            "FROM user\n" +
-            "LEFT JOIN group_members ON group_members.username = user.username\n" +
+        String countSql = "SELECT COUNT(u.username) \n" +
+            "FROM \"user\" u\n" +
+            "LEFT JOIN group_members ON group_members.username = u.username\n" +
             "LEFT JOIN \"groups\" ON \"groups\".id = group_members.group_id ";
         Long count = this.jdbcOperations.queryForObject(countSql, Long.class);
         return new PageImpl<>(userList, pageable, count == null ? 0 : count);
