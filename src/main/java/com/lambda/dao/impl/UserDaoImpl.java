@@ -313,7 +313,7 @@ public class UserDaoImpl extends JdbcUserDetailsManager implements UserDao {
     public Map<String, UserProfileDTO> userList() {
         String sql = "SELECT user.username, up.first_name, up.last_name, up.date_of_birth, " +
             "up.gender, up.phone_number, up.email, up.avatar_url, up.other_info " +
-            "FROM user LEFT JOIN user_profile up " +
+            "FROM \"user\" LEFT JOIN user_profile up " +
             "ON user.username = up.username";
         return Objects.requireNonNull(
             this.jdbcOperations.query(sql, this.userProfileExtractor.customListExtractor()))

@@ -173,7 +173,7 @@ BEGIN
             ROLLBACK;
             RESIGNAL;
         END;
-    IF (EXISTS(SELECT 1 FROM user WHERE user.username = p_username)) THEN
+    IF (EXISTS(SELECT 1 FROM "user" WHERE "user".username = p_username)) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'USERNAME_EXISTED';
     ELSE
         INSERT INTO user (account_expired, account_locked, credentials_expired,
@@ -218,7 +218,7 @@ BEGIN
         END;
     DELETE FROM user_profile WHERE user_profile.username = p_username;
     DELETE FROM setting WHERE setting.username = p_username;
-    DELETE FROM user WHERE user.username = p_username;
+    DELETE FROM "user" WHERE "user".username = p_username;
 END $$
 DELIMITER ;
 

@@ -11,7 +11,7 @@ public class JdbcConstant {
 
     public static final String DEF_USERS_BY_USERNAME_FULL_QUERY = "SELECT username, " +
         "password, enabled, account_locked, account_expired, " +
-        "credentials_expired FROM user WHERE username =?";
+        "credentials_expired FROM \"user\" WHERE username =?";
 
     public static final String DEF_USERS_BY_USERNAME_FULL_WITH_SETTING_QUERY =
         " SELECT u.username as username, password, enabled, account_locked, account_expired, credentials_expired,\n"
@@ -19,7 +19,7 @@ public class JdbcConstant {
             " ga.authority as authority, s.alert as setting_alert, s.theme as setting_theme,\n" +
             " up.first_name, up.last_name, up.date_of_birth, up.gender, up.phone_number, up.email, up.avatar_url"
             +
-            " FROM user u\n" +
+            " FROM \"user\" u\n" +
             " INNER JOIN group_members gm ON gm.username = u.username\n" +
             " INNER JOIN `groups` g ON g.id = gm.group_id\n" +
             " INNER JOIN group_authorities ga on g.id = ga.group_id\n" +

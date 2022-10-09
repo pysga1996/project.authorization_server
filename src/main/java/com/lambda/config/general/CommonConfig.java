@@ -106,7 +106,7 @@ public class CommonConfig {
 //        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager();
 //        jdbcUserDetailsManager.setEnableAuthorities(false);
 //        jdbcUserDetailsManager.setEnableGroups(true);
-//        jdbcUserDetailsManager.setUsersByUsernameQuery("SELECT username, password, enabled,  FROM user WHERE username =?");
+//        jdbcUserDetailsManager.setUsersByUsernameQuery("SELECT username, password, enabled,  FROM "user" WHERE username =?");
 //        return jdbcUserDetailsManager;
 //    }
 
