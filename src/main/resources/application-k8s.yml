@@ -24,6 +24,8 @@ server:
     whitelabel:
       enabled: false
     path: /error
+  ssl:
+    enabled: false
 spring:
   redis:
     host: ${REDIS_HOST:}
