@@ -20,7 +20,7 @@ drop table if exists oauth_client_token;
 create table oauth_client_token
 (
     token_id          varchar(255) null,
-    token             mediumblob   null,
+    token             bytea   null,
     authentication_id varchar(255) not null
         primary key,
     user_name         varchar(255) null,
@@ -32,12 +32,12 @@ drop table if exists oauth_access_token;
 create table oauth_access_token
 (
     token_id          varchar(255) null,
-    token             mediumblob   null,
+    token             bytea   null,
     authentication_id varchar(255) not null
         primary key,
     user_name         varchar(255) null,
     client_id         varchar(255) null,
-    authentication    mediumblob   null,
+    authentication    bytea   null,
     refresh_token     varchar(255) null
 );
 
@@ -45,15 +45,15 @@ drop table if exists oauth_refresh_token;
 create table oauth_refresh_token
 (
     token_id       varchar(255) null,
-    token          mediumblob   null,
-    authentication mediumblob   null
+    token          bytea   null,
+    authentication bytea   null
 );
 
 drop table if exists oauth_code;
 create table oauth_code
 (
     code           varchar(255) null,
-    authentication mediumblob   null
+    authentication bytea   null
 );
 
 drop table if exists oauth_approvals;
@@ -67,20 +67,23 @@ create table oauth_approvals
     lastModifiedAt timestamp    null
 );
 
-# create table authorities (
-#                              username varchar(50) not null,
-#                              authority varchar(50) not null,
-#                              constraint fk_authorities_users foreign key(username) references user(username)
-# );
 
-# create unique index ix_auth_username on authorities (username,authority);
+-- create table authorities
+-- (
+--                                   username varchar(50) not null,
+--                                   authority varchar(50) not null,
+--                                   constraint fk_authorities_users foreign key(username) references user(username)
+--      );
+--
+
+-- create unique index ix_auth_username on authorities (username, authority);
 
 drop table if exists "groups";
 create table "groups"
 (
-    id         bigint auto_increment
+    id         bigserial
         primary key,
-    group_name varchar(50) charset utf8 not null,
+    group_name varchar(50) not null,
     constraint groups_group_name_uindex
         unique (group_name)
 );
@@ -108,7 +111,7 @@ create table group_members
 drop table if exists authentication_token;
 create table authentication_token
 (
-    id          LONG auto_increment,
+    id          bigserial,
     token       VARCHAR(50) null,
     username    VARCHAR(50) null,
     create_date TIMESTAMP   not null,
@@ -116,8 +119,8 @@ create table authentication_token
     status      BIT(10)     null,
     constraint authentication_token_pk
         primary key (id)
-)
-    comment 'Authentication token management table';
+);
+comment on  table authentication_token is 'Authentication token management table';
 
 create unique index authentication_token_token_uindex
     on authentication_token (token);
@@ -147,8 +150,8 @@ drop table if exists user_profile;
 create table user_profile
 (
     username      varchar(50)  not null primary key,
-    first_name    NVARCHAR(50) null,
-    last_name     NVARCHAR(50) null,
+    first_name    varchar(50) null,
+    last_name     varchar(50) null,
     date_of_birth TIMESTAMP    null,
     gender        BIT(10)      null,
     phone_number  VARCHAR(20)  null,
@@ -158,32 +161,31 @@ create table user_profile
         foreign key (username) references user (username)
 );
 
-DELIMITER $$
-DROP PROCEDURE IF EXISTS REGISTER $$
-CREATE PROCEDURE REGISTER(IN p_username varchar(255), IN p_password varchar(255),
+CREATE OR REPLACE PROCEDURE REGISTER(IN p_username varchar(255), IN p_password varchar(255),
                           IN p_first_name varchar(255), IN p_last_name varchar(255),
                           IN p_date_of_birth timestamp, IN p_gender bit,
                           IN p_phone_number varchar(255), IN p_email varchar(255),
                           IN p_group_name varchar(255))
-proc:
+    LANGUAGE plpgsql
+AS $$
+DECLARE
+    check_group int;
 BEGIN
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-        BEGIN
-            SHOW ERRORS;
-            ROLLBACK;
-            RESIGNAL;
-        END;
-    IF (EXISTS(SELECT 1 FROM "user" WHERE "user".username = p_username)) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'USERNAME_EXISTED';
+    IF (EXISTS(SELECT 1 FROM "user" u WHERE u.username = p_username)) THEN
+        RAISE EXCEPTION USING
+            ERRCODE = '45000',
+            MESSAGE = 'USERNAME_EXISTED',
+            HINT = 'User ' || p_username || ' does not exist';
     ELSE
-        INSERT INTO user (account_expired, account_locked, credentials_expired,
+        INSERT INTO "user"(account_expired, account_locked, credentials_expired,
                           enabled, password, username)
         VALUES (false, false, false, false, p_password, p_username);
     END IF;
-    #     SET @user_id = (SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'user'
-    #         AND TABLE_SCHEMA = (SELECT DATABASE()));
     IF (EXISTS(SELECT 1 FROM user_profile WHERE user_profile.username = p_username)) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'USER_PROFILE_EXISTED';
+        RAISE EXCEPTION USING
+            ERRCODE = '45000',
+            MESSAGE = 'USER_PROFILE_EXISTED',
+            HINT = 'User profile ' || p_username || ' existed';
     ELSE
         INSERT INTO user_profile (username, first_name, last_name, date_of_birth, gender,
                                   phone_number, email)
@@ -191,59 +193,63 @@ BEGIN
                 p_email);
     END IF;
     IF (EXISTS(SELECT 1 FROM setting WHERE setting.username = p_username)) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'SETTING_EXISTED';
+        RAISE EXCEPTION USING
+            ERRCODE = '45000',
+            MESSAGE = 'SETTING_EXISTED',
+            HINT = 'Setting ' || p_username || ' existed';
     ELSE
         INSERT INTO setting (username, alert, theme)
         VALUES (p_username, 1, 'light');
     END IF;
-    SET @check_group = (SELECT id FROM "groups" WHERE "groups".group_name = p_group_name);
-    IF (NOT ISNULL(@check_group)) THEN
-        INSERT INTO group_members(username, group_id) VALUES (p_username, @check_group);
+    SELECT id INTO check_group FROM "groups" WHERE "groups".group_name = p_group_name;
+    IF (check_group IS NOT NULL) THEN
+        INSERT INTO group_members(username, group_id) VALUES (p_username, check_group);
     ELSE
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'GROUP_NOT_FOUND';
+        RAISE EXCEPTION USING
+            ERRCODE = '45000',
+            MESSAGE = 'GROUP_NOT_FOUND',
+            HINT = 'Group ' || p_group_name || ' did not found';
     END IF;
+    COMMIT;
 END $$
-DELIMITER ;
+;
 
-DELIMITER $$
-DROP PROCEDURE IF EXISTS UNREGISTER $$
-CREATE PROCEDURE UNREGISTER(IN p_username VARCHAR(255))
-proc:
+
+CREATE OR REPLACE PROCEDURE UNREGISTER(IN p_username VARCHAR(255))
+    LANGUAGE plpgsql
+AS
+$$
 BEGIN
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-        BEGIN
-            SHOW ERRORS;
-            ROLLBACK;
-            RESIGNAL;
-        END;
     DELETE FROM user_profile WHERE user_profile.username = p_username;
     DELETE FROM setting WHERE setting.username = p_username;
     DELETE FROM "user" WHERE "user".username = p_username;
-END $$
-DELIMITER ;
+    COMMIT;
+END
+$$;
 
 
-DELIMITER $$
-DROP PROCEDURE IF EXISTS DELETE_GROUP $$
-CREATE PROCEDURE DELETE_GROUP(IN p_group_name VARCHAR(255))
-proc:
+CREATE OR REPLACE PROCEDURE DELETE_GROUP(p_group_name VARCHAR(255))
+    LANGUAGE plpgsql
+AS
+$$
+DECLARE
+    id int;
 BEGIN
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-        BEGIN
-            SHOW ERRORS;
-            ROLLBACK;
-            RESIGNAL;
-        END;
-    SET @id = (SELECT id FROM "groups" WHERE "groups".group_name = p_group_name);
-    IF (ISNULL(@id)) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'GROUP_NOT_FOUND';
+    SELECT g.id INTO id FROM "groups" g WHERE g.group_name = p_group_name;
+    IF (id IS NULL) THEN
+        RAISE EXCEPTION USING
+            ERRCODE = '45000',
+            MESSAGE = 'GROUP_NOT_FOUND',
+            HINT = 'Not found groud id' || id;
     ELSE
-        DELETE FROM group_members WHERE group_members.group_id = @id;
-        DELETE FROM group_authorities WHERE group_authorities.group_id = @id;
-        DELETE FROM "groups" WHERE "groups".id = @id;
+        DELETE FROM group_members WHERE group_members.group_id = id;
+        DELETE FROM group_authorities WHERE group_authorities.group_id = id;
+        DELETE FROM "groups" WHERE "groups".id = id;
     END IF;
-END; $$
-DELIMITER ;
+    COMMIT;
+END
+$$;
+
 
 
 
