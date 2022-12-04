@@ -36,7 +36,7 @@ spring:
       cleanup-cron: "0 * * * * *"
     timeout: 1h
   datasource:
-    driver-class-name: ${SPRING_DATASOURCE_DRIVER:}
+    driver-class-name: org.postgresql.Driver
     hikari:
       connectionTimeout: 30000
       idleTimeout: 100000
