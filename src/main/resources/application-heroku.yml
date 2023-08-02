@@ -16,7 +16,7 @@ logging:
   config: classpath:log4j-spring.xml
 server:
   servlet:
-    context-path: /lambda-auth
+    context-path: /lambda-auth-service
     encoding:
       charset: UTF-8
       enabled: true
@@ -36,7 +36,7 @@ spring:
       cleanup-cron: "0 * * * * *"
     timeout: 1h
   datasource:
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.mariadb.jdbc.Driver
     hikari:
       connectionTimeout: 30000
       idleTimeout: 100000
@@ -95,17 +95,11 @@ storage:
     upload-dir: ${UPLOAD_DIR:}
 webservices:
   url:
-    notification: https://delta-notification-service.herokuapp.com/delta-notification/webservice/notification.wsdl
+    notification: https://delta-notification-service.herokuapp.com/delta-notification-service/webservice/notification.wsdl
 security:
   oath2:
     resource-id: user
 custom:
-  http-port: 8081
-  https-port: 8082
-  security-policy: CONFIDENTIAL
-  connector-scheme: http
-  trust-store-password: ${SSL_TRUSTSTORE_PASSWORD:}
-  trust-store-type: JKS
   jwk:
     keystore: classpath:vengeance.jks
     keystore-password: ${JWK_KEYSTORE_PASSWORD:}

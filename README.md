@@ -14,7 +14,7 @@ https://lambda-auth-service.herokuapp.com/
 - Spring Web (Mvc/REST endpoint)
 - Spring Web Service (SOAP client)
 - Thymeleaf 3
-- Mysql 8
+- MariaDB
 - Redis (session storage)
 - Cloudinary/Firebase (file storage)
 - Log4j2

@@ -233,18 +233,18 @@ CREATE OR REPLACE PROCEDURE DELETE_GROUP(p_group_name VARCHAR(255))
 AS
 $$
 DECLARE
-    id int;
+    v_id int;
 BEGIN
-    SELECT g.id INTO id FROM "groups" g WHERE g.group_name = p_group_name;
-    IF (id IS NULL) THEN
+    SELECT g.id INTO v_id FROM "groups" g WHERE g.group_name = p_group_name;
+    IF (v_id IS NULL) THEN
         RAISE EXCEPTION USING
             ERRCODE = '45000',
             MESSAGE = 'GROUP_NOT_FOUND',
-            HINT = 'Not found groud id' || id;
+            HINT = 'Not found groud id' || v_id;
     ELSE
-        DELETE FROM group_members WHERE group_members.group_id = id;
-        DELETE FROM group_authorities WHERE group_authorities.group_id = id;
-        DELETE FROM "groups" WHERE "groups".id = id;
+        DELETE FROM group_members WHERE group_members.group_id = v_id;
+        DELETE FROM group_authorities WHERE group_authorities.group_id = v_id;
+        DELETE FROM "groups" WHERE "groups".id = v_id;
     END IF;
     COMMIT;
 END

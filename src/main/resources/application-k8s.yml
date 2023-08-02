@@ -16,7 +16,7 @@ logging:
 server:
   port: 80
   servlet:
-    context-path: /
+    context-path: /lambda-auth-service
     encoding:
       charset: UTF-8
       enabled: true
@@ -40,7 +40,7 @@ spring:
       cleanup-cron: "0 * * * * *"
     timeout: 1h
   datasource:
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.mariadb.jdbc.Driver
     hikari:
       connectionTimeout: 30000
       idleTimeout: 100000
@@ -107,12 +107,6 @@ security:
   oath2:
     resource-id: user
 custom:
-  http-port: 80
-  https-port: 443
-  security-policy: NONE
-  connector-scheme: http
-  trust-store-password: ${SSL_TRUSTSTORE_PASSWORD:}
-  trust-store-type: JKS
   jwk:
     keystore: classpath:vengeance.jks
     keystore-password: ${JWK_KEYSTORE_PASSWORD:}

@@ -7,11 +7,6 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.StorageClient;
 import com.lambda.config.security.CustomTokenServices;
 import com.lambda.error.FileStorageException;
-import org.apache.catalina.Context;
-import org.apache.catalina.connector.Connector;
-import org.apache.coyote.http2.Http2Protocol;
-import org.apache.tomcat.util.descriptor.web.SecurityCollection;
-import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +16,6 @@ import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
@@ -77,16 +71,8 @@ public class CommonConfig {
     private String firebaseStorageBucket;
     @Value("${storage.firebase.credentials}")
     private String firebaseCredentials;
-    @Value("${spring.profiles.active:Default}")
+    @Value("${spring.profiles.active:default}")
     private String activeProfile;
-    @Value("${custom.http-port}")
-    private Integer httpPort;
-    @Value("${custom.https-port}")
-    private Integer httpsPort;
-    @Value("${custom.security-policy}")
-    private String securityPolicy;
-    @Value("${custom.connector-scheme}")
-    private String connectorScheme;
 
     @Autowired
     public CommonConfig(DataSource dataSource,
@@ -274,45 +260,12 @@ public class CommonConfig {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("SESSIONID");
         serializer.setCookiePath("/");
-        switch (activeProfile) {
-            case "heroku":
-                serializer.setDomainName("lambda-auth-service.herokuapp.com");
-                break;
-            default:
-                serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+        if ("heroku".equals(activeProfile)) {
+            serializer.setDomainName("lambda-auth-service.herokuapp.com");
+        } else {
+            serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
         }
         return serializer;
-    }
-
-    @RefreshScope
-    @Bean
-    @ConditionalOnCloudPlatform(CloudPlatform.NONE)
-    public ServletWebServerFactory servletContainer() {
-        TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
-            @Override
-            protected void postProcessContext(Context context) {
-                SecurityConstraint securityConstraint = new SecurityConstraint();
-                // set to CONFIDENTIAL to automatically redirect from http to https port
-                securityConstraint.setUserConstraint(securityPolicy);
-//                securityConstraint.setUserConstraint("NONE");
-                SecurityCollection collection = new SecurityCollection();
-                collection.addPattern("/*");
-                securityConstraint.addCollection(collection);
-                context.addConstraint(securityConstraint);
-            }
-        };
-        tomcat.addAdditionalTomcatConnectors(getHttpConnector());
-        return tomcat;
-    }
-
-    private Connector getHttpConnector() {
-        Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
-        connector.setScheme(connectorScheme);
-        connector.setPort(httpPort);
-        connector.setSecure(false);
-        connector.setRedirectPort(httpsPort);
-        connector.addUpgradeProtocol(new Http2Protocol());
-        return connector;
     }
 
 }

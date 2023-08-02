@@ -1,0 +1,32 @@
+version: '2.2'
+networks:
+  global:
+    external: true
+services:
+  lambda-auth-service:
+    env_file:
+      - './environment/poweredge.env'
+    container_name: lambda-auth-service
+    hostname: lambda-auth-service.vengeance.svc.cluster.local
+      # build:
+      # context: '.'
+    # dockerfile: Dockerfile
+    image: pysga1996/prv_repo:lambda-auth-service
+    expose:
+      - 80
+    ports:
+      - 8082:80
+    networks:
+      - global
+      # depends_on:
+      # - chi-discovery-service
+    volumes:
+      - ./:/app
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+    mem_limit: 1024M
+    mem_reservation: 256M
+    cpus: 0.7
