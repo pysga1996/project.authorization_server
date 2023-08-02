@@ -16,7 +16,7 @@ spring:
 eureka:
   instance:
     hostname: localhost
-    secure-port-enabled: true
+    secure-port-enabled: false
     non-secure-port-enabled: true
   #    prefer-ip-address: true
   client:

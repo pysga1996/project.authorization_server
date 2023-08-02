@@ -16,7 +16,7 @@ spring:
 eureka:
   instance:
     hostname: ${LAMBDA_AUTH_HOSTNAME:}
-    secure-port-enabled: true
+    secure-port-enabled: false
     non-secure-port-enabled: true
     non-secure-port: 80
     secure-port: 443
