@@ -161,7 +161,7 @@ create table user_profile
 );
 
 delimiter //
-create or replace procedure register(in p_username varchar(255), in p_password varchar(255),
+create procedure register(in p_username varchar(255), in p_password varchar(255),
                           in p_first_name varchar(255), in p_last_name varchar(255),
                           in p_date_of_birth timestamp, in p_gender bit,
                           in p_phone_number varchar(255), in p_email varchar(255),
@@ -205,7 +205,7 @@ end //
 delimiter ;
 
 delimiter //
-create or replace procedure unregister(in p_username varchar(255))
+create procedure unregister(in p_username varchar(255))
 begin
     start transaction;
     delete from user_profile where user_profile.username = p_username;
@@ -216,7 +216,7 @@ end //
 delimiter ;
 
 delimiter //
-create or replace procedure delete_group(p_group_name varchar(255))
+create  procedure delete_group(p_group_name varchar(255))
 begin
     declare v_id int;
     start transaction;
