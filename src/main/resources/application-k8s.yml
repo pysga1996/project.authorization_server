@@ -40,7 +40,7 @@ spring:
       cleanup-cron: "0 * * * * *"
     timeout: 1h
   datasource:
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.mariadb.jdbc.Driver
     hikari:
       connectionTimeout: 30000
       idleTimeout: 100000

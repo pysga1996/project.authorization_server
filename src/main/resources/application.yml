@@ -29,17 +29,6 @@ server:
     enabled: true
     mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
     min-response-size: 1024
-  http2:
-    enabled: true
-  ssl:
-    enabled: true
-    enabled-protocols: TLSv1.2
-    key-alias: ${SSL_KEY_ALIAS:}
-    key-password: ${SSL_KEY_PASSWORD:}
-    key-store: classpath:vengeance.jks
-    key-store-password: ${SSL_KEYSTORE_PASSWORD:}
-    key-store-type: JKS
-    protocol: TLS
   forward-headers-strategy: framework
 spring:
   session:
@@ -55,7 +44,7 @@ spring:
     database: ${REDIS_DB:}
     password: ${REDIS_PASSWORD:}
   datasource:
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.mariadb.jdbc.Driver
     hikari:
       connectionTimeout: 30000
       idleTimeout: 100000
@@ -121,12 +110,6 @@ security:
   oath2:
     resource-id: user
 custom:
-  http-port: 8081
-  https-port: 8082
-  security-policy: CONFIDENTIAL
-  connector-scheme: http
-  trust-store-password: ${SSL_TRUSTSTORE_PASSWORD:}
-  trust-store-type: JKS
   jwk:
     keystore: classpath:vengeance.jks
     keystore-password: ${JWK_KEYSTORE_PASSWORD:}

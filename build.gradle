@@ -1,3 +1,4 @@
+
 buildscript {
     ext {
         springBootVersion = '2.4.0'
@@ -20,6 +21,22 @@ plugins {
     id 'com.github.jacobono.wsdl' version '1.7.7'
     id "org.openrepose.gradle.plugins.jaxb" version "2.5.0"
     id 'idea'
+    id 'maven-publish'
+}
+
+publishing {
+    publications {
+        customLibrary(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            name = 'sampleRepo'
+            url = layout.buildDirectory.dir("repo")
+        }
+    }
 }
 
 group = 'com.vengeance'
@@ -62,7 +79,8 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: '2.4.0'
     compile 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
-    compile 'org.postgresql:postgresql'
+//    compile 'org.postgresql:postgresql'
+    compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '3.1.4'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web-services'
     compile group: 'org.springframework.ws', name: 'spring-ws-security', version: '3.0.10.RELEASE'
     compile(group: 'com.sun.xml.wss', name: 'xws-security', version: '3.0') {
