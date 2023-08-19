@@ -20,5 +20,5 @@ eureka:
     non-secure-port-enabled: false
   #    prefer-ip-address: true
   client:
-    serviceUrl:
+    service-url:
       defaultZone: ${EUREKA_SERVICE_URL:}

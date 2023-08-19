@@ -22,5 +22,5 @@ eureka:
     secure-port: 443
   #    prefer-ip-address: true
   client:
-    serviceUrl:
+    service-url:
       defaultZone: ${EUREKA_SERVICE_URL:}

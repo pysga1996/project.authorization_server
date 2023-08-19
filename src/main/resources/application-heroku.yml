@@ -16,7 +16,7 @@ logging:
   config: classpath:log4j-spring.xml
 server:
   servlet:
-    context-path: /lambda-auth
+    context-path: /lambda-auth-service
     encoding:
       charset: UTF-8
       enabled: true

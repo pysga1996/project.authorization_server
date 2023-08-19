@@ -17,7 +17,7 @@ logging:
 server:
   port: 8082
   servlet:
-    context-path: /lambda-auth
+    context-path: /lambda-auth-service
     encoding:
       charset: UTF-8
       enabled: true
